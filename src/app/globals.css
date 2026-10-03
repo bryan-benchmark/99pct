@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+:root {
+  --paper: #ffffff;
+  --ink: #111111;
+  --body: #222222;
+  --muted: #444444;
+  --line: #cccccc;
+  --link: #0645ad;
+  --link-visited: #0b0080;
+}
+
+@theme inline {
+  --color-background: var(--paper);
+  --color-foreground: var(--ink);
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
+  --font-mono: var(--font-mono);
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-serif), "Georgia", "Times New Roman", serif;
+  font-size: 1.125rem;
+  line-height: 1.7;
+  min-height: 100%;
+}
+
+a {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+}
+
+a:visited {
+  color: var(--link-visited);
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+::selection {
+  background: #dbeafe;
+  color: var(--ink);
+}
+
+.mono,
+code,
+pre {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.9em;
+}
+
+pre {
+  overflow-x: auto;
+  padding: 1rem 0;
+  line-height: 1.5;
+  color: var(--body);
+  white-space: pre;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 2.5rem 0;
+}
+
+.doc-status {
+  margin-top: 1.5rem;
+  margin-bottom: 0;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.doc-status code {
+  font-size: 0.95em;
+  color: var(--ink);
+}
+
+.maturity {
+  display: inline-block;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  padding: 0.1rem 0.4rem;
+  vertical-align: middle;
+}
+
+.prose-mission p {
+  max-width: 40rem;
+}
+
+.prose-mission ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+  color: var(--body);
+  max-width: 40rem;
+}
+
+.prose-mission li {
+  margin-top: 0.35rem;
+}
+
+.prose-mission h2 {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ink);
+  margin-top: 0;
+}
+
+.site-nav a,
+.site-footer a {
+  text-decoration: none;
+}
+
+.site-nav a:hover,
+.site-footer a:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,58 @@
+{
+  "name": "missionism-com",
+  "version": "0.1.0",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "verify": "npm run check:canonical && npm run test:mu && npm run test:voice && npm run test:spark && npm run test:pilot && npm run test:toolshare && npm run test:teamup && npm run test:experiments && npm run test:workspace",
+    "check:canonical": "node scripts/check-canonical-badge.mjs",
+    "test:mu": "tsx --test src/mission-units/invariants.test.ts src/mission-units/outcome.test.ts",
+    "test:voice": "tsx --test src/content/voice.test.ts",
+    "test:spark": "tsx --test src/sparks/sparks.test.ts",
+    "test:pilot": "tsx --test src/pilots/pilots.test.ts",
+    "test:toolshare": "tsx --test src/toolshare/toolshare.test.ts",
+    "test:teamup": "tsx --test src/teamups/teamups.test.ts",
+    "test:experiments": "tsx --test src/experiments/experiments.test.ts",
+    "test:workspace": "tsx --test src/workspace/*.test.ts src/workspace/db/*.test.ts src/workspace/auth/*.test.ts",
+    "workspace:migrate": "tsx scripts/workspace-migrate.ts",
+    "workspace:pg-smoke": "tsx scripts/workspace-pg-smoke.ts",
+    "workspace:restore-check": "tsx scripts/workspace-restore-check.ts",
+    "workspace:prune-rate-limits": "tsx scripts/workspace-prune-rate-limits.ts",
+    "workspace:check-runtime-role": "tsx scripts/workspace-check-runtime-role.ts",
+    "workspace:check-audit": "tsx scripts/workspace-check-audit.ts",
+    "workspace:verify-export": "tsx scripts/workspace-verify-export.ts",
+    "workspace:bind-environment": "tsx scripts/workspace-bind-environment.ts"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.5.8",
+    "firebase": "^12.19.0",
+    "firebase-admin": "^14.5.0",
+    "next": "^16.3.6",
+    "pg": "^8.23.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/pg": "^8.23.1",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "babel-plugin-react-compiler": "1.0.0",
+    "eslint": "^9",
+    "eslint-config-next": "^16.3.6",
+    "tailwindcss": "^4",
+    "tsx": "^4.20.5",
+    "typescript": "^5"
+  },
+  "overrides": {
+    "uuid": "^11.1.1"
+  }
+}
