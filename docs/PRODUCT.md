@@ -53,17 +53,17 @@ Continuous contribution writes MCUs immediately. Legal equity settles on a Missi
 
 ## People
 
-Accounts are open to humans regardless of citizenship. What a person may do depends on the Mission, jurisdiction, industry, and the person's verification level.
+99pct is designed for global human participation. Availability and permitted activities remain subject to applicable law, sanctions or restrictions, jurisdiction, industry rules, and Mission-specific requirements.
 
 Progressive verification:
 
 1. Human account. Email or passkey, username, optional country. Browse, follow, post, create ideas. No Social Security number.
 2. Contributor. Legal name and jurisdiction when a contract is required. Public profile identity can stay separate.
-3. Paid contributor. Tax documentation through a provider. 99pct stores the provider's status flags, not a raw Social Security number.
-4. Owner or investor. Additional identity and securities checks through a regulated provider when equity is involved.
-5. Trader. Only if a person enters a regulated secondary-market transaction, and then through a registered broker-dealer or alternative trading system.
+3. Paid contributor. Tax documentation through a provider. 99pct stores provider status flags, not a raw Social Security number.
+4. Owner or investor. Additional identity and securities checks through an appropriate provider when equity is involved.
+5. Trader. Only if a person enters a regulated secondary-market transaction, through the required regulated infrastructure.
 
-Industry rules can be stricter. A U.S. air-carrier Mission, for example, carries citizenship and control limits that a software Mission does not. The product needs a compliance decision for a specific Mission, not a platform-wide citizenship ban.
+Industry rules can be stricter. The product needs a compliance decision for a specific Mission and activity, not a platform-wide citizenship ban or mandatory KYC at ordinary signup.
 
 ## Profile
 
@@ -79,13 +79,13 @@ Figures on that page must come from recorded data. Placeholder company homepages
 
 Buying or selling MCUs. A securities exchange. Custody of investment cash. Percentage commissions for brokering private stock. Seed phrases as the control for a person's equity. Issuing a share on every small contribution event.
 
-Ordinary investment, when it exists, is a separate rail from earned ownership. Example direction: a person can help fund a Mission by buying a mission bond or other regulated instrument through a registered funding portal or broker-dealer. That rail does not replace contributor ownership.
+Ordinary investment, when it exists, is a separate rail from earned ownership. That rail does not replace contributor ownership.
 
 ## Liquidity ladder
 
-Wages and other legally required pay come first. Then compensatory ownership under a real equity plan. Then distributions. Then structured mission repurchase. Then credit secured by verified ownership. Secondary trading only through a registered broker-dealer or alternative trading system.
+Legally required pay comes first where applicable. Then compensatory ownership under a real equity plan. Then distributions. Then structured mission repurchase. Then credit secured by verified ownership. Secondary trading only through legally appropriate infrastructure.
 
-Vested contributor ownership is meant to survive resignation, account deletion, and a terms-of-service change. Those protections belong in the charter, bylaws, equity plan, stock agreement, and stock ledger. They do not belong only in the 99pct terms of service.
+Vested contributor ownership is meant to survive resignation, account deletion, and a terms-of-service change. Those protections belong in the governing legal documents and authoritative ownership ledger, not only in 99pct terms of service.
 
 ## Predecessor vocabulary
 

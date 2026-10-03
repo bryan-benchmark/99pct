@@ -1,24 +1,13 @@
 # Work orders
 
-A work order is the only instruction that authorizes a product change.
+A work order is the durable input to one implementation PR.
 
-Each order states the goal, the user outcome, non-goals, the security invariants that apply, and the acceptance checks. Agents read `VISION.md`, `PRODUCT.md`, `ARCHITECTURE.md`, `SECURITY_INVARIANTS.md`, `CURRENT_STATE.md`, relevant decisions, and the order before editing. If the order contradicts an accepted decision, stop and add a proposed ADR.
+Use one branch: `wo/<number>-<short-name>`.
 
-When the order is finished, add `docs/implementation-reports/WO-####-*.md` and update `CURRENT_STATE.md`. Do not start the next order in the same change.
+The work order must be short enough to reread cheaply and complete enough that Cursor does not need chat history.
 
-## Report shape
+Agents read `AGENTS.md`, `CURRENT_STATE.md`, and the assigned work order first. The work order explicitly names any additional docs required.
 
-```text
-IMPLEMENTATION REPORT WO-####
+The PR is the default implementation report. Standalone implementation reports are only required when the work order says so.
 
-Commit:
-Changed:
-Acceptance criteria:
-Tests:
-Security:
-Migration:
-Deviations:
-Known issues:
-Canonical docs updated:
-Manual verification:
-```
+See `TEMPLATE.md`.
