@@ -53,16 +53,27 @@ First perform migration preflight. Then import a sanitized current application s
 
 After migration, new 99pct product development occurs here. The Missionism repository becomes predecessor/archive rather than a second active product source.
 
-## ADR-007 — Open-source licensing
+## ADR-007 — Application source uses AGPL-3.0-only
 
-Status: Proposed  
+Status: Accepted  
 Date: 2026-10-03
 
-A public GitHub repository is not itself an open-source license. Choose licenses before application code is published here.
+99pct application source code is licensed under the GNU Affero General Public License version 3 only (`AGPL-3.0-only`), unless a file explicitly states otherwise.
 
-Current candidate: AGPL-3.0 for the hosted application so modified network forks remain open. Protocol/document licensing may be separate.
+Why this license:
 
-Mission governance requirements such as funding or ownership rules must not be assumed to be enforceable merely through the software license.
+- 99pct is intended to be genuinely open and forkable.
+- A network-hosted fork that modifies the AGPL-covered application must offer its users the corresponding source for that modified version.
+- `-only` is deliberate: a future license version does not silently change the project's terms.
+
+Scope:
+
+- application source, application tests, build/runtime scripts, and application configuration imported into this repository are AGPL-3.0-only unless explicitly noted;
+- third-party dependencies retain their own licenses;
+- `docs/` and `spec/` are not granted an AGPL license merely because they share this repository. Their long-term documentation/protocol license is a separate future decision;
+- trademarks, Mission certification/compatibility rules, funding restrictions, contributor-ownership requirements, and governance rules are not created by the software license.
+
+Before a 99pct-hosted AGPL application is publicly deployed, its interface must provide users a clear path to the corresponding source as required for network interaction.
 
 ## ADR-008 — Pull requests are the default implementation report
 
