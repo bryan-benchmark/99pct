@@ -21,15 +21,19 @@ Cursor does not push implementation directly to `main` and does not redefine pro
 
 ## Minimal-context rule
 
-Do not load the whole repository into an agent context by default.
-
 For implementation work, start with:
 
 1. `AGENTS.md`
 2. `docs/CURRENT_STATE.md`
 3. the assigned work order
 
-The work order names any additional canonical files or invariants that must be read. Read other docs only when the task touches them.
+The work order names any additional canonical files or invariants that must be read.
+
+## Licensing
+
+Application source code is **AGPL-3.0-only** unless explicitly noted. See `LICENSE`, `LICENSE_SCOPE.md`, and ADR-007.
+
+Third-party dependencies keep their own licenses. Materials in `docs/` and `spec/` have a separate licensing decision and are not made AGPL solely by sharing this repository.
 
 ## Durable records
 
