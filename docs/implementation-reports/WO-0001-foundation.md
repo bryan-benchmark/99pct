@@ -1,6 +1,8 @@
 # IMPLEMENTATION REPORT WO-0001
 
-Commit: pending first commit of this repository
+Commit: e12856413780aefd80906f750c1010ff42d35cea
+
+That hash is the foundation commit. The commit that writes this hash into the report only updates `CURRENT_STATE.md` and this file.
 
 ## Repository architecture discovered
 
