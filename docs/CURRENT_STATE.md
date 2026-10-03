@@ -11,6 +11,17 @@ Updated: 2026-10-03
 - `spec/canonical.json` remains the canonical short-claim source
 - Accepted architecture: MCUs, legal equity, and money are separate ledgers
 - WO-0002 migration preflight accepted and merged at `3171e6f`
+- ADR-007 accepted: application source license is `AGPL-3.0-only`
+
+## License boundary
+
+Application source, application tests, build/runtime scripts, and application configuration are AGPL-3.0-only unless explicitly noted.
+
+Third-party dependencies retain their own licenses.
+
+`docs/` and `spec/` are not automatically licensed under AGPL by sharing this repository. Protocol/document licensing remains a separate future decision.
+
+Before a publicly hosted 99pct application goes live, users must have a clear path to the corresponding AGPL source.
 
 ## Migration findings
 
@@ -18,10 +29,10 @@ The private predecessor can be migrated only as a sanitized tracked snapshot, no
 
 Proposed source tree: `321d4b6` on `feat/mission-workspace-v1`.
 
-Before any public application snapshot is accepted:
+Before the application snapshot is accepted:
 
-- resolve ADR-007 licensing;
 - use a clean tracked archive;
+- apply the private publication denylist;
 - preserve 99pct control-plane paths;
 - run a standard credential/secret scanner;
 - run a privacy/publication scan for personal compensation/employment/legal material and other private artifacts;
@@ -50,6 +61,8 @@ Mission → Project → Work → Join → Contribution → MCU history.
 
 Also not implemented: public contribution profiles, production MCU ledger, passkeys, progressive verification providers, legal equity settlement, payments, repurchase, financing, or secondary liquidity.
 
-## Active blocker
+## Active next step
 
-ADR-007: choose the open-source license before application code is published into this public repository.
+Execute `docs/work-orders/WO-0003-sanitized-application-snapshot.md`.
+
+No production deployment or infrastructure cutover is authorized by WO-0003.
