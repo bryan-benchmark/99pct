@@ -105,7 +105,7 @@ Inspected 2026-10-03. None of these were moved or rewritten by WO-0001.
 |---|---|---|
 | Public site | `Missionism.com`, `origin/main` | Next.js explanatory site plus simulators. Firebase App Hosting on `main`. |
 | Feature branch | `feat/mission-workspace-v1` @ `321d4b6` | Adds file-backed Sparks, Pilots, experiments, team-ups, toolshare demos, and a PostgreSQL Mission Workspace. Nine commits ahead of `main`. |
-| Protocol spec | `Missionism.com/spec` | `canonical.json` plus explanatory spec markdown. |
+| Protocol claims | `spec/canonical.json` in this repo | Unmodified import from Missionism.com on 2026-10-03. Explanatory spec markdown still lives in Missionism.com. |
 | Protocol code | `Missionism/missionism-protocol` | Sibling directory, outside the website git repo. Experimental MCU ledger, Merkle batches, OpenTimestamps-style anchoring. Not the 99pct application. |
 | Workspace | `src/workspace` | Private organizations, memberships, contract revisions, decisions, reviews, invitations, append-only audit. Firebase Auth session. Not a public Mission network. |
 

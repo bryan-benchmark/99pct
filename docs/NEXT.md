@@ -2,7 +2,7 @@
 
 Updated: 2026-10-03
 
-Do not start these slices until ADR-004 is accepted. The code is not in this repository.
+Do not start these slices until ADR-006 is accepted. The control plane is this repository. The application code is not.
 
 The first live loop:
 
@@ -16,13 +16,13 @@ Visitor discovers or starts a Mission
 
 Smallest sequence. Each item is one future work order, not a backlog to build in parallel.
 
-## WO-0002 — Choose the working tree
+## WO-0002 — Choose where application code lands
 
-Accept or rewrite ADR-004.
+Accept or rewrite ADR-006.
 
-If the choice is the existing application, move this `docs/` tree into `Missionism.com` in that work order so agents stop reading two brains. If the choice is this repository, import `bryan-benchmark/missionism` with history.
+The control-plane documents stay in this repository. The open choice is whether product slices are implemented in `bryan-benchmark/missionism` or that application is imported here with history.
 
-Non-goals: new product behavior, MCU rules, equity, payments.
+Non-goals: new product behavior, MCU rules, equity, payments, moving these docs out of this repo.
 
 ## WO-0003 — Start or discover a Mission
 

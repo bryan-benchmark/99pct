@@ -1,32 +1,32 @@
 # Current State
 
 Updated: 2026-10-03  
-Commit: e12856413780aefd80906f750c1010ff42d35cea  
+Control plane: `https://github.com/bryan-benchmark/99pct` (`main`)  
 Predecessor inspected: `bryan-benchmark/missionism` `feat/mission-workspace-v1` `321d4b6cf88737c096918cad51069f2294e8c934`  
-Production branch tip: `origin/main` `4747bf3` Make Mishys Launch compile from founder intentions
+Missionism production tip: `4747bf3` Make Mishys Launch compile from founder intentions
 
-This repository contains handoff documents only. It has no application, no tests, and no deployment. The sections below describe that fact first, then the predecessor that actually runs.
+This repository is the control plane. It contains the handoff documents and an unmodified `spec/canonical.json`. It has no application, no tests, and no deployment. The sections below describe that fact first, then the predecessor that actually runs.
 
 ## Production / Deployable
 
 This repository: nothing to deploy.
 
-Predecessor production path, from `docs/DEPLOY.md` and `origin/main`:
+Predecessor production path, from `docs/DEPLOY.md` and missionism `main`:
 
 - Next.js 16 App Router site (`missionism-com` 0.1.0, React 19, Node 22).
 - Firebase App Hosting backend id `missionism`, project `missionism`, automatic rollouts from `main`.
 - Config: `apphosting.yaml`, `firebase.json`, `.firebaserc`.
-- Routes on `origin/main`: `/`, `/principles`, `/how-it-works`, `/why-now`, `/specification`, `/open-questions`, `/changes`, `/simulators/mishys-launch`, `/simulators/mission-units`.
+- Routes on missionism `main`: `/`, `/principles`, `/how-it-works`, `/why-now`, `/specification`, `/open-questions`, `/changes`, `/simulators/mishys-launch`, `/simulators/mission-units`.
 
 WO-0001 did not open the live domain and did not confirm which commit is currently rolled out. The deploy document says `main` rolls out automatically.
 
-The feature branch is nine commits ahead of `origin/main` and is not the documented production branch.
+The feature branch is nine commits ahead of missionism `main` and is not the documented production branch.
 
 ## Working
 
 In this repository: the documents listed in `README.md`.
 
-On `origin/main`, working as a static and server-rendered explanatory site plus simulators. Homepage hero is "Own your work. / Own your life." Primary action is "See how it works" (`/how-it-works`). Secondary action links to `https://mishys.com`. Canonical claims render only from `spec/canonical.json`.
+On missionism `main`, working as a static and server-rendered explanatory site plus simulators. Homepage hero is "Own your work. / Own your life." Primary action is "See how it works" (`/how-it-works`). Secondary action links to `https://mishys.com`. Canonical claims on that site render from its own `spec/canonical.json`. This control plane now holds the same claim text, imported unchanged.
 
 On `feat/mission-workspace-v1`, also present and covered by tests:
 
@@ -58,7 +58,8 @@ In both this repository and the predecessor application:
 
 ## Known issues
 
-- This 99pct workspace was empty at inspection. The application is a different directory. ADR-004 is unresolved.
+- ADR-004 is accepted: this GitHub repository is the control plane. ADR-006 is still proposed: application code stays in `bryan-benchmark/missionism` until a work order chooses where product slices land.
+- The website still has its own `spec/canonical.json`. This repo's copy matches it as of the 2026-10-03 import. Editing either copy alone would split the claim source.
 - `feat/mission-workspace-v1` has uncommitted local files that are not in `321d4b6`: untracked `src/workspace/db/runtime-role.ts` (not imported; the committed checker is `scripts/workspace-check-runtime-role.ts`) and untracked `docs/reviews/`.
 - `src/talent/invariants.test.ts` is outside `npm run verify`. It passed with 2 assertions and 25 todo tests. Those todos are intentional Phase 0 placeholders, not product behavior.
 - Spec wording conflicts with ADR-001. See ADR-005. Left unchanged.
@@ -74,11 +75,11 @@ Predecessor: see `DATA_MODEL.md`. Summary: no public Mission tables on `main`. F
 
 ## Current architectural boundaries
 
-Accepted for future 99pct work: ADR-001 and ADR-002. Not implemented in code.
+Accepted for future 99pct work: ADR-001, ADR-002, and ADR-004. Not implemented in application code. ADR-006 is open.
 
 Predecessor boundaries that already exist and should be kept:
 
-- Canonical claim text has one source, `spec/canonical.json`.
+- Canonical claim text for this control plane is `spec/canonical.json` in this repository. The website still reads the predecessor copy.
 - The public site build does not require workspace secrets. Workspace routes fail closed without server configuration.
 - Workspace history is append-only at the database.
 - Runtime database role is distinct from the migration role.

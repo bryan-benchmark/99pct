@@ -40,29 +40,41 @@ Decision: The Next.js, Firebase App Hosting, Firebase Auth, and PostgreSQL works
 
 Reason: The foundation pass is a handoff protocol. A framework rewrite or a silent repo merge would hide the current system and invent structure.
 
-Implication: Implementation of the product loop waits until a human confirms where code changes land. See ADR-004.
+Implication: Implementation of the product loop waits until ADR-006 is accepted. The control plane itself is ADR-004.
 
-## ADR-004 — Where the next code change is allowed to land
+## ADR-004 — This GitHub repository is the control plane
 
-Status: Proposed  
-Date: 2026-10-03
+Status: Accepted  
+Date: 2026-10-03  
+Source: product owner, after confirming `bryan-benchmark/99pct` was an empty public repository on `main`
 
-Proposal: Choose one working tree before WO-0002 builds product behavior.
+Decision: `https://github.com/bryan-benchmark/99pct` is the permanent shared control plane. Vision, product, architecture, security invariants, data model, decisions, current state, next work, work orders, implementation reports, and `spec/canonical.json` live here.
 
-Options:
+`spec/canonical.json` is an unmodified import of the Missionism.com file as of 2026-10-03. Later claim edits happen in this file, after an accepted ADR. The website copy is the predecessor and must not be edited in parallel.
 
-1. Continue implementation in `/Users/bryangaines/Projects/Missionism/Missionism.com` and move these `/docs` files into that repo so there is one canonical handoff brain next to the code.
-2. Import `bryan-benchmark/missionism` into this 99pct repository with history, then develop here.
+Reason: Humans and coding agents need one repo to read and one commit history to audit. Chat transcripts are not the source of truth.
 
-Until this is accepted, agents do not copy the application, do not fork `canonical.json`, and do not start the Mission loop in the empty 99pct tree.
+Implication: Application code is still not in this repository. See ADR-006.
 
 ## ADR-005 — Reconcile dual MCU wording with ADR-001
 
 Status: Proposed  
 Date: 2026-10-03
 
-Proposal: A later documentation work order should reconcile `spec/MCU_PROTOCOL.md`, `spec/ECONOMIC_PHILOSOPHY.md`, and `missionism-protocol` with ADR-001, without creating a second `canonical.json`.
+Proposal: A later documentation work order should reconcile `spec/MCU_PROTOCOL.md`, `spec/ECONOMIC_PHILOSOPHY.md`, and `missionism-protocol` with ADR-001.
 
 The reconciliation has to preserve anything already true in those files: MCUs are not share certificates, history is append-only, geography does not discount equal verified contribution, and there is no global MCU market. It has to remove or reclassify any sentence that makes an MCU itself an ownership claim, if the product owner confirms ADR-001.
 
-Do not perform that edit until this record is accepted. `canonical.json` does not currently contain the dual-MCU sentence, so this is not a canonical-claim change unless someone proposes one.
+Do not perform that edit until this record is accepted. `spec/canonical.json` does not contain the dual-MCU sentence, so this is not a canonical-claim change unless someone proposes one. Claim text has one control-plane file, this repo's `spec/canonical.json`.
+
+## ADR-006 — Where application code changes land
+
+Status: Proposed  
+Date: 2026-10-03
+
+Proposal: The control plane is this repository. The Next.js application remains `bryan-benchmark/missionism` until a work order chooses one of these:
+
+1. Implement product slices in `bryan-benchmark/missionism`, with this repo remaining the design authority.
+2. Import `bryan-benchmark/missionism` into this repository with history, then implement here.
+
+Until this is accepted, agents do not copy the application and do not start the Mission loop.

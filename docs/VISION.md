@@ -10,7 +10,7 @@ Anyone should be able to identify something that should exist, start a Mission, 
 
 99pct removes the administrative friction between wanting to help and actually helping.
 
-The locked public definition of Missionism stays in the application at `src/content/voice.ts` (`shortDefinition`). Protocol purpose and human constraints stay in `spec/canonical.json` (`claims.purpose`, `humanConstraints`). This file does not restate them as a second normative source.
+The locked public definition of Missionism stays in the application at `src/content/voice.ts` (`shortDefinition`). Protocol purpose and human constraints stay in this repository's `spec/canonical.json` (`claims.purpose`, `humanConstraints`). This file does not restate them.
 
 ## What 99pct.com is for
 

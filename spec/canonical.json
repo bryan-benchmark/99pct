@@ -1,0 +1,28 @@
+{
+  "protocol": {
+    "name": "Missionism Protocol",
+    "version": "0.1",
+    "status": "Draft",
+    "lastUpdated": "September 2026"
+  },
+  "claims": {
+    "purpose": "Missionism exists to help design organizations so that the rational self-interest of the contributor, the organization, and the customer or beneficiary can point the same way.",
+    "noPermanentEntitlement": "Authority and economics should not remain permanently concentrated merely because someone arrived first.",
+    "measurableMission": "A Missionism organization must publicly state a measurable mission; revenue or market capitalization alone is not a sufficient mission.",
+    "contributorPath": "People who create enduring value must have a viable path to meaningful ownership of that value.",
+    "tripleAlignment": "An organizational design is incomplete while the incentives of the contributor, the organization, and the customer or beneficiary diverge.",
+    "missionRecursion": "Missions may contain child missions and participate in parent missions.",
+    "missionAutonomy": "A child mission may retain autonomy while contributing to a parent mission.",
+    "forkability": "Missionism-compatible systems must permit exit and independent continuation; a fork is not automatically the canonical Missionism specification.",
+    "surviveFounder": "If a better version of Missionism is created, people should be free to use it instead.",
+    "voluntaryAdoption": "Missionism proposes rules for organizations that voluntarily use the system; it does not claim jurisdiction over every organization or every life.",
+    "humansNotVariables": "Mission optimization is bounded by non-negotiable human constraints; humans are not optimization variables."
+  },
+  "humanConstraints": {
+    "equalStanding": "Every person has equal human standing.",
+    "freedomOfConscience": "People may believe, worship, question, speak, disagree, and change their minds, while protecting that freedom for others.",
+    "nonCoercion": "Missions may not achieve ends through violence, intimidation, or domination.",
+    "humanDignity": "Ideas and missions are challengeable; people retain dignity and must not be made the enemy of the mission.",
+    "reciprocity": "The freedoms, dignity, and protections claimed for oneself must also be granted to people one profoundly disagrees with."
+  }
+}

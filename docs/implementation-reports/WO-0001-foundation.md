@@ -2,6 +2,10 @@
 
 Commit: e12856413780aefd80906f750c1010ff42d35cea
 
+## Follow-up seed
+
+The product owner confirmed `bryan-benchmark/99pct` as the public control plane. A later commit imports `spec/canonical.json` unchanged, records ADR-004, and pushes this repository to GitHub. Claim strings were not edited. Application code was not added. The file list below is the original foundation commit, before that import.
+
 That hash is the foundation commit. The commit that writes this hash into the report only updates `CURRENT_STATE.md` and this file.
 
 ## Repository architecture discovered
