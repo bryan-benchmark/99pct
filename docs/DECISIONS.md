@@ -376,3 +376,50 @@ Consequences for the public product:
 Short internal test:
 
 > 99pct is what we are building. Missionism is how it works.
+
+## ADR-019 — 99pct is a three-mode commerce network built from shared substrate + Utility Missions
+
+Status: Accepted  
+Date: 2026-10-04
+
+99pct is designed as one network with three human modes:
+
+1. **Use** — customers use Utility Missions for real-life services.
+2. **Operate** — service providers deliver those services.
+3. **Build** — contributors build and maintain the infrastructure.
+
+A single human identity may participate in multiple modes.
+
+99pct core should provide reusable primitives instead of hard-coding each vertical:
+
+- identity/trust;
+- Mission graph;
+- Projects / Work;
+- participation;
+- Contribution / MCU history;
+- governance/rules;
+- money/legal connectors;
+- open-source artifacts;
+- locality/discovery;
+- reusable Mission blueprints.
+
+A **Utility Mission** provides domain-specific service logic on top of that substrate. Rideshare 99, Stay 99, Music 99, and future utilities are examples.
+
+Reusable blueprints may later spawn/fork/localize Missions. Automation may propose or instantiate infrastructure, but regulated service activation, money, legal obligations, and ownership remain governed and auditable.
+
+Product-surface rule:
+
+- customer/operator/builder experiences may look very different;
+- they should share identity and backend domain contracts rather than become unrelated products;
+- start web/PWA where practical;
+- add native shells when vertical requirements such as background location, media, low-latency interaction, or device integration justify them.
+
+Economic rule:
+
+- money, MCUs, and legal equity remain separate ledgers;
+- Utility Mission customer revenue may fund operators, infrastructure, reserves, and growth under published rules;
+- recognized builders/operators may earn MCUs;
+- legal ownership may settle separately only where real legal machinery exists;
+- the default design direction is to keep economic value with the humans/communities building and operating the service rather than giving permanent control to passive outside equity by default.
+
+Bounties are a later Work mechanism and must not be implemented as promised MCU/money rewards before Contribution recognition and reward rails exist.
