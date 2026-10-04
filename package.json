@@ -33,7 +33,8 @@
     "mission:bind-environment": "tsx scripts/mission-bind-environment.ts",
     "mission:check-runtime-role": "tsx scripts/mission-check-runtime-role.ts",
     "mission:pg-smoke": "tsx scripts/mission-pg-smoke.ts",
-    "mission:restore-check": "tsx scripts/mission-restore-check.ts"
+    "mission:restore-check": "tsx scripts/mission-restore-check.ts",
+    "mission:prod-check": "tsx scripts/mission-prod-check.ts"
   },
   "engines": {
     "node": ">=22"

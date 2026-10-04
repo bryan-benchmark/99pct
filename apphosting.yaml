@@ -1,5 +1,6 @@
 # Settings for Firebase App Hosting (Cloud Run runtime).
 # Docs: https://firebase.google.com/docs/app-hosting/configure
+# Automatic rollouts stay off. The database password is a Secret Manager reference, not a literal.
 
 runConfig:
   minInstances: 0
@@ -7,3 +8,40 @@ runConfig:
   concurrency: 80
   cpu: 1
   memoryMiB: 512
+
+env:
+  - variable: MISSION_RELEASE_TARGET
+    value: production
+    availability:
+      - RUNTIME
+  - variable: MISSION_DB_INSTANCE
+    value: pct-99:us-central1:pct99-missions-prod
+    availability:
+      - RUNTIME
+  - variable: MISSION_DB_NAME
+    value: missions
+    availability:
+      - RUNTIME
+  - variable: MISSION_DB_USER
+    value: missions_runtime
+    availability:
+      - RUNTIME
+  - variable: MISSION_DB_PASSWORD
+    secret: mission-db-password
+    availability:
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: pct-99
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: AIzaSyB-OT6IjTcr42E0hnw6lY5atWmgZ0tnGx8
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: FIREBASE_PROJECT_ID
+    value: pct-99
+    availability:
+      - BUILD
+      - RUNTIME

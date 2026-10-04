@@ -1,11 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { verifyHumanSession, type HumanIdentity } from "@/human/auth/server";
-import { humanCsrfCookieName, humanSessionCookieName } from "@/human/auth/session";
+import { humanCsrfAccepted, humanCsrfCookieName, humanSessionCookieName } from "@/human/auth/session";
 import type { MissionDb } from "@/missions/db/client";
 import { getMissionDb } from "@/missions/db/runtime";
 import { MissionInputError, missionDraft, publicMissionUrl } from "@/missions/model";
 import { createFormingMission } from "@/missions/store";
-import { validSameOriginCsrf } from "@/workspace/auth/session";
 import { readWorkspaceJsonObject } from "@/workspace/http-body";
 
 export const runtime = "nodejs";
@@ -26,7 +25,7 @@ export async function createMissionRequest(request: NextRequest, deps: MissionRe
   const parsed = await readWorkspaceJsonObject(request, 8000);
   if (parsed.error) return parsed.error;
   const body = parsed.body;
-  if (!validSameOriginCsrf(request.headers.get("origin"), request.nextUrl.origin, request.cookies.get(humanCsrfCookieName)?.value, body.csrfToken)) return rejected(403, "Mission request rejected.");
+  if (!humanCsrfAccepted(request.headers.get("origin"), request.nextUrl.origin, request.cookies.get(humanCsrfCookieName)?.value, body.csrfToken)) return rejected(403, "Mission request rejected.");
   const identity = await deps.verifySession(request.cookies.get(humanSessionCookieName)?.value);
   if (!identity) return rejected(401, "Sign in with a verified email first.");
   let draft;
