@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["@electric-sql/pglite"],
   outputFileTracingIncludes: {
     "/api/workspace/health": ["./src/workspace/db/migrations/*.sql"],
+    "/api/missions": ["./src/missions/db/migrations/*.sql"],
+    "/missions": ["./src/missions/db/migrations/*.sql"],
+    "/missions/new": ["./src/missions/db/migrations/*.sql"],
+    "/missions/[slug]": ["./src/missions/db/migrations/*.sql"],
   },
   turbopack: {
     root: path.join(__dirname),
@@ -44,12 +48,6 @@ const nextConfig: NextConfig = {
         source: "/mishys",
         destination: "https://mishys.com",
         permanent: false,
-      },
-      { source: "/missions", destination: "/how-it-works", permanent: true },
-      {
-        source: "/missions/:path*",
-        destination: "/how-it-works",
-        permanent: true,
       },
     ];
   },

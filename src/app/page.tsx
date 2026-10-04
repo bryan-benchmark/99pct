@@ -46,6 +46,10 @@ export default function HomePage() {
         {homeHero.definition}
       </p>
 
+      <p className="mt-6 text-lg leading-relaxed text-[var(--body)]">
+        {homeHero.product}
+      </p>
+
       <p className="mt-8 font-[family-name:var(--font-sans)]">
         <Link
           href={homeHero.primaryCta.href}
@@ -54,12 +58,16 @@ export default function HomePage() {
           {homeHero.primaryCta.label}
         </Link>
         <span className="mx-3 text-[var(--muted)]">·</span>
-        <a
+        <Link
           href={homeHero.secondaryCta.href}
-          className="text-[var(--muted)]"
+          className="font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4"
         >
           {homeHero.secondaryCta.label}
-        </a>
+        </Link>
+        <span className="mx-3 text-[var(--muted)]">·</span>
+        <Link href={homeHero.explainerCta.href} className="text-[var(--muted)]">
+          {homeHero.explainerCta.label}
+        </Link>
       </p>
 
       <DocStatus source="spec/canonical.json" sourceKind="canonical" />
