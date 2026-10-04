@@ -4,23 +4,29 @@ Updated: 2026-10-04
 
 ## Active
 
-`WO-0005 — 99pct deployment baseline`
+`WO-0006 — 99pct.com controlled domain cutover`
 
-See `docs/work-orders/WO-0005-deployment-baseline.md`.
+See `docs/work-orders/WO-0006-99pct-domain-cutover.md`.
 
-Goal: prove that the accepted 99pct repository can be deployed safely on infrastructure isolated from the predecessor, using a generated App Hosting URL and a specific accepted commit, with health evidence, rollback evidence, and an AGPL source link.
+Goal: move public web traffic to the already-proven 99pct App Hosting backend with minimal blast radius.
 
-This is not the `99pct.com` cutover.
+Canonical public host:
 
-## After WO-0005 acceptance
+`https://99pct.com`
 
-1. custom-domain cutover work order for `99pct.com`
-2. verify TLS, canonical host, smoke checks, logs, and rollback after cutover
-3. start/discover a Mission
-4. Projects + needed Work
-5. Join
-6. Contribution + append-only MCU history
-7. export/tamper evidence/passkeys
-8. legal-equity pilot only after the contribution foundation and appropriate legal design exist
+`https://www.99pct.com` redirects to the apex.
+
+The cutover must preserve registrar ownership, nameserver delegation, email/MX/TXT records, automatic-rollout-off state, the predecessor deployment, and workspace fail-closed behavior.
+
+## After WO-0006 acceptance
+
+1. start/discover a Mission
+2. Projects + needed Work
+3. Join
+4. Contribution + append-only MCU history
+5. export/tamper evidence/passkeys
+6. legal-equity pilot only after the contribution foundation and appropriate legal design exist
+
+Infrastructure hardening remains continuous, including review/removal of ADR-010 dependency exceptions before their expiry.
 
 One vertical slice at a time.
