@@ -2,49 +2,59 @@
 
 Updated: 2026-10-04
 
-## Blocked release
+## Active engineering
 
-`WO-0009 — Provision and deploy Start + Discover`
+`WO-0010 — Projects + needed Work`
 
-See `docs/work-orders/WO-0009-provision-and-deploy-missions.md`.
+See `docs/work-orders/WO-0010-projects-and-work.md`.
 
-Status:
+Goal: extend the live Mission loop from:
 
-**BLOCKED — EXPLICIT CLOUD SQL SPEND APPROVAL REQUIRED**
+`Mission`
 
-Do not start WO-0009 merely because billing is enabled.
+to:
 
-After explicit approval, the order will:
+`Mission → Project → Work`
 
-1. create the dedicated Mission Cloud SQL instance;
-2. create database + separate migration/runtime users;
-3. migrate and bind the database;
-4. apply least-privilege runtime grants;
-5. create the Secret Manager runtime password;
-6. grant only required IAM to the App Hosting serving service account;
-7. create a Firebase Web App and enable Email/Password Auth;
-8. authorize the generated App Hosting domain for Auth;
-9. update the real App Hosting configuration;
-10. manually deploy an exact accepted commit;
-11. prove live sign-up / verification / sign-in / Mission create / discover / read;
-12. prove Mission health, backups/PITR posture, generated-domain fallback, and rollback.
+The first slice should let a Mission creator:
 
-No custom-domain dependency is required for that release.
+- create a bounded Project;
+- describe the outcome the Project exists to produce;
+- post needed Work under that Project;
+- publish a clear description of what needs doing and what “done” means.
+
+Anyone can read Projects and open Work without an account.
+
+Until Join exists, only the Mission creator may mutate these objects.
+
+Open Work is a request for help only. It does not create:
+
+- a job offer;
+- employment;
+- an independent-contractor agreement;
+- compensation;
+- a bounty;
+- an MCU grant;
+- legal ownership;
+- a promise that the Mission will accept someone.
+
+WO-0010 may migrate the existing production Mission database and manually deploy the slice after green CI.
 
 ## Waiting externally
 
 `WO-0006 — 99pct.com controlled domain cutover`
 
-PR #11 remains parked on DNS/Firebase preparation. It can finish independently after the generated-domain Mission release is healthy.
+PR #11 remains parked on DNS/Firebase preparation. The generated App Hosting URL remains the product host until that cutover is separately accepted.
 
-## After Start + Discover is live
+## After WO-0010 acceptance
 
-1. Projects + needed Work
-2. Join
-3. Contribution + append-only MCU history
-4. public contribution profiles + export/tamper evidence/passkeys
-5. legal-equity pilot only after the contribution foundation and appropriate legal design exist
+1. Join / express interest in Work
+2. agreement boundary for accepted Work
+3. Contribution records
+4. append-only MCU grants + public contribution history
+5. public contribution profiles + export/tamper evidence/passkeys
+6. legal-equity pilot only after the contribution foundation and appropriate legal design exist
 
-Infrastructure hardening remains continuous, including removal/review of ADR-010 exceptions before expiry.
+Infrastructure hardening remains continuous, including review/removal of ADR-010 exceptions before expiry.
 
 One product vertical slice at a time.

@@ -220,3 +220,40 @@ Data-safety rules:
 Capacity starts small and can be upgraded without changing the Mission data model. A shared-core instance is acceptable for the early alpha despite having no Cloud SQL SLA, provided backups/PITR and health monitoring are in place.
 
 Creating a recurring paid Cloud SQL resource requires explicit product-owner approval. Architectural acceptance does not itself authorize spend.
+
+## ADR-015 — Initial Projects + Work are public plans, not economic commitments
+
+Status: Accepted  
+Date: 2026-10-04
+
+A Project is a bounded outcome belonging to exactly one Mission.
+
+Initial Work is a public request for help under exactly one Project.
+
+Until the Join slice exists:
+
+- only the Mission creator may create Projects or Work for that Mission;
+- everyone may read public Projects and Work;
+- no other Mission role or membership is implied.
+
+Project and Work descriptions use append-only revision rows rather than silent in-place edits.
+
+The initial Work model distinguishes only:
+
+- `task` — a bounded thing that needs doing;
+- `role` — an ongoing or repeating responsibility the Project needs.
+
+An open Work item does **not** by itself create:
+
+- employment;
+- an independent-contractor relationship;
+- a binding offer;
+- payment or bounty entitlement;
+- an MCU grant;
+- legal equity;
+- a contract;
+- acceptance into the Mission.
+
+The UI must say this plainly enough that a reasonable visitor does not mistake “open work” for a compensated job posting.
+
+Join, acceptance, contracts, contribution evidence, compensation, MCUs, and legal ownership are later product states with separate authorization and legal/economic rules.

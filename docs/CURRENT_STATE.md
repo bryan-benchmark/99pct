@@ -10,86 +10,97 @@ Updated: 2026-10-04
 - Isolated deployment baseline accepted in WO-0005 and merged at `8d4c9b3`
 - Mission foundation Start + Discover accepted in WO-0007 and merged at `6872a8c`
 - Mission production-persistence readiness accepted in WO-0008 and merged at `754d785`
+- Start + Discover production release accepted in WO-0009 and merged at `4643b4f`
 - `spec/canonical.json` remains the canonical short-claim source
 - Application source license: `AGPL-3.0-only`
 
-## Live deployment baseline
+## Live product
 
-Dedicated 99pct infrastructure:
+Generated App Hosting URL:
 
-- Firebase project: `pct-99`
-- App Hosting backend: `pct99`
-- region: `us-central1`
-- generated URL: `https://pct99--pct-99.us-central1.hosted.app`
+`https://pct99--pct-99.us-central1.hosted.app`
+
+Live release:
+
+- deployed application commit: `efc6a26`
+- App Hosting build: `build-2026-10-04-010`
 - automatic rollouts: off
-- production Mission database: none
+- `/api/health`: ready
+- `/api/missions/health`: ready
+- `/api/workspace/health`: unavailable by design
 
-Accepted `main` `9d1cc6d` remains the live App Hosting release. Start + Discover Mission code is merged but deliberately not deployed because production Mission persistence/auth infrastructure is not provisioned yet.
+A verified human can:
 
-The predecessor `missionism` Firebase backend remains independent and untouched.
+- create an account;
+- verify email;
+- sign in;
+- start a public forming Mission;
+- discover Missions;
+- read a Mission signed out.
+
+Production contains one labeled alpha record: `WO-0009 test Mission`.
+
+Its public page does not expose creator email and truthfully shows no Projects, contributions/MCUs, legal ownership, or governance yet.
+
+## Production Mission persistence
+
+Dedicated Cloud SQL:
+
+- project: `pct-99`
+- region: `us-central1`
+- instance: `pct99-missions-prod`
+- PostgreSQL 18 Enterprise
+- zonal `db-f1-micro`
+- 10 GiB SSD with auto-growth
+- automated backups enabled
+- point-in-time recovery enabled
+- deletion protection enabled
+- public IP used through Cloud SQL Connector
+- authorized networks empty
+
+Database:
+
+- name: `missions`
+- migration identity: separate
+- runtime identity: `missions_runtime`
+- runtime grants: least privilege
+- environment binding: production / `pct-99` / `missions` / `pct-99:us-central1:pct99-missions-prod`
+
+Secrets live in Secret Manager. App Hosting receives only the runtime DB password secret.
+
+Current planning floor remains roughly $7.67/month compute + about $1.70/month SSD + backup/PITR storage, tax, and small egress. Shared-core has no Cloud SQL SLA.
+
+## Firebase Auth
+
+Email/Password is enabled.
+
+The generated App Hosting host is authorized. `99pct.com` and `www.99pct.com` are also authorized for a later domain cutover, but this release does not depend on them.
+
+No service-account JSON is used.
 
 ## Domain cutover — waiting externally
 
 WO-0006 / PR #11 remains parked while Afternic/Firebase ownership and certificate preparation propagates.
 
-Do not mix Mission product work into that PR and do not move apex/www traffic records until Firebase preparation is ready.
+Do not move apex/www traffic records until Firebase preparation is ready.
 
-## Mission product source
+## Product boundary
 
-The first real Mission slice is accepted in source:
+The live loop currently stops at:
 
-- verified public human session;
-- Start a forming Mission;
-- PostgreSQL Mission domain;
-- append-only Mission description revisions;
-- public Mission discovery;
-- public Mission page;
-- explicit no-MCU/no-equity/no-governance empty states.
+Mission → **Projects + Work not yet implemented**
 
-WO-0008 added and verified:
+The broader target remains:
 
-- Cloud SQL Node.js Connector production path;
-- explicit fail-closed Mission environment binding;
-- least-privilege Mission runtime grants;
-- Mission migration/bind/smoke/restore tooling;
-- `/api/missions/health`;
-- separate PostgreSQL 18 Mission CI path;
-- Secret Manager/App Hosting configuration template;
-- read-only Firebase Auth inventory.
+Mission → Project → Work → Join → Contribution → MCU history.
 
-Both required CI jobs passed on run `37222492190`.
+ADR-015 defines the next slice:
 
-## Production resource state
-
-No Cloud SQL instance, production Mission database, database secret, Firebase Auth provider change, App Hosting rollout, DNS change, or product deployment was created by WO-0008.
-
-The proposed initial Cloud SQL resource is:
-
-- project `pct-99`
-- region `us-central1`
-- instance `pct99-missions-prod`
-- PostgreSQL 18 Enterprise
-- zonal `db-f1-micro`
-- 10 GiB SSD with auto-growth
-- automated backups + PITR
-- deletion protection
-- public IP for Cloud SQL Connector with no authorized-network allowlist
-- separate migration and runtime database users
-
-Planning cost checked in WO-0008: about $7.67/month compute + about $1.70/month for 10 GiB SSD + backup/PITR storage, before tax/egress. Shared-core has no Cloud SQL SLA.
-
-**Spend approval has not been granted. No recurring paid Mission database may be created yet.**
-
-## Firebase Auth production gap
-
-Read-only inventory found:
-
-- no Firebase Web App in `pct-99`;
-- Email/Password Auth is not enabled;
-- authorized Auth domains are therefore not configured;
-- Secret Manager has no Mission database secret.
-
-WO-0009 includes these explicit activation steps only after Cloud SQL spend approval.
+- Mission creator is the only writer until Join exists;
+- Projects are bounded outcomes belonging to one Mission;
+- Work is a public request for help under a Project;
+- Work is not yet a job offer, contract, payment promise, MCU grant, or ownership grant;
+- Project and Work descriptions use append-only revisions.
 
 ## Dependency-security state
 
@@ -100,8 +111,8 @@ Two temporary ADR-010 exceptions remain, both expiring 2026-11-03:
 
 The dependency-security CI policy remains required.
 
-## Next release order — blocked
+## Active engineering work
 
-`docs/work-orders/WO-0009-provision-and-deploy-missions.md`
+Execute `docs/work-orders/WO-0010-projects-and-work.md`.
 
-WO-0009 is queued but **must not execute resource creation or deployment until the product owner explicitly approves the recurring Cloud SQL spend**.
+WO-0010 may migrate the existing Mission production database and manually deploy the accepted slice after CI is green. It must not implement Join, contracts, payment, MCUs, equity, or custom-domain changes.
