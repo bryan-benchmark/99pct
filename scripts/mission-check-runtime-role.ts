@@ -1,8 +1,8 @@
 import { configuredMissionDb } from "../src/missions/db/client";
 import { missionDatabaseUnavailable } from "../src/missions/db/config";
 
-const tables = ["mission_schema_migrations", "human_accounts", "missions", "mission_revisions", "mission_environment", "projects", "project_revisions", "work_items", "work_revisions"] as const;
-const canInsert = new Set<string>(["human_accounts", "missions", "mission_revisions", "projects", "project_revisions", "work_items", "work_revisions"]);
+const tables = ["mission_schema_migrations", "human_accounts", "missions", "mission_revisions", "mission_environment", "projects", "project_revisions", "work_items", "work_revisions", "work_interests"] as const;
+const canInsert = new Set<string>(["human_accounts", "missions", "mission_revisions", "projects", "project_revisions", "work_items", "work_revisions", "work_interests"]);
 const canUpdate = new Set<string>();
 
 type TablePrivilege = {

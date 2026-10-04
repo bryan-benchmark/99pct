@@ -80,9 +80,32 @@ export const projectCopy = {
 
 export const workCopy = {
   postingBoundary: "Posting this does not create a contract, compensation, MCUs, or ownership. Join and agreement flows come next.",
-  joinUnavailable: "Joining this work is not available yet.",
+  wantToHelp: "I want to help",
+  interestSent: "Interest sent",
+  interestSentDetail: "The Mission creator can now see your verified email and private note.",
+  interestBoundary: "This only expresses interest. It does not create a job, contract, assignment, compensation, MCUs, or ownership.",
+  consent: "Share my verified email with this Mission's creator so they can follow up.",
+  notePrompt: "Anything you want the Mission creator to know?",
+  emptyInterests: "No one has expressed interest yet.",
+  interestedPeople: "Interested people",
   readBoundary: "Open work is a request for help, not a binding job or contract. No compensation, MCUs, or ownership have been promised by this posting.",
 } as const;
+
+export const interestLimits = { note: { max: 500 } } as const;
+
+export type InterestDraft = { note: string; shareEmail: true };
+
+export function interestDraft(input: Record<string, unknown>): InterestDraft {
+  if (input.shareEmail !== true) throw new MissionInputError("Share your verified email before sending interest.");
+  if (input.note !== undefined && input.note !== null && typeof input.note !== "string") throw new MissionInputError("Private note must be text.");
+  const note = typeof input.note === "string" ? input.note.trim().replace(/\s+/g, " ") : "";
+  if (note.length > interestLimits.note.max) throw new MissionInputError(`Private note must be at most ${interestLimits.note.max} characters.`);
+  return { note, shareEmail: true };
+}
+
+export function interestCountLabel(count: number) {
+  return count === 1 ? "1 person interested" : `${count} people interested`;
+}
 
 export type ProjectDraft = { title: string; outcome: string };
 export type WorkKind = "task" | "role";
@@ -108,6 +131,7 @@ export type PublicWork = {
   description: string;
   doneWhen: string;
   createdAt: string;
+  interestCount: number;
 };
 
 export function projectDraft(input: Record<string, unknown>): ProjectDraft {

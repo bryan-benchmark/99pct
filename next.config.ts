@@ -20,6 +20,7 @@ const nextConfig: NextConfig = {
     "/missions/[slug]/projects/[projectSlug]/work/[workSlug]": ["./src/missions/db/migrations/*.sql"],
     "/api/missions/[slug]/projects": ["./src/missions/db/migrations/*.sql"],
     "/api/missions/[slug]/projects/[projectSlug]/work": ["./src/missions/db/migrations/*.sql"],
+    "/api/missions/[slug]/projects/[projectSlug]/work/[workSlug]/interest": ["./src/missions/db/migrations/*.sql"],
   },
   turbopack: {
     root: path.join(__dirname),

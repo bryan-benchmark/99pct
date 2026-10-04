@@ -42,6 +42,7 @@ type WorkRow = {
   title: string;
   description: string;
   done_when: string;
+  interest_count: number | string;
 };
 
 const projectSelect = `
@@ -58,7 +59,8 @@ const projectSelect = `
 
 const workSelect = `
   SELECT missions.slug AS mission_slug, projects.slug AS project_slug, work_items.slug, work_items.kind,
-         work_items.status, work_items.created_at, revisions.title, revisions.description, revisions.done_when
+         work_items.status, work_items.created_at, revisions.title, revisions.description, revisions.done_when,
+         (SELECT count(*) FROM work_interests WHERE work_interests.work_id = work_items.id)::int AS interest_count
   FROM work_items
   JOIN projects ON projects.id = work_items.project_id
   JOIN missions ON missions.id = projects.mission_id
@@ -91,6 +93,7 @@ function publishedWork(row: WorkRow): PublicWork {
     description: row.description,
     doneWhen: row.done_when,
     createdAt: new Date(row.created_at).toISOString(),
+    interestCount: Number(row.interest_count),
   };
 }
 
