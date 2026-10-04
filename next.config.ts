@@ -6,10 +6,11 @@ assertWorkspaceReleaseBuildConfig(process.env);
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
-  serverExternalPackages: ["@electric-sql/pglite"],
+  serverExternalPackages: ["@electric-sql/pglite", "@google-cloud/cloud-sql-connector"],
   outputFileTracingIncludes: {
     "/api/workspace/health": ["./src/workspace/db/migrations/*.sql"],
     "/api/missions": ["./src/missions/db/migrations/*.sql"],
+    "/api/missions/health": ["./src/missions/db/migrations/*.sql"],
     "/missions": ["./src/missions/db/migrations/*.sql"],
     "/missions/new": ["./src/missions/db/migrations/*.sql"],
     "/missions/[slug]": ["./src/missions/db/migrations/*.sql"],

@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "verify": "npm run check:canonical && npm run test:mu && npm run test:voice && npm run test:public && npm run test:spark && npm run test:pilot && npm run test:toolshare && npm run test:teamup && npm run test:experiments && npm run test:workspace && npm run test:missions",
-    "test:missions": "tsx --test src/missions/missions.test.ts src/human/auth/human-session.test.ts",
+    "test:missions": "tsx --test src/missions/missions.test.ts src/missions/persistence.test.ts src/human/auth/human-session.test.ts src/app/api/missions/health/route.test.ts",
     "test:public": "tsx --test src/components/site-footer.test.ts src/app/api/health/route.test.ts",
     "check:canonical": "node scripts/check-canonical-badge.mjs",
     "check:npm-audit": "node scripts/check-npm-audit.mjs",
@@ -28,13 +28,19 @@
     "workspace:check-runtime-role": "tsx scripts/workspace-check-runtime-role.ts",
     "workspace:check-audit": "tsx scripts/workspace-check-audit.ts",
     "workspace:verify-export": "tsx scripts/workspace-verify-export.ts",
-    "workspace:bind-environment": "tsx scripts/workspace-bind-environment.ts"
+    "workspace:bind-environment": "tsx scripts/workspace-bind-environment.ts",
+    "mission:migrate": "tsx scripts/mission-migrate.ts",
+    "mission:bind-environment": "tsx scripts/mission-bind-environment.ts",
+    "mission:check-runtime-role": "tsx scripts/mission-check-runtime-role.ts",
+    "mission:pg-smoke": "tsx scripts/mission-pg-smoke.ts",
+    "mission:restore-check": "tsx scripts/mission-restore-check.ts"
   },
   "engines": {
     "node": ">=22"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.8",
+    "@google-cloud/cloud-sql-connector": "^1.12.0",
     "firebase": "^12.19.0",
     "firebase-admin": "^14.5.0",
     "next": "^16.3.6",

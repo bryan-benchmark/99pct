@@ -1,3 +1,4 @@
+import { missionDatabaseUnavailable } from "./config";
 import type { PGlite } from "@electric-sql/pglite";
 import { Pool, type PoolClient } from "pg";
 
@@ -28,8 +29,8 @@ function pgRunner(client: PoolClient): MissionSql {
   };
 }
 
-export function configuredMissionDb(connectionString = process.env.MISSION_DATABASE_URL): MissionDb & { close(): Promise<void> } {
-  if (!connectionString) throw new Error("Mission database is not configured.");
+export function configuredMissionDb(connectionString?: string): MissionDb & { close(): Promise<void> } {
+  if (!connectionString || connectionString === process.env.DATABASE_URL) throw new Error(missionDatabaseUnavailable);
   const pool = new Pool({
     connectionString,
     application_name: "pct99-missions",

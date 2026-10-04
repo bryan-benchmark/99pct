@@ -1,0 +1,43 @@
+# Example only. App Hosting does not load this filename.
+
+# Copy these values into apphosting.yaml only after the Cloud SQL instance,
+# least-privilege database user, and Secret Manager secret exist.
+# Do not reference mission-db-password from the live backend before that secret exists.
+# Automatic rollouts stay off. Do not commit FIREBASE_SERVICE_ACCOUNT_JSON.
+
+env:
+  - variable: MISSION_RELEASE_TARGET
+    value: production
+    availability:
+      - RUNTIME
+  - variable: MISSION_DB_INSTANCE
+    value: pct-99:us-central1:pct99-missions-prod
+    availability:
+      - RUNTIME
+  - variable: MISSION_DB_NAME
+    value: missions
+    availability:
+      - RUNTIME
+  - variable: MISSION_DB_USER
+    value: missions_runtime
+    availability:
+      - RUNTIME
+  - variable: MISSION_DB_PASSWORD
+    secret: mission-db-password
+    availability:
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: pct-99
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: set-from-the-pct-99-web-app-at-release
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: FIREBASE_PROJECT_ID
+    value: pct-99
+    availability:
+      - BUILD
+      - RUNTIME
