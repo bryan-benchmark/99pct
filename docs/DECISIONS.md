@@ -423,3 +423,87 @@ Economic rule:
 - the default design direction is to keep economic value with the humans/communities building and operating the service rather than giving permanent control to passive outside equity by default.
 
 Bounties are a later Work mechanism and must not be implemented as promised MCU/money rewards before Contribution recognition and reward rails exist.
+
+## ADR-020 — Economic state is an append-only deterministic kernel
+
+Status: Accepted  
+Date: 2026-10-04
+
+MCUs, bounty rewards, Contribution recognition consequences, and future economic automation must be built on a small event-sourced economic kernel rather than ordinary mutable CRUD state.
+
+### Source of truth
+
+The authoritative record is an append-only per-Mission economic event stream.
+
+Balances/statuses are derived views. They are not authoritative fields that application code may directly set.
+
+Corrections append compensating events.
+
+### Command boundary
+
+All economic mutation begins as an explicit command with:
+
+- Mission scope;
+- actor/process;
+- canonical command content;
+- idempotency key;
+- authorization context;
+- relevant subject/evidence references.
+
+The kernel validates authorization/idempotency/state/rule before atomically appending events.
+
+The same logical command cannot create two economic outcomes.
+
+### Rules
+
+Published rule versions are immutable.
+
+Every automated economic outcome references the exact rule/version used. Rule activation is itself history. New rule versions affect only future eligible commands/events; prior events are never recomputed under a new rule.
+
+The first rule engine is intentionally constrained and declarative. Do not execute arbitrary Mission-supplied JavaScript or other code inside the economic decision boundary.
+
+### Determinism
+
+The economic core is a pure deterministic state transition over:
+
+`prior authoritative events + command + exact rule version → refusal or event batch`
+
+No network call, floating-point amount, current provider state, LLM output, or nondeterministic randomness may decide the economic result.
+
+Time/IDs required for recording are injected after decision or as explicit command inputs and are not permitted to change reward math.
+
+### AI boundary
+
+AI may assist humans by drafting bounties, summarizing evidence, proposing classifications, or generating commands for review.
+
+AI output cannot directly mint MCUs, trigger a money payout, or alter legal ownership.
+
+### Units
+
+MCU quantities use an integer smallest unit and fixed scale. Do not use JavaScript floating point as economic authority.
+
+### Bounties
+
+A bounty is a conditional reward contract whose terms/rule version become immutable for the accepted reward path.
+
+Publishing, viewing, joining, or working on a bounty does not itself create a reward.
+
+A reward requires an explicit satisfaction/recognition fact. The kernel then deterministically emits at most one reward for the stable reward key.
+
+### External money and ownership
+
+Money and legal ownership remain separate ledgers.
+
+Economic events may request/reconcile external effects through idempotent post-commit connectors. External providers never become hidden mutable input to the deterministic kernel transaction.
+
+### Verification
+
+Economic events are sequence/hash linked and exportable. Independent verification/rebuild is a core feature, not an audit afterthought.
+
+Later hardening may add signed/KMS-backed checkpoints and public transparency roots without changing the event semantics.
+
+### Deployment
+
+The first kernel work order is code + disposable PostgreSQL only.
+
+No production MCU/bounty path is permitted until the kernel passes adversarial review and its invariants are mechanically tested.
