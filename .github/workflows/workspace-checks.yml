@@ -114,6 +114,26 @@ jobs:
           MISSION_TEST_DATABASE_URL: postgresql://missionism_ci:missionism_ci@localhost:5432/mission_check
           MISSION_RESTORE_DATABASE_URL: postgresql://missionism_ci:missionism_ci@localhost:5432/mission_restore_check
         run: npm run mission:restore-check
+      - name: Migrate disposable economic database
+        run: |
+          docker exec "${{ job.services.postgres.id }}" createdb -U missionism_ci economic_check
+          npm run economy:migrate
+        env:
+          ECONOMIC_MIGRATION_DATABASE_URL: postgresql://missionism_ci:missionism_ci@localhost:5432/economic_check
+      - name: Grant economic runtime and verifier roles
+        run: |
+          docker exec "${{ job.services.postgres.id }}" psql -U missionism_ci -d economic_check -v ON_ERROR_STOP=1 -c "CREATE ROLE economic_ci_runtime LOGIN PASSWORD 'economic_ci_runtime'"
+          docker exec "${{ job.services.postgres.id }}" psql -U missionism_ci -d economic_check -v ON_ERROR_STOP=1 -c "CREATE ROLE economic_ci_verifier LOGIN PASSWORD 'economic_ci_verifier'"
+          docker exec -i "${{ job.services.postgres.id }}" psql -U missionism_ci -d economic_check -v ON_ERROR_STOP=1 -v app_role=economic_ci_runtime < scripts/economic-runtime-grants.sql
+          docker exec -i "${{ job.services.postgres.id }}" psql -U missionism_ci -d economic_check -v ON_ERROR_STOP=1 -v app_role=economic_ci_verifier < scripts/economic-verifier-grants.sql
+      - name: Verify economic roles and concurrent rewards
+        env:
+          ECONOMIC_MIGRATION_DATABASE_URL: postgresql://missionism_ci:missionism_ci@localhost:5432/economic_check
+          ECONOMIC_RUNTIME_DATABASE_URL: postgresql://economic_ci_runtime:economic_ci_runtime@localhost:5432/economic_check
+          ECONOMIC_VERIFIER_DATABASE_URL: postgresql://economic_ci_verifier:economic_ci_verifier@localhost:5432/economic_check
+        run: |
+          npm run economy:check-runtime-role
+          npm run economy:pg
 
   dependency-security:
     runs-on: ubuntu-latest
