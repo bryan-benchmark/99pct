@@ -211,6 +211,29 @@ customer chooses a Utility Mission
 
 The current live implementation reaches mutual Work participation. It does not yet implement Contribution, MCU grants, bounties/rewards, consumer utilities, or money settlement.
 
+## Economic kernel
+
+Before Contribution recognition, MCUs, bounty rewards, or autonomous Mission economics go live, 99pct builds one shared economic kernel.
+
+The kernel is intentionally small:
+
+```text
+command
+→ authorize + idempotency check
+→ deterministic versioned rule
+→ append-only event batch
+→ derived state
+→ optional post-commit external effect
+```
+
+An MCU total is a sum/projection of immutable grant/adjustment events. It is not a mutable balance field.
+
+A bounty reward is the deterministic consequence of immutable bounty terms plus an explicit completion/recognition fact. It is not a status toggle.
+
+This same kernel should eventually support infrastructure builders, Utility Mission operators, automated bounty flows, and future revenue/ownership connectors without giving each vertical its own economic logic.
+
+AI can assist with proposals/evidence but cannot directly generate economic value.
+
 ## Bounties
 
 Bounties are a later Work mechanism, not a synonym for all Work.

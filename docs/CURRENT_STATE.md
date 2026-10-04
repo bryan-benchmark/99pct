@@ -5,131 +5,25 @@ Updated: 2026-10-04
 ## 99pct repository
 
 - Public control plane and application repository: `bryan-benchmark/99pct`
-- Sanitized predecessor snapshot accepted in WO-0003 and merged at `5486675`
-- Security + CI baseline accepted in WO-0004 and merged at `edf10a6`
-- Isolated 99pct deployment baseline accepted in WO-0005 and merged at `8d4c9b3`
-- Mission foundation Start + Discover accepted in WO-0007 and merged at `6872a8c`
-- Mission production-persistence readiness accepted in WO-0008 and merged at `754d785`
-- Start + Discover production release accepted in WO-0009 and merged at `4643b4f`
-- Projects + needed Work accepted in WO-0010 and merged at `2756ebd`
-- Work interest accepted in WO-0011 and merged at `2fbfb93`
+- Security + CI baseline accepted in WO-0004
+- Dedicated 99pct App Hosting + PostgreSQL foundation accepted in WO-0005 through WO-0009
+- Mission → Project → Work accepted through WO-0010
+- Work interest accepted in WO-0011
 - Mutual Work participation accepted in WO-0012 and merged at `fcde732`
+- 99pct human-commerce network definition accepted in ADR-018 / ADR-019
 - Application source license: `AGPL-3.0-only`
 
 ## Product identity
 
-99pct and Missionism are related but different.
+**99pct is the product/network/Mission. Missionism is the protocol underneath it.**
 
-**99pct is the product, platform, network, and Mission being built.**
+99pct is intended to become a shared human-commerce substrate with three modes:
 
-**Missionism is the organizational protocol underneath it.**
+- **Use** — people consume useful services;
+- **Operate** — people deliver those services;
+- **Build** — people build the infrastructure.
 
-A useful shorthand:
-
-> 99pct is what we are building. Missionism is how it works.
-
-99pct itself is one Mission built using Missionism.
-
-## North star — a network for human commerce
-
-99pct is intended to become a shared open-source commerce substrate with three human modes:
-
-### Use
-
-Ordinary people use 99pct alternatives for ordinary life:
-
-- rides;
-- stays;
-- music;
-- delivery;
-- tools;
-- care;
-- local services;
-- future utilities created by Missions.
-
-The long-term consumer experience should feel simple: before using an incumbent, a human can check whether a useful 99pct option exists.
-
-### Operate
-
-Humans provide the real-world service:
-
-- drivers;
-- hosts;
-- artists;
-- couriers;
-- clinicians where legally appropriate;
-- local operators;
-- other domain-specific service providers.
-
-Operator software can be specialized for the utility while sharing identity, Mission, contribution, and economic rails.
-
-### Build
-
-Humans build and maintain the infrastructure:
-
-- software;
-- design;
-- operations;
-- legal/compliance work;
-- safety systems;
-- mapping;
-- support;
-- local launch work;
-- research;
-- other Projects, Work, and eventual bounties.
-
-The current Mission → Project → Work → participation system is the beginning of this Build surface.
-
-One human account may use more than one mode.
-
-## Utility Missions and the spiderweb
-
-99pct should not hard-code one giant Uber/Airbnb/Spotify clone into the core platform.
-
-The target architecture is:
-
-```text
-99pct shared substrate
-├── identity / trust
-├── Mission graph
-├── Projects / Work / bounties
-├── Contribution / MCU history
-├── rules / governance
-├── money + legal rails (separate)
-├── open-source artifacts / repositories
-├── locality / discovery
-└── reusable Mission blueprints
-      ├── Rideshare 99
-      ├── Stay 99
-      ├── Music 99
-      └── future utility Missions
-```
-
-A Utility Mission owns its domain-specific service experience. The shared substrate supplies the recurring human/economic infrastructure.
-
-Long term, reusable blueprints may spawn new Missions or local Mission instances with explicit governance and safety gates. Example:
-
-`Rideshare 99 blueprint → Atlanta Rideshare 99 → Decatur/local operating layer`
-
-Automation may propose or instantiate infrastructure from a blueprint, but economic/legal activation must remain governed and auditable.
-
-## Economic direction
-
-The target is to keep useful economic value with the humans and communities creating it rather than defaulting to passive outside extraction.
-
-For a Utility Mission:
-
-- customers pay for a real service;
-- operators earn for providing the service;
-- infrastructure contributors can earn recognized Contribution / MCUs under published rules;
-- Mission revenue and costs remain on a money ledger;
-- MCUs remain a contribution ledger;
-- legal ownership remains a separate legal ledger;
-- the Mission publishes how revenue, reserves, infrastructure, operators, and any legal ownership interact.
-
-99pct must not pretend that revenue, MCUs, and legal equity are the same asset.
-
-The default design direction remains customer/revenue/non-equity financing rather than outside investor equity taking permanent control of Missions.
+Utility Missions such as Rideshare 99, Stay 99, Music 99, and future local/service Missions sit on shared 99pct primitives rather than becoming unrelated products.
 
 ## Live product
 
@@ -142,65 +36,87 @@ Live release:
 - deployed application commit: `28e2ff2`
 - App Hosting build: `build-2026-10-04-014`
 - automatic rollouts: off
-- `/api/health`: ready
-- `/api/missions/health`: ready
-- `/api/workspace/health`: unavailable by design
+- Mission health: ready
+- Workspace health: intentionally unavailable
 
-The live functional loop is:
+The live functional loop reaches:
 
-Mission → Project → Work → Interest → Creator invitation → Human confirmation → Helping
+`Mission → Project → Work → Interest → Invitation → Confirmation → Helping`
 
-Production contains labeled alpha records from WO-0009 through WO-0012, including one confirmed helper on the test Work item.
+The production Mission database is migrated through `0005_work_participation.sql`.
 
-These are shared 99pct primitives, not a Missionism website.
+## Economic-kernel priority
 
-## Production Mission persistence
+The next priority is **not** product-shell polish and not direct MCU/bounty UI.
 
-Dedicated Cloud SQL remains:
+Before 99pct can autonomously issue contribution credit or operate bounty rewards, it needs a small economic kernel that is designed to fail closed.
 
-- project: `pct-99`
-- region: `us-central1`
-- instance: `pct99-missions-prod`
-- PostgreSQL 18 Enterprise
-- zonal `db-f1-micro`
-- 10 GiB SSD with auto-growth
-- automated backups enabled
-- point-in-time recovery enabled
-- deletion protection enabled
-- public IP used through Cloud SQL Connector
-- authorized networks empty
+The kernel must make these facts true by construction:
 
-Database `missions` is migrated through `0005_work_participation.sql`.
+- balances are derived, never authoritative mutable fields;
+- economic history is append-only;
+- corrections append compensating events;
+- commands are idempotent;
+- concurrent/retried execution cannot double-award;
+- every outcome cites the exact immutable rule version that produced it;
+- old rule versions remain reproducible;
+- rule changes never rewrite prior history;
+- economic automation is deterministic;
+- AI may propose evidence/commands but cannot directly mint value;
+- private identity does not enter public ledger exports;
+- history can be exported and independently verified;
+- tampering/reordering/deletion is detectable;
+- ordinary application administrators have no “set MCU balance” or “mark bounty paid” capability.
 
-Runtime role remains least privilege.
+“Unbreakable” is treated as a threat-model goal, not a literal claim. The kernel should resist bugs, retries, concurrency races, ordinary admin mistakes, silent row edits, stale workers, and post-hoc history rewriting. Compromise of every application/cloud/root credential simultaneously is outside that guarantee.
 
-## Release compatibility rule
+## Architecture direction
 
-Mission health is forward-compatible with later additive migrations. While an older build is retained as a healthy rollback target, new production schema migrations must remain additive/backward-compatible with it.
+Economic state should be organized as:
 
-## Domain cutover — waiting externally
+```text
+Command
+  ↓ validate/auth/idempotency
+Deterministic rule engine
+  ↓
+Append-only economic events
+  ↓
+Derived views / projections
+  ├── MCU totals
+  ├── bounty state
+  └── audit/history
 
-WO-0006 / PR #11 remains parked while Afternic/Firebase ownership and certificate preparation propagates.
+External effects
+  ↓
+idempotent outbox/connectors
+  ├── money provider
+  └── future legal/equity provider
+```
 
-Do not move apex/www traffic records until Firebase preparation is ready.
+No external network call belongs inside the transaction that decides an MCU outcome.
 
-## Immediate product problem
+Money, MCUs, and legal ownership remain separate ledgers.
 
-The underlying Build primitives are useful, but the public shell still looks like the predecessor Missionism site.
+## Deferred product-shell work
 
-The public application needs to explain the actual 99pct network:
+`docs/work-orders/WO-0013-99pct-product-shell.md` is retained but deferred.
 
-- **Use 99pct** — customer utility layer;
-- **Build 99pct** — Missions, Projects, Work, infrastructure;
-- **Start a Mission** — create something that should exist;
-- Missionism — protocol/supporting layer.
-
-No 99pct consumer utility is live yet. The UI must say that rather than invent fake services.
+It remains valid product work, but it is no longer the active engineering priority.
 
 ## Active engineering work
 
-Execute `docs/work-orders/WO-0013-99pct-product-shell.md`.
+Execute `docs/work-orders/WO-0014-economic-kernel-foundation.md`.
 
-WO-0013 resets the shell around 99pct, introduces the Use / Build / Start architecture, adds public Work discovery, gives the future utility network an honest consumer entry surface, moves Missionism into a supporting protocol hub, and deploys the corrected shell.
+WO-0014 builds the economic kernel in code + disposable PostgreSQL CI only.
 
-WO-0013 has no database migration and must not add Contribution, MCUs, bounties/rewards, payments, equity, or custom-domain changes.
+It must not:
+
+- change production schema;
+- deploy economic behavior;
+- issue production MCUs;
+- publish production bounties;
+- move money;
+- issue legal ownership;
+- change DNS/custom domains.
+
+The first production integration comes only after the kernel survives adversarial review.
