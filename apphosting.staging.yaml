@@ -1,0 +1,14 @@
+# Apply this file only to a separate App Hosting backend whose Environment name
+# is "staging". Keep the public protocol backend on apphosting.yaml.
+# Configure NEXT_PUBLIC_FIREBASE_PROJECT_ID and NEXT_PUBLIC_FIREBASE_API_KEY for
+# this backend before rollout. Create and grant access to the named DB secret.
+env:
+  - variable: WORKSPACE_RELEASE_TARGET
+    value: staging
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: DATABASE_URL
+    secret: missionismWorkspaceStagingDatabaseUrl
+    availability:
+      - RUNTIME

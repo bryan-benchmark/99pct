@@ -1,0 +1,81 @@
+name: Workspace checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: missionism_ci
+          POSTGRES_PASSWORD: missionism_ci
+          POSTGRES_DB: workspace_check
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U missionism_ci -d workspace_check"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - run: npm ci
+      - run: npm run verify
+      - run: npm run lint
+      - run: npm audit --audit-level=moderate
+      - name: Build staging configuration
+        run: npm run build
+        env:
+          WORKSPACE_RELEASE_TARGET: staging
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: missionism-ci-staging
+          NEXT_PUBLIC_FIREBASE_API_KEY: example-public-firebase-key-value
+          FIREBASE_PROJECT_ID: missionism-ci-staging
+      - name: Migrate disposable PostgreSQL database
+        run: npm run workspace:migrate
+        env:
+          WORKSPACE_MIGRATION_DATABASE_URL: postgresql://missionism_ci:missionism_ci@localhost:5432/workspace_check
+      - name: Bind staging database
+        run: npm run workspace:bind-environment
+        env:
+          WORKSPACE_RELEASE_TARGET: staging
+          WORKSPACE_EXPECTED_DATABASE_NAME: workspace_check
+          WORKSPACE_EXPECTED_FIREBASE_PROJECT_ID: missionism-ci-staging
+          WORKSPACE_MIGRATION_DATABASE_URL: postgresql://missionism_ci:missionism_ci@localhost:5432/workspace_check
+      - name: Grant restricted runtime role
+        run: |
+          docker exec "${{ job.services.postgres.id }}" psql -U missionism_ci -d workspace_check -v ON_ERROR_STOP=1 -c "CREATE ROLE missionism_ci_runtime LOGIN PASSWORD 'missionism_ci_runtime'"
+          docker exec -i "${{ job.services.postgres.id }}" psql -U missionism_ci -d workspace_check -v ON_ERROR_STOP=1 -v app_role=missionism_ci_runtime < scripts/workspace-runtime-grants.sql
+      - name: Verify restricted role and customer workflow
+        env:
+          DATABASE_URL: postgresql://missionism_ci_runtime:missionism_ci_runtime@localhost:5432/workspace_check
+          WORKSPACE_TEST_DATABASE_URL: postgresql://missionism_ci_runtime:missionism_ci_runtime@localhost:5432/workspace_check
+          WORKSPACE_TEST_MIGRATION_DATABASE_URL: postgresql://missionism_ci:missionism_ci@localhost:5432/workspace_check
+        run: |
+          npm run workspace:check-runtime-role
+          npm run workspace:pg-smoke
+          npm run workspace:check-audit
+      - name: Restore a logical backup into a second database
+        run: |
+          docker exec "${{ job.services.postgres.id }}" pg_dump -Fc -U missionism_ci -d workspace_check > /tmp/missionism-workspace-ci.dump
+          docker exec "${{ job.services.postgres.id }}" createdb -U missionism_ci workspace_restore_check
+          docker exec -i "${{ job.services.postgres.id }}" pg_restore --no-owner --no-acl --exit-on-error -U missionism_ci -d workspace_restore_check < /tmp/missionism-workspace-ci.dump
+      - name: Verify restored records and audit
+        env:
+          WORKSPACE_TEST_DATABASE_URL: postgresql://missionism_ci:missionism_ci@localhost:5432/workspace_check
+          WORKSPACE_RESTORE_DATABASE_URL: postgresql://missionism_ci:missionism_ci@localhost:5432/workspace_restore_check
+          DATABASE_URL: postgresql://missionism_ci:missionism_ci@localhost:5432/workspace_restore_check
+        run: |
+          npm run workspace:restore-check
+          npm run workspace:check-audit
