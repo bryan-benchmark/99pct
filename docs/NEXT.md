@@ -2,31 +2,40 @@
 
 Updated: 2026-10-04
 
-## Active
+## Active engineering
+
+`WO-0007 — Mission foundation: Start + Discover`
+
+See `docs/work-orders/WO-0007-mission-foundation.md`.
+
+Goal: replace prototype-only Mission creation with the first real public Mission domain:
+
+- verified human account
+- Start a Mission
+- durable PostgreSQL model
+- public Mission discovery
+- public Mission page
+- explicit forming / no-MCUs / no-legal-ownership state
+
+Build and verify the slice in code first. Do not create paid production database infrastructure or deploy it in this work order.
+
+## Waiting externally
 
 `WO-0006 — 99pct.com controlled domain cutover`
 
-See `docs/work-orders/WO-0006-99pct-domain-cutover.md`.
+PR #11 remains blocked on Afternic/Firebase ownership and certificate preparation. It is not the active engineering task.
 
-Goal: move public web traffic to the already-proven 99pct App Hosting backend with minimal blast radius.
+When Firebase preparation becomes ready, resume only the DNS cutover steps; do not mix product code into that PR.
 
-Canonical public host:
+## After WO-0007 acceptance
 
-`https://99pct.com`
-
-`https://www.99pct.com` redirects to the apex.
-
-The cutover must preserve registrar ownership, nameserver delegation, email/MX/TXT records, automatic-rollout-off state, the predecessor deployment, and workspace fail-closed behavior.
-
-## After WO-0006 acceptance
-
-1. start/discover a Mission
+1. provision/bind a dedicated 99pct Mission PostgreSQL environment and deploy Start + Discover
 2. Projects + needed Work
 3. Join
 4. Contribution + append-only MCU history
-5. export/tamper evidence/passkeys
+5. public contribution profiles + export/tamper evidence/passkeys
 6. legal-equity pilot only after the contribution foundation and appropriate legal design exist
 
-Infrastructure hardening remains continuous, including review/removal of ADR-010 dependency exceptions before their expiry.
+Infrastructure hardening remains continuous, including review/removal of ADR-010 dependency exceptions before expiry.
 
-One vertical slice at a time.
+One product vertical slice at a time.

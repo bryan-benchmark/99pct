@@ -162,3 +162,31 @@ During traffic cutover, change only web-routing records that conflict with App H
 The generated App Hosting domain remains an independent fallback endpoint. DNS rollback means restoring the prior captured web-routing records; propagation is not assumed to be instantaneous.
 
 Reason: domain launch should not create collateral risk to email, ownership, or unrelated services.
+
+## ADR-013 — Public Mission is a new PostgreSQL domain, not Spark or Workspace
+
+Status: Accepted  
+Date: 2026-10-04
+
+The public 99pct `Mission` is a new product object.
+
+Do not relabel either predecessor object as the Mission source of truth:
+
+- a Spark is an idea/prototype proposal stored in local files;
+- a Workspace organization is a private collaboration container.
+
+A Mission starts in `forming` state and has its own PostgreSQL persistence model. The first model records the enduring public purpose, intended beneficiaries, starting place, creator identity, status, and append-only descriptive revisions.
+
+Creation of a forming Mission does **not**:
+
+- create a legal entity;
+- issue MCUs;
+- issue shares or other legal ownership;
+- create a contract or payment obligation;
+- certify the Mission as compliant with the protocol.
+
+Public browsing is allowed without an account. Creating or mutating a Mission requires a verified human session.
+
+Mission descriptions should be revisioned rather than silently overwritten so later governance can make changes explicit.
+
+The production Mission database is not provisioned by WO-0007. Code and migrations are built/tested first; a later accepted work order binds a dedicated managed PostgreSQL environment before product writes go live.
