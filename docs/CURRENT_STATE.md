@@ -10,6 +10,7 @@ Updated: 2026-10-04
 - Mission → Project → Work accepted through WO-0010
 - Work interest accepted in WO-0011
 - Mutual Work participation accepted in WO-0012 and merged at `fcde732`
+- 99pct product-shell reset accepted in WO-0013 and merged at `deccfae`
 - 99pct human-commerce network definition accepted in ADR-018 / ADR-019
 - Application source license: `AGPL-3.0-only`
 
@@ -33,8 +34,8 @@ Generated App Hosting URL:
 
 Live release:
 
-- deployed application commit: `28e2ff2`
-- App Hosting build: `build-2026-10-04-014`
+- deployed application commit: `3197dbee18cc092b183b1852cfb551bf10cd7155`
+- App Hosting build: `build-2026-10-04-015`
 - automatic rollouts: off
 - Mission health: ready
 - Workspace health: intentionally unavailable
@@ -97,11 +98,21 @@ No external network call belongs inside the transaction that decides an MCU outc
 
 Money, MCUs, and legal ownership remain separate ledgers.
 
-## Deferred product-shell work
+## Public shell
 
-`docs/work-orders/WO-0013-99pct-product-shell.md` is retained but deferred.
+WO-0013 is complete and live.
 
-It remains valid product work, but it is no longer the active engineering priority.
+The public application is now 99pct:
+
+- homepage: **Build what should exist.**
+- primary paths: **Use 99pct**, **Build 99pct**, **Start a Mission**
+- `/use` truthfully states that no consumer Utility Mission is live yet
+- `/work` exposes public open Work with aggregate interest/helping counts only
+- `/missionism` keeps Missionism as the underlying protocol
+- Mission / Project / Work / interest / participation behavior is unchanged
+- no database migration or production-row mutation was part of the shell reset
+
+Application rollback remains `build-2026-10-04-014`.
 
 ## Active engineering work
 
