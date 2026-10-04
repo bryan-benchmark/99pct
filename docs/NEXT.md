@@ -8,53 +8,59 @@ Updated: 2026-10-04
 
 See `docs/work-orders/WO-0013-99pct-product-shell.md`.
 
-This work order corrects product identity before we build Contribution or MCU rails.
+The immediate goal is not another ledger feature. It is to make the product visibly match the network we are building.
 
-### Product relationship
+### Three product modes
 
-**99pct** is the open-source product/platform and Mission.
+**Use 99pct**
 
-It is the place where people should eventually be able to:
+A consumer layer where humans will eventually choose 99pct utilities for ordinary life: rides, stays, music, delivery, local services, and future Utility Missions.
 
-`start → find → organize → help → contribute → earn MCUs → build ownership`
+No utility is live yet. The first shell must be truthful about that.
 
-**Missionism** is the protocol underneath that system.
+**Operate**
 
-99pct uses Missionism. It is not the Missionism website under another domain.
+The domain-specific tools used by the humans actually delivering each utility: drivers, hosts, artists, couriers, and other operators.
 
-### Immediate product goal
+Operator software will be introduced with the first real Utility Mission rather than as an empty generic dashboard.
 
-Make the live generated-host experience unmistakably 99pct:
+**Build 99pct**
 
-- homepage branded 99pct;
-- clear “for the 99%, by the 99%” purpose;
-- primary actions: Explore Missions, Find Work, Start a Mission;
-- live-vs-coming product state shown truthfully;
-- new public `/work` discovery page using recorded Work;
-- Missionism moved to a supporting `/missionism` protocol hub;
-- Principles / How It Works / Specification / Open Questions remain available as protocol material;
-- Missionism icon/wordmark removed from global 99pct chrome;
-- predecessor demos/simulators remain reachable but leave the primary product navigation/footer;
-- global metadata identifies 99pct, not Missionism.
+The infrastructure marketplace: Missions → Projects → Work → participation → Contribution → MCUs.
 
-No database schema or production rows change in WO-0013.
+The current live product already reaches mutual Work participation.
 
-After green CI, manually deploy the exact commit with automatic rollouts still off.
+### WO-0013 ships
 
-## After WO-0013 acceptance
+- 99pct global branding;
+- home organized around **Use / Build / Start**;
+- public `/use` utility entry surface with an honest “none live yet” state;
+- public `/work` Build marketplace using recorded Work;
+- Missionism moved to `/missionism` as supporting protocol;
+- primary product nav instead of protocol-heavy nav;
+- existing Mission/Project/Work/help flows preserved;
+- no database schema change.
 
-Resume the product loop:
+## Step-by-step platform roadmap after WO-0013
 
-1. Contribution submission by a confirmed helper
-2. creator review / recognized Contribution boundary
-3. append-only MCU grants + public contribution history
-4. public contribution profiles + export/tamper evidence/passkeys
-5. legal ownership rails only after Contribution/MCU and legal design are ready
+1. **Contribution submission** — confirmed helpers record what they did.
+2. **Contribution recognition** — a separate immutable review/recognition event.
+3. **MCU ledger + Mission rules** — recognized Contribution can create append-only MCU grants under versioned rules.
+4. **Bounty/reward Work** — Work may publish a transparent proposed reward only after the MCU/money distinction exists.
+5. **Mission blueprints + dependency graph** — reusable open-source infrastructure can spawn/fork/localize Missions.
+6. **Utility Mission foundation** — mark and discover customer-facing Utility Missions; define customer/operator/build interfaces.
+7. **First utility vertical** — use one real vertical, likely Rideshare 99, to prove customer + operator + builder modes end to end.
+8. **Local Mission instances** — reusable infrastructure can support local operating Missions without duplicating the whole platform.
+9. **Money and legal ownership rails** — only after Contribution/MCU behavior is auditable and the actual legal/financial relationships are designed.
+
+Do not attempt to build Rideshare, Stay, Music, payments, ownership, and a universal bounty engine simultaneously.
+
+The platform should supply reusable primitives; each Utility Mission supplies its vertical-specific service logic.
 
 ## Waiting externally
 
 `WO-0006 — 99pct.com controlled domain cutover`
 
-PR #11 remains parked. The generated App Hosting URL remains the live product host until that cutover is separately accepted.
+PR #11 remains parked. The generated App Hosting URL remains the product host until the cutover is separately accepted.
 
-Infrastructure hardening remains continuous, including review/removal of ADR-010 dependency exceptions before expiry.
+Infrastructure hardening remains continuous, including removal/review of ADR-010 dependency exceptions before expiry.
