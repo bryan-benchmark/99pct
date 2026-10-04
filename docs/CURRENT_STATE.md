@@ -11,6 +11,7 @@ Updated: 2026-10-04
 - Mission foundation Start + Discover accepted in WO-0007 and merged at `6872a8c`
 - Mission production-persistence readiness accepted in WO-0008 and merged at `754d785`
 - Start + Discover production release accepted in WO-0009 and merged at `4643b4f`
+- Projects + needed Work accepted in WO-0010 and merged at `2756ebd`
 - `spec/canonical.json` remains the canonical short-claim source
 - Application source license: `AGPL-3.0-only`
 
@@ -22,29 +23,30 @@ Generated App Hosting URL:
 
 Live release:
 
-- deployed application commit: `efc6a26`
-- App Hosting build: `build-2026-10-04-010`
+- deployed application commit: `de3bdf5`
+- App Hosting build: `build-2026-10-04-012`
 - automatic rollouts: off
 - `/api/health`: ready
 - `/api/missions/health`: ready
 - `/api/workspace/health`: unavailable by design
 
-A verified human can:
+The live product loop is now:
 
-- create an account;
-- verify email;
-- sign in;
-- start a public forming Mission;
-- discover Missions;
-- read a Mission signed out.
+Mission → Project → Work
 
-Production contains one labeled alpha record: `WO-0009 test Mission`.
+Production contains labeled alpha records:
 
-Its public page does not expose creator email and truthfully shows no Projects, contributions/MCUs, legal ownership, or governance yet.
+- `WO-0009 test Mission`
+- `WO-0010 test Project`
+- `WO-0010 test task`
+
+A verified Mission creator can create Projects and Work. Anyone can read Mission, Project, and Work pages signed out.
+
+Open Work is explicitly a request for help only. It does not create a job, contract, compensation, MCU award, or ownership.
 
 ## Production Mission persistence
 
-Dedicated Cloud SQL:
+Dedicated Cloud SQL remains:
 
 - project: `pct-99`
 - region: `us-central1`
@@ -58,23 +60,30 @@ Dedicated Cloud SQL:
 - public IP used through Cloud SQL Connector
 - authorized networks empty
 
-Database:
+Database `missions` is migrated through:
 
-- name: `missions`
-- migration identity: separate
-- runtime identity: `missions_runtime`
-- runtime grants: least privilege
-- environment binding: production / `pct-99` / `missions` / `pct-99:us-central1:pct99-missions-prod`
+- `0001_missions.sql`
+- `0002_environment.sql`
+- `0003_projects_work.sql`
 
-Secrets live in Secret Manager. App Hosting receives only the runtime DB password secret.
+Runtime role remains least privilege.
 
-Current planning floor remains roughly $7.67/month compute + about $1.70/month SSD + backup/PITR storage, tax, and small egress. Shared-core has no Cloud SQL SLA.
+## Release compatibility rule
+
+Mission health is forward-compatible with later additive migrations:
+
+- every migration known to the running build must exist in order with the expected checksum;
+- later migrations unknown to that build may exist;
+- missing, reordered, or changed known migrations fail readiness;
+- the migration runner itself remains strict.
+
+While an older build is retained as a healthy rollback target, new production schema migrations must remain backward-compatible/additive with that retained build.
 
 ## Firebase Auth
 
 Email/Password is enabled.
 
-The generated App Hosting host is authorized. `99pct.com` and `www.99pct.com` are also authorized for a later domain cutover, but this release does not depend on them.
+The generated App Hosting host is authorized. `99pct.com` and `www.99pct.com` remain authorized for a future custom-domain cutover.
 
 No service-account JSON is used.
 
@@ -86,21 +95,18 @@ Do not move apex/www traffic records until Firebase preparation is ready.
 
 ## Product boundary
 
-The live loop currently stops at:
-
-Mission → **Projects + Work not yet implemented**
-
 The broader target remains:
 
 Mission → Project → Work → Join → Contribution → MCU history.
 
-ADR-015 defines the next slice:
+ADR-016 defines the first Join slice as Work-specific interest:
 
-- Mission creator is the only writer until Join exists;
-- Projects are bounded outcomes belonging to one Mission;
-- Work is a public request for help under a Project;
-- Work is not yet a job offer, contract, payment promise, MCU grant, or ownership grant;
-- Project and Work descriptions use append-only revisions.
+- a verified human may say “I want to help” on one Work item;
+- expressing interest is not Mission membership or Work assignment;
+- it creates no contract, compensation, MCU, or ownership;
+- the human explicitly consents before their verified email is shared privately with the Mission creator;
+- public pages may show an interest count, but never private emails or messages;
+- acceptance/agreement remains a later slice.
 
 ## Dependency-security state
 
@@ -113,6 +119,6 @@ The dependency-security CI policy remains required.
 
 ## Active engineering work
 
-Execute `docs/work-orders/WO-0010-projects-and-work.md`.
+Execute `docs/work-orders/WO-0011-work-interest.md`.
 
-WO-0010 may migrate the existing Mission production database and manually deploy the accepted slice after CI is green. It must not implement Join, contracts, payment, MCUs, equity, or custom-domain changes.
+WO-0011 may add an additive production migration and manually deploy after green CI. It must not assign Work, create Mission membership, accept/decline interests, generate contracts, promise compensation, issue MCUs/equity, or change the custom domain.
