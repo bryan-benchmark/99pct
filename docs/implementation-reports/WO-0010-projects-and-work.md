@@ -5,11 +5,12 @@
 The live loop is now Mission → Project → Work on the existing Mission database and the existing `pct99` backend.
 
 - Pull request: https://github.com/bryan-benchmark/99pct/pull/19
-- Deployed commit: `1b3c7dccc71a21c7d3571fbf319b2c43b612c340`
-- Build: `build-2026-10-04-011`, state `READY`
+- Deployed commit: `de3bdf5e35be41c9034c0c3265367f76bd674bf3`
+- Build: `build-2026-10-04-012`, state `READY`
 - URL: `https://pct99--pct-99.us-central1.hosted.app`
 - Automatic rollouts: off (`rolloutPolicy` null)
-- Previous successful build retained for application rollback: `build-2026-10-04-010` of `efc6a26`
+- Previous successful build retained: `build-2026-10-04-011` of `1b3c7dc`
+- Earlier product rollback build retained: `build-2026-10-04-010` of `efc6a26`
 
 Posting Work does not create employment, a contract, pay, an MCU award, or ownership. Join was not started.
 
@@ -46,6 +47,8 @@ GitHub Actions run `37230406673` passed both jobs on `1b3c7dccc71a21c7d3571fbf31
 - dependency-security
 
 An earlier run, `37230201470`, failed only because the smoke user id was the same text as the public Mission slug. That assertion was corrected before the production migration. Workspace PostgreSQL checks stayed green.
+
+The health compatibility correction was CI run `37231560899` on `de3bdf5e35be41c9034c0c3265367f76bd674bf3`. Both jobs passed. That commit was rolled out as `build-2026-10-04-012`. `/api/missions/health` stayed `{"status":"ready"}`. No schema or production rows changed. A fixture checks the WO-0009 migration set (`0001` and `0002`) against a database that already includes `0003`. Live traffic was not rolled back to `build-2026-10-04-010`; that already-built binary still uses exact migration equality.
 
 Local `npm ci`, `npm run verify`, `npm run lint`, `npx next typegen`, `npx tsc --noEmit`, `npm run build`, and `npm run check:npm-audit` passed before the pull request. Audit policy remained `high=9 moderate=0 critical=0`.
 
@@ -86,7 +89,7 @@ After sign-out, unsigned requests still returned all three pages. They did not s
 
 ## Rollback
 
-If this application fails, roll the backend back to `build-2026-10-04-010` (`efc6a26`). Do not reverse `0003` after the live Project and Work rows exist. That previous build does not read the new tables. Health on a retained build stays ready when the database is ahead only by later additive migrations, and stays unavailable if a migration that build knows is missing, reordered, or checksum-changed. Production migrations must stay backward-compatible with the retained rollback build. Backups and point-in-time recovery remain incident recovery, not the ordinary rollback.
+If this health correction fails, roll the backend back to `build-2026-10-04-011` (`1b3c7dc`). That build includes `0003`, so its exact migration check still matches the database. Do not reverse `0003` after the live Project and Work rows exist. `build-2026-10-04-010` remains available and does not read the new tables, but that already-built binary still requires an exact migration list, so Mission health would report unavailable if traffic returned to it. From `build-2026-10-04-012` forward, a retained build stays ready when the database is ahead only by later additive migrations, and stays unavailable if a migration that build knows is missing, reordered, or checksum-changed. Production migrations must stay backward-compatible with the retained rollback build. Backups and point-in-time recovery remain incident recovery, not the ordinary rollback.
 
 ## Left unchanged
 
