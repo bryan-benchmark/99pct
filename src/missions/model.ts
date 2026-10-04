@@ -88,8 +88,26 @@ export const workCopy = {
   notePrompt: "Anything you want the Mission creator to know?",
   emptyInterests: "No one has expressed interest yet.",
   interestedPeople: "Interested people",
+  stateInterested: "Interested",
+  stateInvited: "Invited",
+  stateHelping: "Helping",
+  inviteToHelp: "Invite to help",
+  invitationSent: "Invitation sent",
+  helpingOnWork: "Helping on this Work",
+  invitedToHelp: "You’re invited to help",
+  illHelp: "I’ll help on this Work",
+  youreHelping: "You’re helping on this Work",
+  futureContributions: "Future contribution records for this Work can be tied to your participation.",
+  confirmBoundary: "This records that you and the Mission creator intend to work together on this item. It does not create employment, contractor status, a legal contract, compensation, MCUs, or ownership.",
   readBoundary: "Open work is a request for help, not a binding job or contract. No compensation, MCUs, or ownership have been promised by this posting.",
 } as const;
+
+export type ParticipationState = "interested" | "invited" | "helping";
+
+export function confirmDraft(input: Record<string, unknown>): { confirm: true } {
+  if (input.confirm !== true) throw new MissionInputError("Confirm that you will help on this Work.");
+  return { confirm: true };
+}
 
 export const interestLimits = { note: { max: 500 } } as const;
 
@@ -105,6 +123,10 @@ export function interestDraft(input: Record<string, unknown>): InterestDraft {
 
 export function interestCountLabel(count: number) {
   return count === 1 ? "1 person interested" : `${count} people interested`;
+}
+
+export function helpingCountLabel(count: number) {
+  return count === 1 ? "1 person helping" : `${count} people helping`;
 }
 
 export type ProjectDraft = { title: string; outcome: string };
@@ -132,6 +154,7 @@ export type PublicWork = {
   doneWhen: string;
   createdAt: string;
   interestCount: number;
+  helpingCount: number;
 };
 
 export function projectDraft(input: Record<string, unknown>): ProjectDraft {

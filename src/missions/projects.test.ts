@@ -263,11 +263,15 @@ test("public pages keep the empty state and do not offer a job, contract, or joi
   assert.equal(workCopy.wantToHelp, "I want to help");
   assert.match(workCopy.interestBoundary, /does not create a job, contract, assignment, compensation, MCUs, or ownership/);
   assert.match(workCopy.readBoundary, /not a binding job or contract/);
+  assert.equal(workCopy.illHelp, "I’ll help on this Work");
+  assert.match(workCopy.confirmBoundary, /does not create employment, contractor status, a legal contract, compensation, MCUs, or ownership/);
   const pages = [
     "src/app/missions/[slug]/page.tsx",
     "src/app/missions/[slug]/projects/[projectSlug]/page.tsx",
     "src/app/missions/[slug]/projects/[projectSlug]/work/[workSlug]/page.tsx",
     "src/app/missions/[slug]/projects/[projectSlug]/work/[workSlug]/InterestForm.tsx",
+    "src/app/missions/[slug]/projects/[projectSlug]/work/[workSlug]/InviteForm.tsx",
+    "src/app/missions/[slug]/projects/[projectSlug]/work/[workSlug]/ConfirmHelpForm.tsx",
     "src/app/missions/[slug]/projects/[projectSlug]/work/new/page.tsx",
   ].map((path) => readFileSync(new URL(`../../${path}`, import.meta.url), "utf8")).join("\n");
   assert.match(pages, /missionEmptyStates.projects/);
