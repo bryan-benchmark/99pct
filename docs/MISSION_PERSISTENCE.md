@@ -23,6 +23,8 @@ Local development and unit tests keep PGlite.
 
 Migration `0002_environment.sql` adds one `mission_environment` row: release target, Firebase project id, database name, Cloud SQL connection name, and bound timestamp. `npm run mission:bind-environment` is idempotent only when every value matches. Runtime and `GET /api/missions/health` refuse a different binding. The health body is only `{"status":"ready"}` or `{"status":"unavailable"}`.
 
+Health treats migrations as current when every migration bundled with that build is present, in order, with the same checksum. The database may also contain later additive migrations that this build does not know. A missing, reordered, or checksum-changed migration known to the build still fails. While an older build is retained for rollback, production schema migrations must stay backward-compatible with that build. The migration command itself still refuses a history that is not a prefix of the files it is running.
+
 ## Runtime grants
 
 `scripts/mission-runtime-grants.sql` grants the runtime role:
@@ -34,6 +36,12 @@ Migration `0002_environment.sql` adds one `mission_environment` row: release tar
 | `mission_revisions` | SELECT, INSERT |
 | `mission_schema_migrations` | SELECT |
 | `mission_environment` | SELECT |
+| `projects` | SELECT, INSERT |
+| `project_revisions` | SELECT, INSERT |
+| `work_items` | SELECT, INSERT |
+| `work_revisions` | SELECT, INSERT |
+
+Projects and Work use this same dedicated Mission database and runtime role. The role still has no table-wide UPDATE, DELETE, TRUNCATE, REFERENCES, or TRIGGER, and it does not own the tables. Project and Work revision rows stay append-only.
 
 No schema ownership, CREATE, DROP, mission update/delete, revision update/delete, or migration writes. The append-only revision triggers remain.
 
@@ -83,3 +91,5 @@ Created after the 2026-10-04 spend approval:
 5. IAM for `firebase-app-hosting-compute@pct-99.iam.gserviceaccount.com`: Cloud SQL Client, and Secret Accessor on `mission-db-password` only.
 
 The live App Hosting configuration is `apphosting.yaml`. Automatic rollouts stay off.
+
+WO-0010 adds Projects and Work in migration `0003_projects_work.sql` on this same database. It does not create another instance or change the machine size, region, backups, or deletion protection.

@@ -1,7 +1,12 @@
+import Link from "next/link";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
+import { verifyHumanSession } from "@/human/auth/server";
+import { humanSessionCookieName } from "@/human/auth/session";
 import { getMissionDb } from "@/missions/db/runtime";
-import { missionEmptyStates } from "@/missions/model";
+import { missionEmptyStates, publicProjectUrl } from "@/missions/model";
 import { getPublicMission } from "@/missions/store";
+import { listPublicProjects, viewerMayCreate } from "@/missions/projects";
 
 export const dynamic = "force-dynamic";
 
@@ -19,11 +24,27 @@ function Rail({ title, body }: { title: string; body: string }) {
   );
 }
 
+function openWorkCount(count: number) {
+  return count === 1 ? "1 open work item" : `${count} open work items`;
+}
+
 export default async function MissionPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   let mission: Awaited<ReturnType<typeof getPublicMission>>;
+  let projects: Awaited<ReturnType<typeof listPublicProjects>> = [];
+  let canCreate = false;
   try {
-    mission = await getPublicMission(await getMissionDb(), slug);
+    const db = await getMissionDb();
+    mission = await getPublicMission(db, slug);
+    if (mission) {
+      projects = await listPublicProjects(db, slug);
+      try {
+        const identity = await verifyHumanSession((await cookies()).get(humanSessionCookieName)?.value);
+        canCreate = await viewerMayCreate(db, slug, identity?.uid);
+      } catch (error) {
+        if (!(error instanceof Error) || error.message !== "Human authentication is not configured.") throw error;
+      }
+    }
   } catch (error) {
     if (error instanceof Error && error.message === "Mission database is not configured.") notFound();
     throw error;
@@ -41,7 +62,21 @@ export default async function MissionPage({ params }: { params: Promise<{ slug: 
         <div><dt className="font-semibold text-[var(--ink)]">Started</dt><dd>{created}</dd></div>
       </dl>
       <div className="mt-10 space-y-5">
-        <Rail title="Projects & work" body={missionEmptyStates.projects} />
+        <section className="border-t border-[var(--line)] pt-5">
+          <h2 className="text-lg font-semibold text-[var(--ink)]">Projects & work</h2>
+          {projects.length === 0 ? <p className="mt-2 text-[var(--muted)]">{missionEmptyStates.projects}</p> : (
+            <ul className="mt-4 space-y-4">
+              {projects.map((project) => (
+                <li key={project.slug}>
+                  <Link href={publicProjectUrl(mission.slug, project.slug)} className="font-semibold text-[var(--ink)]">{project.title}</Link>
+                  <p className="mt-1 text-[var(--body)]">{project.outcome}</p>
+                  <p className="mt-1 text-[var(--muted)]">{openWorkCount(project.openWorkCount)}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+          {canCreate ? <p className="mt-4"><Link href={`/missions/${mission.slug}/projects/new`} className="font-semibold text-[var(--ink)]">Create a Project</Link></p> : null}
+        </section>
         <Rail title="Contribution" body={missionEmptyStates.contribution} />
         <Rail title="Ownership" body={missionEmptyStates.ownership} />
         <Rail title="Governance" body={missionEmptyStates.governance} />

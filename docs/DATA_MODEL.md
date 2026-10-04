@@ -1,6 +1,6 @@
 # Data model
 
-Updated: 2026-10-03
+Updated: 2026-10-04
 
 This file separates the target product model from the predecessor schemas. WO-0001 does not add tables or migrations.
 
@@ -13,7 +13,7 @@ These are the concepts later work orders must be able to represent without colla
 | Human | Public profile, authentication identifiers, links to provider verification status | A raw Social Security number, or a cash balance, or a legal share count with no issuance id |
 | Mission | Purpose, place, constitution, contribution rules, legal-entity reference | A Firebase organization row copied forward without a decision |
 | Project | Bounded outcome belonging to exactly one Mission | A Mission |
-| Work | A job, role, bounty, or task under a Project or Mission | An MCU grant by itself |
+| Work | A public task or role under exactly one Project | A job offer, contract, payment, bounty, or MCU grant |
 | Post | Communication attached to a Mission or Project | A governance decision |
 | Proposal | A proposed change with discussion and, later, a vote | An automatic rule change |
 | Contribution | Atomic evidence that something was done | An editable point balance |
@@ -28,9 +28,25 @@ An MCU event, when implemented, carries: contributor, Mission, rule and version,
 
 An equity settlement record may exist before any shares are issued. Its state stays "not yet issued" until SEC-007's external reference exists.
 
+## Live public Mission domain
+
+The dedicated Mission database now stores public Missions, Projects, and Work. These tables are not Workspace tables and they are not the predecessor JSON stores.
+
+| Table | What it holds |
+|---|---|
+| `human_accounts` | Firebase uid and verified email. Public pages do not read this table. |
+| `missions` | One forming Mission. `creator_uid` is the only create authority until Join exists. |
+| `mission_revisions` | Append-only public Mission description. |
+| `projects` | One bounded outcome of exactly one Mission. Status is `active`. Slug is unique within the Mission. |
+| `project_revisions` | Append-only title and outcome. Updates and deletes are rejected. |
+| `work_items` | One `task` or `role` under exactly one Project. Status is `open`. Slug is unique within the Project. |
+| `work_revisions` | Append-only title, description, and done-when. Updates and deletes are rejected. |
+
+Only the Mission creator can create a Project or Work. The server compares the authenticated Firebase uid with `missions.creator_uid`. A client-supplied uid is ignored. Everyone can read the public fields. Posting Work does not create employment, a contract, pay, an MCU award, or ownership. Join, Contribution, and MCU records are not in this schema.
+
 ## Predecessor: public site and simulators
 
-`origin/main` has no product database for Missions. Mission Units on that branch are in-memory domain types and a simulator page. Contribution events in `src/mission-units/types.ts` already use reversal events and policy versions. That shape is worth learning from. It is not the production ledger, and its "Mission Units" name is not automatically the MCU ledger.
+Before the Mission database, the public site had no product tables for Missions. Mission Units in `src/mission-units/types.ts` are in-memory domain types and a simulator page. Contribution events there already use reversal events and policy versions. That shape is worth learning from. It is not the production ledger, and its "Mission Units" name is not automatically the MCU ledger.
 
 ## Predecessor: feature branch file stores
 
