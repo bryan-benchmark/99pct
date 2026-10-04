@@ -43,6 +43,7 @@ Off. After every rollout in this order, backend traffic had no `rolloutPolicy`. 
 | `build-2026-10-04-002` | `build-2026-10-04-002` | `64f68b9e00638e015785ec35c09a8ff9f75164c8` | `SUCCEEDED` | Second rollout, documentation only |
 | `build-2026-10-04-003` | `build-2026-10-04-001` (retained) | `8f90c8271dd1e1708c1857fd6baf56d8be267758` | `SUCCEEDED` | Restore to the first retained build |
 | `build-2026-10-04-004` | `build-2026-10-04-004` | `8f90c8271dd1e1708c1857fd6baf56d8be267758` | `SUCCEEDED` | Later manual rollout of the same earlier commit |
+| `build-2026-10-04-005` | `build-2026-10-04-005` | `dc3e45ca8a5684092dd2969b6dceced81051c5d5` | `SUCCEEDED` | Final WO-0005 roll-forward; live traffic 100% |
 
 Both builds `001` and `002` stayed `READY`. The restore did not rebuild `001`.
 
@@ -50,6 +51,7 @@ GitHub Actions:
 
 - `37214941854` on `8f90c8271dd1e1708c1857fd6baf56d8be267758`: `dependency-security` and `functional` passed.
 - `37215468795` on `64f68b9e00638e015785ec35c09a8ff9f75164c8`: both jobs passed.
+- `37216434449` on `dc3e45ca8a5684092dd2969b6dceced81051c5d5`: both jobs passed.
 
 ## Source link and public health
 
@@ -78,7 +80,19 @@ While `003` still showed `PROGRESSING`, a separate manual rollout of the same ea
 
 ## Roll forward
 
-This commit is the roll-forward target. Its GitHub Actions run must be green before it is promoted. The rollout identifier for this commit is recorded in the pull request after that promotion. The post-promotion smoke checks are `/` and `/api/health`.
+Final rollout `build-2026-10-04-005` promoted commit `dc3e45ca8a5684092dd2969b6dceced81051c5d5` after GitHub Actions run `37216434449` passed both required jobs.
+
+After `005` became live, traffic was 100% on that build. Final smoke on the generated App Hosting URL passed:
+
+- `/` → 200
+- `/principles` → 200
+- `/how-it-works` → 200
+- `/specification` → 200
+- footer source link present and correct
+- `/api/health` → 200 with `Cache-Control: no-store` and `{"status":"ready","service":"99pct"}`
+- `/api/workspace/health` → 503 with `{"status":"unavailable"}`
+
+The live WO-0005 rollout at close is `build-2026-10-04-005`. Automatic rollouts remain off and no custom domain is attached.
 
 ## Local verification
 
