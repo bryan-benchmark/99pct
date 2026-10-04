@@ -10,6 +10,7 @@
     "lint": "eslint",
     "verify": "npm run check:canonical && npm run test:mu && npm run test:voice && npm run test:spark && npm run test:pilot && npm run test:toolshare && npm run test:teamup && npm run test:experiments && npm run test:workspace",
     "check:canonical": "node scripts/check-canonical-badge.mjs",
+    "check:npm-audit": "node scripts/check-npm-audit.mjs",
     "test:mu": "tsx --test src/mission-units/invariants.test.ts src/mission-units/outcome.test.ts",
     "test:voice": "tsx --test src/content/voice.test.ts",
     "test:spark": "tsx --test src/sparks/sparks.test.ts",
