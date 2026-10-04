@@ -190,3 +190,33 @@ Public browsing is allowed without an account. Creating or mutating a Mission re
 Mission descriptions should be revisioned rather than silently overwritten so later governance can make changes explicit.
 
 The production Mission database is not provisioned by WO-0007. Code and migrations are built/tested first; a later accepted work order binds a dedicated managed PostgreSQL environment before product writes go live.
+
+## ADR-014 — Production Mission persistence uses isolated Cloud SQL PostgreSQL
+
+Status: Accepted  
+Date: 2026-10-04
+
+The production Mission domain will use a dedicated Cloud SQL for PostgreSQL instance in Firebase/Google Cloud project `pct-99`, colocated in `us-central1` with the App Hosting backend.
+
+The initial database major is PostgreSQL 18, matching the CI major.
+
+Runtime connection rules:
+
+- use the Cloud SQL Node.js Connector rather than raw public-IP allowlists;
+- App Hosting's serving service account receives only Cloud SQL Client access needed to connect;
+- database credentials/secrets live in Secret Manager, not Git;
+- application runtime uses a least-privilege database user distinct from migration/administration credentials;
+- production runtime must validate an explicit Mission environment binding before serving Mission data;
+- Mission runtime must never fall back to the Workspace `DATABASE_URL`.
+
+Data-safety rules:
+
+- automated backups and point-in-time recovery are enabled before product writes go live;
+- deletion protection is enabled;
+- migrations are checksum-tracked and run explicitly, never opportunistically on each production request;
+- append-only Mission revisions keep their database mutation guards;
+- runtime grants do not include schema ownership or unrestricted update/delete.
+
+Capacity starts small and can be upgraded without changing the Mission data model. A shared-core instance is acceptable for the early alpha despite having no Cloud SQL SLA, provided backups/PITR and health monitoring are in place.
+
+Creating a recurring paid Cloud SQL resource requires explicit product-owner approval. Architectural acceptance does not itself authorize spend.
