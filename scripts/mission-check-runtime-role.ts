@@ -3,7 +3,7 @@ import { missionDatabaseUnavailable } from "../src/missions/db/config";
 
 const tables = ["mission_schema_migrations", "human_accounts", "missions", "mission_revisions", "mission_environment"] as const;
 const canInsert = new Set<string>(["human_accounts", "missions", "mission_revisions"]);
-const canUpdate = new Set<string>(["human_accounts"]);
+const canUpdate = new Set<string>();
 
 type TablePrivilege = {
   relname: string;
