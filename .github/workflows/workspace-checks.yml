@@ -34,6 +34,7 @@ jobs:
       - run: npm ci
       - run: npm run verify
       - run: npm run lint
+      - run: npx next typegen
       - run: npx tsc --noEmit
       - name: Build staging configuration
         run: npm run build

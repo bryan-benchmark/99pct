@@ -66,10 +66,12 @@ Upstream reference: https://github.com/advisories/GHSA-m9gg-hp2v-232j. Firebase'
 
 `.github/workflows/workspace-checks.yml` now has two jobs, neither with `continue-on-error`:
 
-- `functional`: `npm ci`, verify, lint, `tsc --noEmit`, staging build, disposable PostgreSQL migration, environment binding, restricted runtime role, customer smoke, audit-integrity check, logical backup/restore, and restored-record verification
+- `functional`: `npm ci`, verify, lint, `next typegen`, `tsc --noEmit`, staging build, disposable PostgreSQL migration, environment binding, restricted runtime role, customer smoke, audit-integrity check, logical backup/restore, and restored-record verification
 - `dependency-security`: `npm ci`, the policy unit tests, and `npm run check:npm-audit`
 
 `actions/checkout` and `actions/setup-node` are pinned to full commit SHAs, with the v7 tag noted in a comment.
+
+The first functional run failed in `tsc` because a clean checkout does not contain gitignored `next-env.d.ts` or `.next/types`. `next typegen` now runs immediately before `tsc`.
 
 ## Local verification
 
@@ -80,6 +82,7 @@ Node v22.23.3:
 | `npm ci` | Exit 0 |
 | `npm run verify` | Exit 0. 81 passed, 0 failed |
 | `npm run lint` | Exit 0 |
+| `npx next typegen` | Exit 0. Required before typecheck on a clean tree because `next-env.d.ts` and `.next/types` are gitignored |
 | `npx tsc --noEmit` | Exit 0 |
 | `npm run build` | Exit 0 |
 | `npm run check:npm-audit` | Exit 0. Policy accepts the two exceptions. `npm audit` still reports 9 high |
