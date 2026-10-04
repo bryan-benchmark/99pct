@@ -4,63 +4,90 @@ Updated: 2026-10-04
 
 ## Active engineering
 
-`WO-0013 — 99pct product-shell reset`
+`WO-0014 — Economic kernel foundation`
 
-See `docs/work-orders/WO-0013-99pct-product-shell.md`.
+See `docs/work-orders/WO-0014-economic-kernel-foundation.md`.
 
-The immediate goal is not another ledger feature. It is to make the product visibly match the network we are building.
+Goal: build the smallest trustworthy core that future Contribution, MCU, bounty, money-connector, and ownership-connector features can depend on.
 
-### Three product modes
+### Kernel laws
 
-**Use 99pct**
+1. **Events are truth.**
+   No mutable MCU balance or bounty-status row is authoritative.
 
-A consumer layer where humans will eventually choose 99pct utilities for ordinary life: rides, stays, music, delivery, local services, and future Utility Missions.
+2. **Commands are idempotent.**
+   One logical command produces at most one economic result, even through retries/races.
 
-No utility is live yet. The first shell must be truthful about that.
+3. **History is append-only.**
+   Corrections are new events referencing prior events.
 
-**Operate**
+4. **Rules are immutable + versioned.**
+   Every automated outcome names the exact rule/version used.
 
-The domain-specific tools used by the humans actually delivering each utility: drivers, hosts, artists, couriers, and other operators.
+5. **Automation is deterministic.**
+   Given the same prior events + command + rule, every correct implementation reaches the same economic result.
 
-Operator software will be introduced with the first real Utility Mission rather than as an empty generic dashboard.
+6. **AI cannot mint value.**
+   Model output may become evidence/proposal input; deterministic policy decides economic events.
 
-**Build 99pct**
+7. **No floating-point economics.**
+   MCU arithmetic uses integer smallest units.
 
-The infrastructure marketplace: Missions → Projects → Work → participation → Contribution → MCUs.
+8. **No direct admin override.**
+   There is no ordinary capability to set a balance, rewrite an event, or mark a reward paid.
 
-The current live product already reaches mutual Work participation.
+9. **External side effects happen after commit.**
+   Money/legal connectors are idempotent effects of recorded events, not part of the rule transaction.
 
-### WO-0013 ships
+10. **Independent verification is possible.**
+    Exported history can be checked without trusting the running 99pct application.
 
-- 99pct global branding;
-- home organized around **Use / Build / Start**;
-- public `/use` utility entry surface with an honest “none live yet” state;
-- public `/work` Build marketplace using recorded Work;
-- Missionism moved to `/missionism` as supporting protocol;
-- primary product nav instead of protocol-heavy nav;
-- existing Mission/Project/Work/help flows preserved;
-- no database schema change.
+### WO-0014 scope
 
-## Step-by-step platform roadmap after WO-0013
+Build and test, without production deployment:
 
-1. **Contribution submission** — confirmed helpers record what they did.
-2. **Contribution recognition** — a separate immutable review/recognition event.
-3. **MCU ledger + Mission rules** — recognized Contribution can create append-only MCU grants under versioned rules.
-4. **Bounty/reward Work** — Work may publish a transparent proposed reward only after the MCU/money distinction exists.
-5. **Mission blueprints + dependency graph** — reusable open-source infrastructure can spawn/fork/localize Missions.
-6. **Utility Mission foundation** — mark and discover customer-facing Utility Missions; define customer/operator/build interfaces.
-7. **First utility vertical** — use one real vertical, likely Rideshare 99, to prove customer + operator + builder modes end to end.
-8. **Local Mission instances** — reusable infrastructure can support local operating Missions without duplicating the whole platform.
-9. **Money and legal ownership rails** — only after Contribution/MCU behavior is auditable and the actual legal/financial relationships are designed.
+- isolated economic schema/migrations;
+- command receipt/idempotency model;
+- append-only per-Mission event stream;
+- deterministic sequence/hash chain;
+- immutable/versioned rule registry + activation events;
+- exact integer MCU unit type;
+- pure command/rule engine boundary;
+- derived MCU totals, never direct balance mutation;
+- compensating adjustment model;
+- reference bounty state machine in test/sandbox;
+- exactly-once reward-key invariant;
+- export format + offline verifier;
+- tamper/deletion/reorder tests;
+- concurrency/race tests;
+- database role/trigger protections;
+- documented threat model.
 
-Do not attempt to build Rideshare, Stay, Music, payments, ownership, and a universal bounty engine simultaneously.
+## Planned sequence after kernel acceptance
 
-The platform should supply reusable primitives; each Utility Mission supplies its vertical-specific service logic.
+1. **WO-0015 — Contribution recognition + MCU issuance**
+   Real Contribution submission/recognition uses the kernel; no bounties yet.
+
+2. **WO-0016 — Bounty contracts + autonomous MCU rewards**
+   Immutable bounty terms and completion conditions trigger exactly-once MCU rewards.
+
+3. **WO-0017 — Transparency hardening**
+   Signed/checkpointed ledger roots, public/verifiable exports, recovery/rebuild exercises.
+
+4. **Money bounty connector**
+   Cash rewards use external funded/escrow/payment infrastructure and idempotent provider events; no editable internal cash balance.
+
+5. **Rule governance**
+   Safe rule publication/activation, future approval thresholds, delays, freezes, and challenge/correction events.
+
+6. Resume Mission blueprints / Utility Mission work on top of the economic kernel.
+
+## Deferred
+
+`WO-0013 — 99pct product-shell reset` is deferred, not discarded.
 
 ## Waiting externally
 
-`WO-0006 — 99pct.com controlled domain cutover`
+`WO-0006 — 99pct.com domain cutover` remains parked.
 
-PR #11 remains parked. The generated App Hosting URL remains the product host until the cutover is separately accepted.
-
-Infrastructure hardening remains continuous, including removal/review of ADR-010 dependency exceptions before expiry.
+One economic invariant at a time.
