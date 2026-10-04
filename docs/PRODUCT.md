@@ -1,92 +1,185 @@
 # Product
 
-Updated: 2026-10-03
+Updated: 2026-10-04
 
-99pct.com is the product surface for Missionism. The explanatory site is the predecessor. The target product is the loop in which Missions actually happen.
+## What 99pct is
 
-## Primary loop
+99pct is an open-source place for people to build the future together.
 
-Someone has an idea, starts a Mission, other humans join, work is broken into projects and jobs or bounties, agreements are generated, contributions are recorded, Mission Contribution Units (MCUs) are earned, ownership accumulates through a legal process, governance happens, money flows on separate rails, and the history remains transparent and forkable.
+A person should be able to arrive with something that ought to exist, start a Mission, break it into Projects and Work, find other humans who want to help, record what was contributed, and build a transparent history of who made the Mission real.
 
-The first live loop to build toward:
+The long-term product is infrastructure for the 99%, by the 99%: make it dramatically easier for ordinary people to start, join, copy, improve, fork, fund, and operate useful Missions without needing a venture-backed company or a centralized conglomerate to organize every opportunity.
+
+99pct itself is one Mission built using Missionism.
+
+## Relationship to Missionism
+
+99pct and Missionism are different layers.
+
+**99pct is the product and Mission.**
+
+**Missionism is the underlying organizational protocol / operating philosophy.**
+
+Missionism describes how mission, contribution, ownership, authority, governance, incentives, and human dignity can fit together. 99pct implements and experiments with those ideas in a real open-source product.
+
+The public 99pct product must not require a visitor to understand Missionism before doing something useful.
+
+A useful shorthand:
+
+> 99pct is what we are building. Missionism is how it works.
+
+The Missionism protocol material remains available through its own supporting surface: definition, principles, how it works, specification, open questions, and change history.
+
+## Primary product loop
+
+The target loop is:
 
 ```text
 Land
-→ discover a Mission, or start one
-→ create a Project
-→ post needed Work
-→ a human joins
-→ a human contributes
-→ the contribution is recorded
-→ MCUs are earned
-→ the contribution history is public
+→ discover a Mission, find Work, or start a Mission
+→ create or join a Project
+→ publish or choose needed Work
+→ humans mutually agree to help
+→ Contribution is recorded
+→ Contribution is reviewed / recognized
+→ MCUs are issued under the Mission's published rules
+→ contribution history is transparent
+→ legally valid ownership may settle on a separate rail where implemented
 ```
 
-Profiles, posts, proposals, Mission activity, and search surround that loop. Equity issuance, payouts, repurchases, financing, and secondary trading come after the MCU foundation exists, and only with the legal machinery named in `ARCHITECTURE.md`.
+The current live implementation reaches mutual Work participation. Contribution, recognition, MCUs, and ownership rails remain later work.
 
-## Six core objects
+## Product entry points
+
+The primary 99pct shell should optimize for action:
+
+1. **Explore Missions** — see what people are trying to make real.
+2. **Find Work** — see open tasks and roles that need help.
+3. **Start a Mission** — create a public forming Mission around something that should exist.
+
+Protocol explanation is secondary navigation, not the front door.
+
+## Core objects
 
 | Object | Meaning |
 |---|---|
-| Mission | The enduring organization. A public purpose, place, constitution, and the people building it. |
-| Project | A bounded thing the Mission needs. |
-| Work | Jobs, roles, contracts, bounties, and individual tasks. |
+| Mission | The enduring purpose/organization people are trying to make real. |
+| Project | A bounded outcome the Mission needs. |
+| Work | A task or ongoing role a Project needs help with. |
+| Human participation | Interest, invitation, and mutual confirmation around Work. |
+| Contribution | A durable record of what a human actually contributed. |
+| MCU | A Mission Contribution Unit issued only for recognized Contribution under published Mission rules. |
 | Post | Communication: ideas, research, arguments, updates, questions. |
-| Proposal | A change to software, governance, MCU rules, strategy, or contracts. |
-| Contribution | The atomic event from which MCUs arise. |
+| Proposal | A proposed change to software, rules, strategy, governance, or contracts. |
 
-Contracts are generated when a human accepts Work. The human sees the agreement. Contributor agreements, employment terms, intellectual-property terms, open-source terms, tax documentation, and equity paperwork are chosen by the system from the activity, not presented as a document dump.
+Posts and Proposals are part of the long-term graph but are not yet the core live loop.
+
+## Current implementation truth
+
+Live now:
+
+- verified human accounts;
+- public forming Missions;
+- Projects;
+- open Work as task or role;
+- public Mission / Project / Work reading;
+- Work interest;
+- explicit email-sharing consent;
+- creator invitation;
+- human confirmation;
+- aggregate public interest/helping counts.
+
+Not live yet:
+
+- Contribution submission;
+- Contribution review/recognition;
+- MCU issuance;
+- public contribution profiles;
+- Mission governance;
+- payments;
+- contracts generated from activity;
+- legal equity issuance;
+- Mission funding rails;
+- secondary trading.
+
+The interface must never present a future rail as already implemented.
 
 ## Contribution and ownership
 
 MCUs are the shared language of recognized contribution across 99pct.
 
-Legal shares, units, options, profit rights, or another instrument are the ownership asset. Which instrument exists depends on the Mission's legal entity and approved rules.
+A self-reported action is not automatically an MCU-generating Contribution. The system needs an auditable recognition rule and event.
 
-A dashboard may show MCUs earned, vested ownership, distributions received, an estimated ownership value, and any amount currently eligible for a mission repurchase. Those are different facts. MCU totals are not a substitute for an issued share count.
+Legal shares, units, options, profit rights, or another legal instrument are a separate ownership ledger. Which instrument exists depends on the Mission's entity and approved legal rules.
 
-Until an authoritative legal issuance exists, the product shows MCUs earned and equity settlement as not yet issued. It shows legal equity as issued only when an authoritative issuance reference exists.
+MCU totals are not a substitute for issued legal ownership.
 
-Each Mission publishes its own Contribution Constitution. Rules can differ by Mission. Every MCU issuance records why, which rule version produced it, what evidence supports it, who or what approved it, and that it can be challenged. The protocol governs how rules are made and published. It does not set one universal price for every human activity.
+Until an authoritative legal issuance exists, 99pct must say that ownership has not been issued rather than estimating or fabricating a percentage.
 
-Continuous contribution writes MCUs immediately. Legal equity settles on a Mission clock, such as monthly or quarterly, into the legal stock ledger. Microscopic per-action share issuance is out of scope.
+Each Mission should eventually publish a Contribution Constitution: how work becomes recognized Contribution, how MCUs are calculated, which rule version applied, what evidence supports the recognition, who or what approved it, and how it can be challenged.
 
 ## People
 
-99pct is designed for global human participation. Availability and permitted activities remain subject to applicable law, sanctions or restrictions, jurisdiction, industry rules, and Mission-specific requirements.
+99pct is designed for global human participation, subject to applicable law and Mission-specific restrictions.
 
-Progressive verification:
+Verification should be progressive rather than front-loading unnecessary identity friction:
 
-1. Human account. Email or passkey, username, optional country. Browse, follow, post, create ideas. No Social Security number.
-2. Contributor. Legal name and jurisdiction when a contract is required. Public profile identity can stay separate.
-3. Paid contributor. Tax documentation through a provider. 99pct stores provider status flags, not a raw Social Security number.
-4. Owner or investor. Additional identity and securities checks through an appropriate provider when equity is involved.
-5. Trader. Only if a person enters a regulated secondary-market transaction, through the required regulated infrastructure.
+1. Human account — enough to participate in ordinary product actions.
+2. Contributor — additional legal identity only when the activity requires an agreement.
+3. Paid contributor — tax/payment requirements handled through appropriate providers.
+4. Owner/investor — additional checks only when legal ownership or investment requires them.
+5. Trader — regulated infrastructure only if secondary trading ever exists.
 
-Industry rules can be stricter. The product needs a compliance decision for a specific Mission and activity, not a platform-wide citizenship ban or mandatory KYC at ordinary signup.
+99pct should not store raw Social Security numbers merely to let a human start or help a Mission.
 
-## Profile
+## Public Mission home
 
-A profile is a portable proof-of-contribution graph: lifetime MCUs and the Missions, evidence, and roles behind them. It is the history of things a person helped make real.
+A mature Mission page should eventually answer:
 
-## Mission page
+- What are we trying to make real?
+- Who is it for?
+- What Projects are active?
+- What Work needs help now?
+- Who is helping?
+- What Contribution has been recognized?
+- How are MCUs earned?
+- What legal ownership, if any, has actually been issued?
+- How are decisions made?
+- Where does money go?
+- What can I do right now?
+- What is open source and forkable?
 
-A Mission page is the organization's public home. It states the purpose, who is helping, active projects, revenue when real, MCUs recognized, and the share of ownership held by contributors when that ownership has actually been issued. It answers what the Mission is doing, what needs help, who is working, how MCUs are earned, who owns it, how decisions are made, where money goes, what is changing, what is open source, and what a visitor can do now.
+Every displayed figure must come from recorded data.
 
-Figures on that page must come from recorded data. Placeholder company homepages are not implemented product.
+## Open source and forkability
+
+99pct is not only a website for organizations. It is intended to make the machinery for organizing them open and reusable.
+
+Missions should be able to share software, operating playbooks, contracts, rules, Projects, and Work structures where appropriate, then fork or localize them without asking a central incumbent for permission.
+
+The application source is AGPL-3.0-only unless a file says otherwise. The Missionism protocol/documentation licensing question remains separate.
 
 ## Explicitly later
 
-Buying or selling MCUs. A securities exchange. Custody of investment cash. Percentage commissions for brokering private stock. Seed phrases as the control for a person's equity. Issuing a share on every small contribution event.
+The following are not implied by the current product:
 
-Ordinary investment, when it exists, is a separate rail from earned ownership. That rail does not replace contributor ownership.
+- buying or selling MCUs;
+- a securities exchange;
+- custody of investment cash;
+- seed phrases controlling equity;
+- issuing a legal share for every small action;
+- arbitrary admin-set ownership percentages;
+- guaranteed compensation for open Work;
+- automatic legal employment/contractor relationships from participation.
 
-## Liquidity ladder
+Ordinary investment, if a Mission uses it, remains a separate rail from earned Contribution and ownership.
 
-Legally required pay comes first where applicable. Then compensatory ownership under a real equity plan. Then distributions. Then structured mission repurchase. Then credit secured by verified ownership. Secondary trading only through legally appropriate infrastructure.
+## Predecessor material
 
-Vested contributor ownership is meant to survive resignation, account deletion, and a terms-of-service change. Those protections belong in the governing legal documents and authoritative ownership ledger, not only in 99pct terms of service.
+The repository began from a sanitized snapshot of the private Missionism application. That imported application contains Sparks, Pilots, Mission Cells, Mines, Mission Units, Workspace tooling, simulators, and explanatory Missionism pages.
 
-## Predecessor vocabulary
+Those are predecessor experiments and research assets.
 
-The current application uses Sparks, Pilots, Mission Cells, Mines, Mission Units, and a private Workspace. Those are existing experiments and tools. Mapping them onto Mission, Project, Work, Post, Proposal, and Contribution is future product work. This document does not rename them in code.
+They may remain available while useful, but they do not define the 99pct product hierarchy or brand.
+
+The 99pct product source of truth is the Mission → Project → Work → Participation → Contribution → MCU loop described here and in accepted ADRs/work orders.
