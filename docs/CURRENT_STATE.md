@@ -12,6 +12,7 @@ Updated: 2026-10-04
 - Mission production-persistence readiness accepted in WO-0008 and merged at `754d785`
 - Start + Discover production release accepted in WO-0009 and merged at `4643b4f`
 - Projects + needed Work accepted in WO-0010 and merged at `2756ebd`
+- Work interest accepted in WO-0011 and merged at `2fbfb93`
 - `spec/canonical.json` remains the canonical short-claim source
 - Application source license: `AGPL-3.0-only`
 
@@ -23,8 +24,8 @@ Generated App Hosting URL:
 
 Live release:
 
-- deployed application commit: `de3bdf5`
-- App Hosting build: `build-2026-10-04-012`
+- deployed application commit: `1c3f4f4`
+- App Hosting build: `build-2026-10-04-013`
 - automatic rollouts: off
 - `/api/health`: ready
 - `/api/missions/health`: ready
@@ -32,17 +33,18 @@ Live release:
 
 The live product loop is now:
 
-Mission → Project → Work
+Mission → Project → Work → expressed interest
 
 Production contains labeled alpha records:
 
 - `WO-0009 test Mission`
 - `WO-0010 test Project`
 - `WO-0010 test task`
+- one labeled WO-0011 interest from a second verified human
 
-A verified Mission creator can create Projects and Work. Anyone can read Mission, Project, and Work pages signed out.
+A verified non-creator can say “I want to help” on an open Work item after explicitly consenting to share their verified email with the Mission creator.
 
-Open Work is explicitly a request for help only. It does not create a job, contract, compensation, MCU award, or ownership.
+Public pages expose only aggregate interest count. The interested human sees their own private state. The Mission creator privately sees interested email + note. Interest is immutable and does not create membership, assignment, contract, compensation, MCU, or ownership.
 
 ## Production Mission persistence
 
@@ -65,6 +67,7 @@ Database `missions` is migrated through:
 - `0001_missions.sql`
 - `0002_environment.sql`
 - `0003_projects_work.sql`
+- `0004_work_interests.sql`
 
 Runtime role remains least privilege.
 
@@ -78,6 +81,8 @@ Mission health is forward-compatible with later additive migrations:
 - the migration runner itself remains strict.
 
 While an older build is retained as a healthy rollback target, new production schema migrations must remain backward-compatible/additive with that retained build.
+
+WO-0011 proved this in production: `0004` was applied while build-012 still served, and Mission health remained ready before build-013 rolled out.
 
 ## Firebase Auth
 
@@ -99,14 +104,15 @@ The broader target remains:
 
 Mission → Project → Work → Join → Contribution → MCU history.
 
-ADR-016 defines the first Join slice as Work-specific interest:
+ADR-017 defines the next slice as mutual Work participation:
 
-- a verified human may say “I want to help” on one Work item;
-- expressing interest is not Mission membership or Work assignment;
-- it creates no contract, compensation, MCU, or ownership;
-- the human explicitly consents before their verified email is shared privately with the Mission creator;
-- public pages may show an interest count, but never private emails or messages;
-- acceptance/agreement remains a later slice.
+1. Mission creator privately invites a human who already expressed interest.
+2. That human separately confirms: **I’ll help on this Work.**
+3. Only after both immutable records exist does the product say the human is **helping on this Work**.
+
+This is a collaboration/participation record only. It is not Mission membership, employment, contractor status, a legal contract, compensation, an MCU grant, or ownership.
+
+Multiple humans may eventually help the same Work item. Work remains open in this slice.
 
 ## Dependency-security state
 
@@ -119,6 +125,6 @@ The dependency-security CI policy remains required.
 
 ## Active engineering work
 
-Execute `docs/work-orders/WO-0011-work-interest.md`.
+Execute `docs/work-orders/WO-0012-work-participation.md`.
 
-WO-0011 may add an additive production migration and manually deploy after green CI. It must not assign Work, create Mission membership, accept/decline interests, generate contracts, promise compensation, issue MCUs/equity, or change the custom domain.
+WO-0012 may add an additive production migration and manually deploy after green CI. It must not create Mission membership, employment/contractor status, legal agreements, compensation, Contribution records, MCUs, equity, or custom-domain changes.

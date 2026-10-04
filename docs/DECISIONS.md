@@ -296,3 +296,44 @@ Public Work pages may show an aggregate interest count. They must not expose:
 - session/auth data.
 
 WO-0011 has no acceptance/decline state. Creator acceptance, agreement terms, assignment, Contribution, compensation, MCU rules, and ownership are separate later decisions.
+
+## ADR-017 — Work participation requires mutual confirmation and is not a legal contract
+
+Status: Accepted  
+Date: 2026-10-04
+
+A Work interest is not enough to say a human is doing the Work.
+
+Initial Work participation requires two separate immutable actions:
+
+1. **Creator invitation** — the Mission creator invites a human who already expressed interest in that specific Work item.
+2. **Human confirmation** — that same human confirms: **I’ll help on this Work.**
+
+Only after both records exist may the product describe that human as **helping on this Work**.
+
+Neither action alone creates participation.
+
+Rules:
+
+- the creator may invite only an existing interested human;
+- a human may confirm only an invitation addressed to their own verified identity;
+- the creator cannot confirm on another human’s behalf;
+- a human cannot self-invite;
+- duplicate invite/confirm actions must be non-destructive;
+- multiple humans may be mutually confirmed on the same Work item;
+- the Work item remains `open` in this slice;
+- invitation and confirmation history are append-only.
+
+This mutual participation record does **not** by itself create:
+
+- Mission membership;
+- employment;
+- independent-contractor status;
+- a legally binding contract;
+- compensation or bounty entitlement;
+- an MCU grant;
+- legal equity or ownership.
+
+Public pages may expose aggregate helping count. Private participant identity remains visible only where already authorized: the participant themself and the Mission creator.
+
+The confirmed participation relation exists so later Contribution records have a clear human + Mission + Project + Work context. Formal legal agreements are selected later when the actual activity requires them; they are not fabricated merely because two humans agreed to collaborate.
