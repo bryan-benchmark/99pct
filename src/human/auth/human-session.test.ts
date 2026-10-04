@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { NextRequest } from "next/server";
 import { DELETE, POST } from "../../app/api/human/session/route";
-import { assertVerifiedRecentHumanLogin, humanCsrfCookieName, humanSessionCookieName, safeReturnPath } from "./session";
+import { assertVerifiedRecentHumanLogin, humanCsrfAccepted, humanCsrfCookieName, humanSessionCookieName, safeReturnPath } from "./session";
 import { csrfCookieName, sessionCookieName } from "../../workspace/auth/session";
 import { verifyHumanSession } from "./server";
 
@@ -40,4 +40,8 @@ test("human session mutation rejects a cross-origin or invalid CSRF request", as
   const removed = await DELETE(new NextRequest(url, { method: "DELETE", headers, body: JSON.stringify({ csrfToken: "other" }) }));
   assert.equal(created.status, 403);
   assert.equal(removed.status, 403);
+  const internal = "https://pct99-494723962533.us-central1.run.app";
+  assert.equal(humanCsrfAccepted("https://pct99--pct-99.us-central1.hosted.app", internal, token, token), true);
+  assert.equal(humanCsrfAccepted("https://attacker.example", internal, token, token), false);
+  assert.equal(humanCsrfAccepted("http://localhost:3000", "http://localhost:3000", token, token), true);
 });

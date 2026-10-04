@@ -1,8 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { humanFirebaseAuth, isInvalidHumanCredential } from "@/human/auth/server";
-import { humanCsrfCookieName, humanSessionCookieName, humanSessionDurationMs } from "@/human/auth/session";
-import { assertVerifiedRecentHumanLogin } from "@/human/auth/session";
-import { validSameOriginCsrf } from "@/workspace/auth/session";
+import { assertVerifiedRecentHumanLogin, humanCsrfAccepted, humanCsrfCookieName, humanSessionCookieName, humanSessionDurationMs } from "@/human/auth/session";
 import { readWorkspaceJsonObject } from "@/workspace/http-body";
 
 export const runtime = "nodejs";
@@ -18,7 +16,7 @@ export async function POST(request: NextRequest) {
   const parsed = await readWorkspaceJsonObject(request, 12000);
   if (parsed.error) return parsed.error;
   const body = parsed.body;
-  if (!validSameOriginCsrf(request.headers.get("origin"), request.nextUrl.origin, request.cookies.get(humanCsrfCookieName)?.value, body.csrfToken)) return rejected(403, "Session request rejected.");
+  if (!humanCsrfAccepted(request.headers.get("origin"), request.nextUrl.origin, request.cookies.get(humanCsrfCookieName)?.value, body.csrfToken)) return rejected(403, "Session request rejected.");
   if (typeof body.idToken !== "string" || body.idToken.length === 0 || body.idToken.length > 10000) return rejected(401, "Sign in first.");
   try {
     const auth = humanFirebaseAuth();
@@ -41,7 +39,7 @@ export async function DELETE(request: NextRequest) {
   const parsed = await readWorkspaceJsonObject(request, 1000);
   if (parsed.error) return rejected(403, "Session request rejected.");
   const body = parsed.body;
-  if (!validSameOriginCsrf(request.headers.get("origin"), request.nextUrl.origin, request.cookies.get(humanCsrfCookieName)?.value, body.csrfToken)) return rejected(403, "Session request rejected.");
+  if (!humanCsrfAccepted(request.headers.get("origin"), request.nextUrl.origin, request.cookies.get(humanCsrfCookieName)?.value, body.csrfToken)) return rejected(403, "Session request rejected.");
   const cookie = request.cookies.get(humanSessionCookieName)?.value;
   if (cookie) {
     try {
