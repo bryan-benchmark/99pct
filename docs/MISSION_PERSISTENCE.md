@@ -41,6 +41,8 @@ Health treats migrations as current when every migration bundled with that build
 | `work_items` | SELECT, INSERT |
 | `work_revisions` | SELECT, INSERT |
 | `work_interests` | SELECT, INSERT |
+| `work_invitations` | SELECT, INSERT |
+| `work_confirmations` | SELECT, INSERT |
 
 Projects and Work use this same dedicated Mission database and runtime role. The role still has no table-wide UPDATE, DELETE, TRUNCATE, REFERENCES, or TRIGGER, and it does not own the tables. Project and Work revision rows stay append-only.
 
@@ -96,3 +98,5 @@ The live App Hosting configuration is `apphosting.yaml`. Automatic rollouts stay
 WO-0010 adds Projects and Work in migration `0003_projects_work.sql` on this same database. It does not create another instance or change the machine size, region, backups, or deletion protection.
 
 WO-0011 adds immutable Work interest in migration `0004_work_interests.sql` on this same database. The migration is additive. A serving build that does not include `0004` stays healthy because Mission health allows later additive migrations. The runtime role can select and insert interests and still cannot update or delete them. Private email and note visibility is enforced by the application, not by a broader database grant.
+
+WO-0012 adds immutable invitations and confirmations in migration `0005_work_participation.sql`. That migration is also additive. A serving build that does not include `0005` stays healthy and ignores the new tables. The runtime role can select and insert both tables and cannot update or delete them. Helping is derived only when both rows exist. Public pages receive counts, not participant identity.

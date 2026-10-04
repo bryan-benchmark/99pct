@@ -5,10 +5,12 @@ import { verifyHumanSession } from "@/human/auth/server";
 import { humanSessionCookieName } from "@/human/auth/session";
 import { getMissionDb } from "@/missions/db/runtime";
 import { getOwnInterest, listCreatorInterests, type CreatorInterest, type OwnInterest } from "@/missions/interest";
-import { interestCountLabel, publicMissionUrl, publicProjectUrl, workCopy } from "@/missions/model";
+import { helpingCountLabel, interestCountLabel, publicMissionUrl, publicProjectUrl, workCopy, type ParticipationState } from "@/missions/model";
 import { getPublicMission } from "@/missions/store";
 import { getPublicProject, getPublicWork, viewerMayCreate } from "@/missions/projects";
+import { ConfirmHelpForm } from "./ConfirmHelpForm";
 import { InterestForm } from "./InterestForm";
+import { InviteForm } from "./InviteForm";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +25,12 @@ function workKind(kind: "task" | "role") {
 
 function expressedAt(value: string) {
   return new Date(value).toLocaleDateString("en-US", { dateStyle: "long", timeZone: "UTC" });
+}
+
+function participationLabel(state: ParticipationState) {
+  if (state === "helping") return workCopy.stateHelping;
+  if (state === "invited") return workCopy.stateInvited;
+  return workCopy.stateInterested;
 }
 
 export default async function WorkPage({ params }: { params: Promise<{ slug: string; projectSlug: string; workSlug: string }> }) {
@@ -69,6 +77,7 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
       </p>
       <h1 className="mt-2 text-[2rem] font-semibold leading-tight tracking-tight text-[var(--ink)]">{work.title}</h1>
       {work.interestCount > 0 ? <p className="mt-3 text-[var(--muted)]">{interestCountLabel(work.interestCount)}</p> : null}
+      {work.helpingCount > 0 ? <p className="mt-1 text-[var(--muted)]">{helpingCountLabel(work.helpingCount)}</p> : null}
       <p className="mt-6 text-lg leading-relaxed text-[var(--body)]">{work.description}</p>
       <dl className="mt-8 space-y-3 text-[var(--body)]">
         <div><dt className="font-semibold text-[var(--ink)]">Done when</dt><dd>{work.doneWhen}</dd></div>
@@ -81,14 +90,30 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
             {interests.length === 0 ? <p className="mt-2 text-[var(--muted)]">{workCopy.emptyInterests}</p> : (
               <ul className="mt-4 space-y-4">
                 {interests.map((interest) => (
-                  <li key={interest.email}>
+                  <li key={interest.id}>
                     <p className="font-semibold text-[var(--ink)]">{interest.email}</p>
+                    <p className="mt-1 text-[var(--body)]">{participationLabel(interest.state)}</p>
                     {interest.note ? <p className="mt-1 text-[var(--body)]">{interest.note}</p> : null}
                     <p className="mt-1 text-[var(--muted)]">{expressedAt(interest.createdAt)}</p>
+                    {interest.state === "interested" ? <InviteForm missionSlug={slug} projectSlug={projectSlug} workSlug={workSlug} interestId={interest.id} /> : null}
+                    {interest.state === "invited" ? <p className="mt-2 text-[var(--body)]">{workCopy.invitationSent}</p> : null}
+                    {interest.state === "helping" ? <p className="mt-2 text-[var(--body)]">{workCopy.helpingOnWork}</p> : null}
                   </li>
                 ))}
               </ul>
             )}
+          </>
+        ) : ownInterest?.state === "helping" ? (
+          <>
+            <h2 className="text-lg font-semibold text-[var(--ink)]">{workCopy.youreHelping}</h2>
+            <p className="mt-2 text-[var(--body)]">{workCopy.futureContributions}</p>
+            {ownInterest.note ? <p className="mt-3 text-[var(--body)]">{ownInterest.note}</p> : null}
+          </>
+        ) : ownInterest?.state === "invited" ? (
+          <>
+            <h2 className="text-lg font-semibold text-[var(--ink)]">{workCopy.invitedToHelp}</h2>
+            <ConfirmHelpForm missionSlug={slug} projectSlug={projectSlug} workSlug={workSlug} />
+            {ownInterest.note ? <p className="mt-3 text-[var(--body)]">{ownInterest.note}</p> : null}
           </>
         ) : ownInterest ? (
           <>

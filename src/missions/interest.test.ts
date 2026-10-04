@@ -72,17 +72,20 @@ test("a non-creator can send one immutable interest and public data stays aggreg
   const pub = await getPublicWork(db, mission.slug, project.slug, work.slug);
   const serialized = JSON.stringify(pub);
   assert.equal(pub?.interestCount, 1);
+  assert.equal(pub?.helpingCount, 0);
   assert.equal(serialized.includes(helper.email), false);
   assert.equal(serialized.includes(helper.uid), false);
   assert.equal(serialized.includes(privateNote), false);
   const own = await getOwnInterest(db, mission.slug, project.slug, work.slug, helper.uid);
   const strangerView = await getOwnInterest(db, mission.slug, project.slug, work.slug, stranger.uid);
   assert.equal(own?.note, privateNote);
+  assert.equal(own?.state, "interested");
   assert.equal(JSON.stringify(own).includes(helper.email), false);
   assert.equal(strangerView, null);
   const creatorView = await listCreatorInterests(db, mission.slug, project.slug, work.slug, creator.uid);
   assert.equal(creatorView[0]?.email, helper.email);
   assert.equal(creatorView[0]?.note, privateNote);
+  assert.equal(creatorView[0]?.state, "interested");
   assert.equal(JSON.stringify(creatorView).includes(helper.uid), false);
   await assert.rejects(() => listCreatorInterests(db, mission.slug, project.slug, work.slug, stranger.uid), /creator/);
   await assert.rejects(() => listCreatorInterests(db, mission.slug, project.slug, work.slug, helper.uid), /creator/);
@@ -135,7 +138,9 @@ test("the interest route rejects bad sessions and persists one consented interes
 test("the work page offers help without employment, membership, or another person's private note", () => {
   const page = readFileSync(new URL("../app/missions/[slug]/projects/[projectSlug]/work/[workSlug]/page.tsx", import.meta.url), "utf8");
   const form = readFileSync(new URL("../app/missions/[slug]/projects/[projectSlug]/work/[workSlug]/InterestForm.tsx", import.meta.url), "utf8");
-  const source = `${page}\n${form}`;
+  const invite = readFileSync(new URL("../app/missions/[slug]/projects/[projectSlug]/work/[workSlug]/InviteForm.tsx", import.meta.url), "utf8");
+  const confirm = readFileSync(new URL("../app/missions/[slug]/projects/[projectSlug]/work/[workSlug]/ConfirmHelpForm.tsx", import.meta.url), "utf8");
+  const source = `${page}\n${form}\n${invite}\n${confirm}`;
   for (const word of ["Apply", "Applicant", "Hired", "Candidate", "Employee", "Contractor", "Assigned", "Member"]) {
     assert.equal(source.includes(word), false, word);
   }

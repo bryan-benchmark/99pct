@@ -42,8 +42,10 @@ The dedicated Mission database now stores public Missions, Projects, and Work. T
 | `work_items` | One `task` or `role` under exactly one Project. Status is `open`. Slug is unique within the Project. |
 | `work_revisions` | Append-only title, description, and done-when. Updates and deletes are rejected. |
 | `work_interests` | One immutable interest per human and Work item. The private note stays here. The verified email stays in `human_accounts` and is not copied onto the interest. |
+| `work_invitations` | One immutable invitation from the Mission creator for an existing interest. A human cannot invite themself. |
+| `work_confirmations` | One immutable confirmation of that invitation by the interested human. The human identity is the interest behind the invitation. |
 
-Only the Mission creator can create a Project or Work. A different verified human can express interest in open Work after explicitly consenting to share their verified email with that creator. Interest is not Mission membership, Work assignment, a contract, pay, an MCU award, or ownership. Public Work data includes an interest count only. The note and email are visible to the interested human and the Mission creator. Contribution and MCU records are not in this schema.
+Only the Mission creator can create a Project or Work. A different verified human can express interest in open Work after explicitly consenting to share their verified email with that creator. The creator may then invite that interest, and the same human may confirm. Participation is derived from those two append-only rows: interested, invited, or helping. It is not Mission membership, employment, contractor status, a legal contract, pay, an MCU award, or ownership. Work stays open, and more than one human can be helping. Public Work data includes an interest count and a helping count only. The note and email stay with the interested human and the Mission creator. Contribution and MCU records are not in this schema.
 
 ## Predecessor: public site and simulators
 

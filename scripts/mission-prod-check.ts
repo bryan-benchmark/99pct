@@ -24,12 +24,14 @@ async function main() {
   const client = new Client({ connectionString: connection, application_name: "pct99-missions" });
   await client.connect();
   try {
-    const before = await client.query<{ missions: number; accounts: number; projects: number; work_items: number; interests: number }>(
+    const before = await client.query<{ missions: number; accounts: number; projects: number; work_items: number; interests: number; invitations: number; confirmations: number }>(
       `SELECT (SELECT count(*) FROM missions)::int AS missions,
               (SELECT count(*) FROM human_accounts)::int AS accounts,
               (SELECT count(*) FROM projects)::int AS projects,
               (SELECT count(*) FROM work_items)::int AS work_items,
-              (SELECT count(*) FROM work_interests)::int AS interests`,
+              (SELECT count(*) FROM work_interests)::int AS interests,
+              (SELECT count(*) FROM work_invitations)::int AS invitations,
+              (SELECT count(*) FROM work_confirmations)::int AS confirmations`,
     );
     await client.query("BEGIN");
     await client.query(
@@ -61,12 +63,20 @@ async function main() {
     await client.query(
       "INSERT INTO work_interests (id, work_id, human_uid, private_note, email_share_consented) VALUES ('00000000-0000-4000-8000-000000000013', '00000000-0000-4000-8000-000000000012', 'prod-check-interest', 'Rolled back.', TRUE)",
     );
+    await client.query(
+      "INSERT INTO work_invitations (id, interest_id, invited_by_uid) VALUES ('00000000-0000-4000-8000-000000000014', '00000000-0000-4000-8000-000000000013', 'prod-check-project')",
+    );
+    await client.query(
+      "INSERT INTO work_confirmations (invitation_id) VALUES ('00000000-0000-4000-8000-000000000014')",
+    );
     await client.query("ROLLBACK");
     for (const statement of [
       "UPDATE mission_revisions SET name = name",
       "UPDATE project_revisions SET title = title",
       "UPDATE work_revisions SET title = title",
       "UPDATE work_interests SET private_note = private_note",
+      "UPDATE work_invitations SET invited_by_uid = invited_by_uid",
+      "UPDATE work_confirmations SET created_at = created_at",
     ]) {
       await client.query("BEGIN");
       const forbidden = await client.query(statement).then(
@@ -76,12 +86,14 @@ async function main() {
       await client.query("ROLLBACK");
       if (!/append-only|permission denied/i.test(forbidden)) throw new Error("Mission runtime role accepted a revision update.");
     }
-    const after = await client.query<{ missions: number; accounts: number; projects: number; work_items: number; interests: number }>(
+    const after = await client.query<{ missions: number; accounts: number; projects: number; work_items: number; interests: number; invitations: number; confirmations: number }>(
       `SELECT (SELECT count(*) FROM missions)::int AS missions,
               (SELECT count(*) FROM human_accounts)::int AS accounts,
               (SELECT count(*) FROM projects)::int AS projects,
               (SELECT count(*) FROM work_items)::int AS work_items,
-              (SELECT count(*) FROM work_interests)::int AS interests`,
+              (SELECT count(*) FROM work_interests)::int AS interests,
+              (SELECT count(*) FROM work_invitations)::int AS invitations,
+              (SELECT count(*) FROM work_confirmations)::int AS confirmations`,
     );
     assert.deepEqual(after.rows[0], before.rows[0]);
     process.stdout.write("Mission production check passed with no persisted rows.\n");

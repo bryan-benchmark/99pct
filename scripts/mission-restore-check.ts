@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { configuredMissionDb } from "../src/missions/db/client";
 import { missionMigrationsCurrent } from "../src/missions/db/migrate";
 
-const tables = ["mission_schema_migrations", "human_accounts", "missions", "mission_revisions", "mission_environment", "projects", "project_revisions", "work_items", "work_revisions", "work_interests"] as const;
+const tables = ["mission_schema_migrations", "human_accounts", "missions", "mission_revisions", "mission_environment", "projects", "project_revisions", "work_items", "work_revisions", "work_interests", "work_invitations", "work_confirmations"] as const;
 
 function dedicatedCheckUrl(value: string | undefined, name: string) {
   if (!value) throw new Error(`${name} is required.`);
@@ -32,8 +32,10 @@ async function main() {
     const projectRevision = (await restored.query<{ project_id: string }>("SELECT project_id FROM project_revisions LIMIT 1")).rows[0];
     const workRevision = (await restored.query<{ work_id: string }>("SELECT work_id FROM work_revisions LIMIT 1")).rows[0];
     const interest = (await restored.query<{ id: string }>("SELECT id FROM work_interests LIMIT 1")).rows[0];
+    const invitation = (await restored.query<{ id: string }>("SELECT id FROM work_invitations LIMIT 1")).rows[0];
+    const confirmation = (await restored.query<{ invitation_id: string }>("SELECT invitation_id FROM work_confirmations LIMIT 1")).rows[0];
     const binding = (await restored.query<{ release_target: string }>("SELECT release_target FROM mission_environment WHERE singleton = 1")).rows[0];
-    assert.ok(revision && projectRevision && workRevision && interest && binding, "Restore drill needs Mission, Project, Work, and interest records and an environment binding");
+    assert.ok(revision && projectRevision && workRevision && interest && invitation && confirmation && binding, "Restore drill needs Mission, Project, Work, interest, invitation, and confirmation records and an environment binding");
     await assert.rejects(restored.query("UPDATE mission_revisions SET name = name WHERE mission_id = $1", [revision.mission_id]), /append-only/);
     await assert.rejects(restored.query("DELETE FROM mission_revisions WHERE mission_id = $1", [revision.mission_id]), /append-only/);
     await assert.rejects(restored.query("UPDATE project_revisions SET title = title WHERE project_id = $1", [projectRevision.project_id]), /append-only/);
@@ -42,6 +44,10 @@ async function main() {
     await assert.rejects(restored.query("DELETE FROM work_revisions WHERE work_id = $1", [workRevision.work_id]), /append-only/);
     await assert.rejects(restored.query("UPDATE work_interests SET private_note = private_note WHERE id = $1", [interest.id]), /append-only/);
     await assert.rejects(restored.query("DELETE FROM work_interests WHERE id = $1", [interest.id]), /append-only/);
+    await assert.rejects(restored.query("UPDATE work_invitations SET invited_by_uid = invited_by_uid WHERE id = $1", [invitation.id]), /append-only/);
+    await assert.rejects(restored.query("DELETE FROM work_invitations WHERE id = $1", [invitation.id]), /append-only/);
+    await assert.rejects(restored.query("UPDATE work_confirmations SET created_at = created_at WHERE invitation_id = $1", [confirmation.invitation_id]), /append-only/);
+    await assert.rejects(restored.query("DELETE FROM work_confirmations WHERE invitation_id = $1", [confirmation.invitation_id]), /append-only/);
     process.stdout.write("Mission backup restore check passed.\n");
   } finally {
     await Promise.all([source.close(), restored.close()]);
