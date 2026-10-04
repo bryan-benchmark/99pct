@@ -1,8 +1,6 @@
 # Mission production persistence
 
-Status: ready in the repository, blocked on explicit Cloud SQL spend approval.
-
-No Cloud SQL instance, database user, secret, Auth provider change, or App Hosting rollout was created by this preparation.
+Status: production instance provisioned by WO-0009 after explicit spend approval on 2026-10-04. Operational evidence is in `docs/implementation-reports/WO-0009-provision-and-deploy-missions.md`.
 
 ## Connection
 
@@ -39,29 +37,19 @@ Migration `0002_environment.sql` adds one `mission_environment` row: release tar
 
 No schema ownership, CREATE, DROP, mission update/delete, revision update/delete, or migration writes. The append-only revision triggers remain.
 
-## Firebase human auth, read on 2026-10-04
+## Firebase human auth
 
-Project `pct-99` is active. Inventory was read-only:
+WO-0009 found two existing web apps in `pct-99` and did not create another. Email/Password is enabled. The generated App Hosting host, `99pct.com`, and `www.99pct.com` are authorized domains. The public web API key is in `apphosting.yaml`. Server Firebase Admin uses App Hosting application default credentials. No service-account JSON key is committed.
 
-- Firebase web apps: none
-- Identity Platform config: `CONFIGURATION_NOT_FOUND`, so Email/Password is not enabled and authorized domains are not published
-- generated App Hosting host `pct99--pct-99.us-central1.hosted.app` is therefore not an authorized Auth domain yet
-- `99pct.com` and `www.99pct.com` authorization is not visible because Auth is not configured
-- serving service account: `firebase-app-hosting-compute@pct-99.iam.gserviceaccount.com`
-- automatic rollout policy: off
-- Secret Manager: no secrets
-
-The existing human sign-in code needs `NEXT_PUBLIC_FIREBASE_PROJECT_ID` and `NEXT_PUBLIC_FIREBASE_API_KEY` in the browser build, and server project identity through App Hosting application default credentials. Do not add a service-account JSON key. Those public values stay unset until a web app exists. Auth settings were not changed.
+Details and the domain list are in the WO-0009 implementation report.
 
 ## Eventual App Hosting config
 
-`apphosting.missions.example.yaml` is not loaded by App Hosting. After approval, the release work creates the secret `mission-db-password`, grants the serving service account `roles/secretmanager.secretAccessor` on that secret and `roles/cloudsql.client`, then copies the example env into `apphosting.yaml`. The live file does not reference the secret yet.
+`apphosting.missions.example.yaml` is not loaded by App Hosting. The release values live in `apphosting.yaml`, including the Secret Manager reference `mission-db-password`. Automatic rollouts stay off.
 
-## Cloud SQL inventory and proposed spend
+## Cloud SQL inventory
 
-Cloud SQL Admin API has not been used on `pct-99` and is disabled. No instance was listed, and none was created.
-
-Proposed resource, not created:
+WO-0009 created the instance below. The planning price was rechecked on 2026-10-04 before creation and had not changed: `db-f1-micro` remains $0.0105 per hour, shared-core has no Cloud SQL SLA, and Google's us-central1 example with this machine and 10 GB storage and no backups remains $9.37 per month.
 
 - project `pct-99`
 - region `us-central1`
@@ -84,15 +72,14 @@ Published Google Cloud pricing checked 2026-10-04 for Iowa (`us-central1`):
 
 No free-credit balance was visible from the project billing description. Billing already being enabled is not approval to create this instance.
 
-## After approval
+## Provisioned by WO-0009
 
-Create only:
+Created after the 2026-10-04 spend approval:
 
 1. Cloud SQL instance `pct99-missions-prod` with the settings above.
 2. Database `missions`.
-3. Migration and runtime database users.
-4. Secret Manager secret `mission-db-password`.
-5. IAM for the serving service account: Cloud SQL Client, and Secret Accessor on that secret.
-6. Firebase web app, Email/Password provider, and authorized domains, in a later auth/release step rather than as a hidden side effect of the database.
+3. Migration user `missions_migrate` and runtime user `missions_runtime`.
+4. Secret Manager secrets `mission-db-password`, `mission-db-migration-password`, and `mission-db-admin-password`.
+5. IAM for `firebase-app-hosting-compute@pct-99.iam.gserviceaccount.com`: Cloud SQL Client, and Secret Accessor on `mission-db-password` only.
 
-Do not deploy Start + Discover until that binding is in place.
+The live App Hosting configuration is `apphosting.yaml`. Automatic rollouts stay off.
