@@ -27,8 +27,8 @@ function audit() {
       "@grpc/grpc-js": {
         severity: "high",
         via: [
-          { severity: "high", url: "https://github.com/advisories/GHSA-m9gg-hp2v-232j" },
-          { severity: "low", url: "https://github.com/advisories/GHSA-f596-whhp-79r4" },
+          { severity: "high", url: "https://github.com/advisories/GHSA-m9gg-hp2v-232j", range: "<1.13.6" },
+          { severity: "low", url: "https://github.com/advisories/GHSA-f596-whhp-79r4", range: "<1.13.6" },
         ],
       },
       "@firebase/firestore": { severity: "high", via: ["@grpc/grpc-js"] },
@@ -87,6 +87,38 @@ test("rejects a review window longer than 30 days", () => {
     today,
   });
   assert.ok(errors.some((error) => error.includes("30 days")));
+});
+
+test("rejects an accepted 1.9.16 install plus a second vulnerable 1.10.0 path", () => {
+  const errors = evaluateAudit({
+    audit: audit(),
+    exceptions: [exception()],
+    versions,
+    installs: {
+      "@grpc/grpc-js": [
+        installs["@grpc/grpc-js"][0],
+        { path: "other@1.0.0 > @grpc/grpc-js@1.10.0", version: "1.10.0" },
+      ],
+    },
+    today,
+  });
+  assert.ok(errors.some((error) => error.includes("1.10.0")));
+});
+
+test("allows a patched install of the same package outside the advisory range", () => {
+  const errors = evaluateAudit({
+    audit: audit(),
+    exceptions: [exception()],
+    versions,
+    installs: {
+      "@grpc/grpc-js": [
+        installs["@grpc/grpc-js"][0],
+        { path: "firebase-admin@14.5.0 > @grpc/grpc-js@1.14.5", version: "1.14.5" },
+      ],
+    },
+    today,
+  });
+  assert.deepEqual(errors, []);
 });
 
 test("rejects a second install of the excepted version", () => {

@@ -46,6 +46,59 @@ function carriedNames(info) {
   return (info.via || []).filter((via) => typeof via === "string");
 }
 
+function versionParts(version) {
+  return String(version)
+    .split("-")[0]
+    .split(".")
+    .map((part) => {
+      const value = Number.parseInt(part, 10);
+      return Number.isNaN(value) ? null : value;
+    });
+}
+
+function compareVersions(left, right) {
+  const a = versionParts(left);
+  const b = versionParts(right);
+  if (a.some((part) => part === null) || b.some((part) => part === null)) return null;
+  const length = Math.max(a.length, b.length);
+  for (let index = 0; index < length; index += 1) {
+    const da = a[index] ?? 0;
+    const db = b[index] ?? 0;
+    if (da !== db) return da < db ? -1 : 1;
+  }
+  return 0;
+}
+
+export function versionInRange(version, range) {
+  const text = String(range ?? "").trim();
+  if (text === "" || text === "*") return true;
+  if (text.includes("||")) return text.split("||").some((part) => versionInRange(version, part));
+  const hyphen = text.match(/^(\d+(?:\.\d+)*)\s+-\s+(\d+(?:\.\d+)*)$/);
+  if (hyphen) {
+    const low = compareVersions(version, hyphen[1]);
+    const high = compareVersions(version, hyphen[2]);
+    if (low === null || high === null) return true;
+    return low >= 0 && high <= 0;
+  }
+  const match = text.match(/^(<=|>=|<|>|=)?\s*(\d+(?:\.\d+)*)$/);
+  if (!match) return true;
+  const operator = match[1] || "=";
+  const compared = compareVersions(version, match[2]);
+  if (compared === null) return true;
+  if (operator === "<") return compared < 0;
+  if (operator === "<=") return compared <= 0;
+  if (operator === ">") return compared > 0;
+  if (operator === ">=") return compared >= 0;
+  return compared === 0;
+}
+
+function advisoryRange(info, id) {
+  const via = (info.via || []).find(
+    (item) => typeof item === "object" && MODERATE.has(item.severity) && advisoryId(item) === id,
+  );
+  return via?.range || "*";
+}
+
 export function collectInstalls(tree, packageName, chain = []) {
   const found = [];
   for (const [name, child] of Object.entries(tree.dependencies || {})) {
@@ -78,6 +131,20 @@ export function evaluateAudit({ audit, exceptions, versions, installs, today }) 
       if (copies.length !== 1 || copies[0].path !== ex.dependencyPath) {
         errors.push(
           `${id} on ${name} path is ${(copies.map((item) => item.path).join(" | ") || "missing")}, exception allows ${ex.dependencyPath}`,
+        );
+        continue;
+      }
+      const recorded = exceptions.filter((item) => item.package === name && item.advisoryId.toUpperCase() === id);
+      const range = advisoryRange(info, id);
+      const unrecorded = (installs[name] || []).filter((item) => {
+        const listed = recorded.some(
+          (itemEx) => item.version === itemEx.installedVersion && item.path === itemEx.dependencyPath,
+        );
+        return !listed && versionInRange(item.version, range);
+      });
+      if (unrecorded.length > 0) {
+        errors.push(
+          `${id} on ${name} has an unrecorded vulnerable install: ${unrecorded.map((item) => item.path).join(" | ")}`,
         );
         continue;
       }

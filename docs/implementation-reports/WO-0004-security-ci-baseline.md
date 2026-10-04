@@ -37,7 +37,7 @@ Advisories removed with those versions:
 
 ### Temporary exceptions
 
-Both expire on 2026-11-03. The checker rejects a review window longer than 30 days, an expired date, a version or install path outside the record, and any new moderate-or-higher advisory.
+Both expire on 2026-11-03. The checker rejects a review window longer than 30 days, an expired date, a version or install path outside the record, any other install of an excepted package that is still inside that advisory's affected range, and any new moderate-or-higher advisory. A patched copy outside that range, such as `@grpc/grpc-js` 1.14.5, is not an extra exception.
 
 | Advisory | Package | Version | Class | Path |
 |---|---|---|---|---|
