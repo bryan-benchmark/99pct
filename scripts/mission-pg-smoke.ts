@@ -15,7 +15,7 @@ async function main() {
   try {
     if (!await missionMigrationsCurrent(db)) throw new Error("Mission migrations are not current.");
     const suffix = randomUUID().slice(0, 8);
-    const creator = { uid: `smoke-${suffix}`, email: `smoke-${suffix}@example.test` };
+    const creator = { uid: `private-uid-${suffix}`, email: `private-${suffix}@example.test` };
     const created = await createFormingMission(db, creator, {
       name: `Smoke ${suffix}`,
       purpose: "Prove the restricted Mission role can write.",
