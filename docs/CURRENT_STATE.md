@@ -9,6 +9,7 @@ Updated: 2026-10-04
 - Security + CI baseline accepted in WO-0004 and merged at `edf10a6`
 - Isolated deployment baseline accepted in WO-0005 and merged at `8d4c9b3`
 - Mission foundation Start + Discover accepted in WO-0007 and merged at `6872a8c`
+- Mission production-persistence readiness accepted in WO-0008 and merged at `754d785`
 - `spec/canonical.json` remains the canonical short-claim source
 - Application source license: `AGPL-3.0-only`
 
@@ -23,7 +24,7 @@ Dedicated 99pct infrastructure:
 - automatic rollouts: off
 - production Mission database: none
 
-Accepted `main` `9d1cc6d` remains the live App Hosting release. WO-0007 product code is merged but deliberately not deployed because production Mission persistence is not provisioned yet.
+Accepted `main` `9d1cc6d` remains the live App Hosting release. Start + Discover Mission code is merged but deliberately not deployed because production Mission persistence/auth infrastructure is not provisioned yet.
 
 The predecessor `missionism` Firebase backend remains independent and untouched.
 
@@ -33,31 +34,62 @@ WO-0006 / PR #11 remains parked while Afternic/Firebase ownership and certificat
 
 Do not mix Mission product work into that PR and do not move apex/www traffic records until Firebase preparation is ready.
 
-## Product state
+## Mission product source
 
-The first real Mission slice now exists in source:
+The first real Mission slice is accepted in source:
 
 - verified public human session;
 - Start a forming Mission;
-- separate PostgreSQL Mission domain;
+- PostgreSQL Mission domain;
 - append-only Mission description revisions;
 - public Mission discovery;
 - public Mission page;
-- truthful empty states for Projects, contribution/MCUs, legal ownership, and governance.
+- explicit no-MCU/no-equity/no-governance empty states.
 
-It is not live yet because production persistence/auth runtime configuration has not been provisioned.
+WO-0008 added and verified:
 
-The target loop remains:
+- Cloud SQL Node.js Connector production path;
+- explicit fail-closed Mission environment binding;
+- least-privilege Mission runtime grants;
+- Mission migration/bind/smoke/restore tooling;
+- `/api/missions/health`;
+- separate PostgreSQL 18 Mission CI path;
+- Secret Manager/App Hosting configuration template;
+- read-only Firebase Auth inventory.
 
-Mission → Project → Work → Join → Contribution → MCU history.
+Both required CI jobs passed on run `37222492190`.
 
-## Production persistence direction
+## Production resource state
 
-ADR-014 selects a dedicated Cloud SQL for PostgreSQL 18 environment in the `pct-99` project, same region as App Hosting, using the Cloud SQL Node.js Connector, Secret Manager, fail-closed environment binding, least-privilege runtime credentials, backups/PITR, and deletion protection.
+No Cloud SQL instance, production Mission database, database secret, Firebase Auth provider change, App Hosting rollout, DNS change, or product deployment was created by WO-0008.
 
-No paid Cloud SQL instance has been authorized or created yet.
+The proposed initial Cloud SQL resource is:
 
-Current published shared-core compute pricing for `db-f1-micro` in `us-central1` is approximately $0.0105/hour (~$7.67/month compute) plus storage/backups. Shared-core has no Cloud SQL SLA.
+- project `pct-99`
+- region `us-central1`
+- instance `pct99-missions-prod`
+- PostgreSQL 18 Enterprise
+- zonal `db-f1-micro`
+- 10 GiB SSD with auto-growth
+- automated backups + PITR
+- deletion protection
+- public IP for Cloud SQL Connector with no authorized-network allowlist
+- separate migration and runtime database users
+
+Planning cost checked in WO-0008: about $7.67/month compute + about $1.70/month for 10 GiB SSD + backup/PITR storage, before tax/egress. Shared-core has no Cloud SQL SLA.
+
+**Spend approval has not been granted. No recurring paid Mission database may be created yet.**
+
+## Firebase Auth production gap
+
+Read-only inventory found:
+
+- no Firebase Web App in `pct-99`;
+- Email/Password Auth is not enabled;
+- authorized Auth domains are therefore not configured;
+- Secret Manager has no Mission database secret.
+
+WO-0009 includes these explicit activation steps only after Cloud SQL spend approval.
 
 ## Dependency-security state
 
@@ -68,8 +100,8 @@ Two temporary ADR-010 exceptions remain, both expiring 2026-11-03:
 
 The dependency-security CI policy remains required.
 
-## Active engineering work
+## Next release order — blocked
 
-Execute `docs/work-orders/WO-0008-mission-production-readiness.md`.
+`docs/work-orders/WO-0009-provision-and-deploy-missions.md`
 
-WO-0008 makes Mission persistence/auth production-ready in code and CI, and inspects the exact GCP resource/cost plan. It must not create a recurring paid Cloud SQL resource without explicit product-owner approval.
+WO-0009 is queued but **must not execute resource creation or deployment until the product owner explicitly approves the recurring Cloud SQL spend**.
