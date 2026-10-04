@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { PGlite } from "@electric-sql/pglite";
 import { NextRequest } from "next/server";
-import { POST } from "../app/api/missions/route";
+import { POST, createMissionRequest } from "../app/api/missions/route";
 import { embeddedMissionDb, configuredMissionDb, type MissionDb } from "./db/client";
 import { migrateMissions } from "./db/migrate";
 import { MissionInputError, missionDraft } from "./model";
@@ -109,6 +109,45 @@ test("Mission creation refuses a missing session and a cross-origin request", as
   }));
   assert.equal(unsigned.status, 401);
   assert.equal(crossOrigin.status, 403);
+});
+
+function missionRequest(body: Record<string, unknown>) {
+  const token = "c".repeat(64);
+  return new NextRequest("http://localhost:3000/api/missions", {
+    method: "POST",
+    headers: { "content-type": "application/json", origin: "http://localhost:3000", cookie: `human_csrf=${token}; human_session=verified-session` },
+    body: JSON.stringify({ csrfToken: token, ...body }),
+  });
+}
+
+test("an authenticated Mission request returns the public URL and persists revision 1", async () => {
+  const db = await database();
+  const response = await createMissionRequest(missionRequest(draft), {
+    verifySession: async () => creator,
+    openDb: async () => db,
+  });
+  assert.equal(response.status, 201);
+  const body = await response.json() as { url: string };
+  assert.equal(body.url, "/missions/river-school");
+  assert.equal(JSON.stringify(body).includes(creator.email), false);
+  const listed = await listPublicMissions(db);
+  assert.equal(listed.length, 1);
+  assert.equal(JSON.stringify(listed).includes(creator.email), false);
+  const revisions = await db.query<{ revision: number }>("SELECT revision FROM mission_revisions");
+  assert.equal(Number(revisions.rows[0].revision), 1);
+});
+
+test("invalid Mission input returns 400 before the Mission database is opened", async () => {
+  let opened = false;
+  const response = await createMissionRequest(missionRequest({ ...draft, name: "A" }), {
+    verifySession: async () => creator,
+    openDb: async () => {
+      opened = true;
+      throw new Error("database opened");
+    },
+  });
+  assert.equal(response.status, 400);
+  assert.equal(opened, false);
 });
 
 test("the Mission database does not silently use the workspace database", () => {
