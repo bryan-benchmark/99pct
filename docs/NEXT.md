@@ -4,23 +4,23 @@ Updated: 2026-10-04
 
 ## Active
 
-`WO-0004 — Security + CI baseline`
+`WO-0005 — 99pct deployment baseline`
 
-See `docs/work-orders/WO-0004-security-ci-baseline.md`.
+See `docs/work-orders/WO-0005-deployment-baseline.md`.
 
-Goal: make the imported application trustworthy enough to become the deployable baseline by resolving fixable dependency findings, explicitly bounding any unavoidable temporary exceptions, and making the full functional + security CI pipeline green.
+Goal: prove that the accepted 99pct repository can be deployed safely on infrastructure isolated from the predecessor, using a generated App Hosting URL and a specific accepted commit, with health evidence, rollback evidence, and an AGPL source link.
 
-## After WO-0004 acceptance
+This is not the `99pct.com` cutover.
 
-1. deployment-baseline work order
-2. deploy an unchanged 99pct baseline without moving the public domain
-3. verify health, rollback, and corresponding-source link
-4. cut 99pct.com to the verified baseline
-5. start/discover a Mission
-6. Projects + needed Work
-7. Join
-8. Contribution + append-only MCU history
-9. export/tamper evidence/passkeys
-10. legal-equity pilot only after the contribution foundation and appropriate legal design exist
+## After WO-0005 acceptance
+
+1. custom-domain cutover work order for `99pct.com`
+2. verify TLS, canonical host, smoke checks, logs, and rollback after cutover
+3. start/discover a Mission
+4. Projects + needed Work
+5. Join
+6. Contribution + append-only MCU history
+7. export/tamper evidence/passkeys
+8. legal-equity pilot only after the contribution foundation and appropriate legal design exist
 
 One vertical slice at a time.
