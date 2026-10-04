@@ -75,7 +75,10 @@ The release depends only on the generated App Hosting host. `99pct.com` and `www
 Serving service account `firebase-app-hosting-compute@pct-99.iam.gserviceaccount.com`:
 
 - `roles/cloudsql.client` on project `pct-99`
-- `roles/secretmanager.secretAccessor` on secret `mission-db-password` only
+- `roles/secretmanager.secretAccessor` on secret `mission-db-password`
+- `roles/secretmanager.viewer` on that same secret, added by App Hosting's grant-access command
+
+The App Hosting service agent `service-494723962533@gcp-sa-firebaseapphosting.iam.gserviceaccount.com` has `roles/secretmanager.secretVersionManager` on `mission-db-password` only, which is what the rollout needs to pin the secret version. These are secret-level bindings, not project-wide Secret Manager access.
 
 `mission-db-migration-password` and `mission-db-admin-password` have no bindings. App Hosting does not receive them.
 
@@ -85,7 +88,44 @@ Serving service account `firebase-app-hosting-compute@pct-99.iam.gserviceaccount
 
 ## Rollout
 
-Pending promotion of the green commit. This section is updated after the manual rollout.
+Automatic rollouts stayed off. The first rollout of `8ccfcb1` failed before traffic moved because App Hosting could not read `mission-db-password`. `firebase apphosting:secrets:grantaccess` added secret-level access for the App Hosting service agent. The retry succeeded.
+
+Live release:
+
+| Item | Value |
+|------|--------|
+| Commit | `efc6a26` |
+| Build | `build-2026-10-04-010` |
+| State | ready |
+| URL | `https://pct99--pct-99.us-central1.hosted.app` |
+| Automatic rollouts | off |
+
+`build-2026-10-04-007` failed during the secret-access attempt and did not replace the previous release. `build-2026-10-04-008` served `8ccfcb1`. `build-2026-10-04-009` served the sign-in origin fix. `build-2026-10-04-010` is the current release.
+
+App Hosting presents the public `hosted.app` origin to the browser and the internal Cloud Run host to the application. Human sign-in and Mission creation now accept the public App Hosting origin, `99pct.com`, and `www.99pct.com`, and still reject any other origin. Workspace routes keep the stricter same-host check.
+
+## Live checks
+
+On `https://pct99--pct-99.us-central1.hosted.app` after `build-2026-10-04-010`:
+
+- `/` returned 200 and the footer still links `Source (AGPL-3.0)` to `https://github.com/bryan-benchmark/99pct`
+- `/api/health` returned 200 `{"status":"ready","service":"99pct"}` with `Cache-Control: no-store`
+- `/missions` returned 200
+- `/api/missions/health` returned 200 `{"status":"ready"}` with `Cache-Control: no-store`
+- `/api/workspace/health` stayed 503 `{"status":"unavailable"}`
+- `/principles`, `/how-it-works`, and `/specification` returned 200
+
+A disposable test account created an account, received the Firebase verification email, verified the address, signed in, and started one forming Mission named `WO-0009 test Mission`. The public page and the public list show that Mission, the four empty-state lines, and no creator email. Signing out left the Mission publicly readable. The production database contains that one Mission.
+
+The first verification email's action link omitted the public web API key, and the Firebase action page rejected it. Adding the already-public web API key verified the address. A later verification email included the key.
+
+CI for the deployed commit passed both required jobs on run `37228668951`. Earlier commits on this branch passed `37227155168` and `37228027073`.
+
+After the write, the runtime role check passed again, the environment binding still matches production, and backups, point-in-time recovery, and deletion protection were still enabled.
+
+## Rollback
+
+Application rollback is a manual rollout of the previous successful build, `build-2026-10-04-006`, commit `9d1cc6d`. That does not delete the database or the test Mission. Database recovery uses the automated backup or point-in-time recovery and is reserved for a real data incident.
 
 ## Boundaries
 
