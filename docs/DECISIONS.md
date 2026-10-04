@@ -257,3 +257,42 @@ An open Work item does **not** by itself create:
 The UI must say this plainly enough that a reasonable visitor does not mistake “open work” for a compensated job posting.
 
 Join, acceptance, contracts, contribution evidence, compensation, MCUs, and legal ownership are later product states with separate authorization and legal/economic rules.
+
+## ADR-016 — Initial Join is Work interest, not membership or assignment
+
+Status: Accepted  
+Date: 2026-10-04
+
+The first Join action is Work-specific:
+
+**I want to help**
+
+A verified human may express interest in one open Work item.
+
+This creates an immutable interest record. It does not itself:
+
+- add the human as a Mission member;
+- assign the Work;
+- create employment or an independent-contractor relationship;
+- create a contract;
+- promise compensation;
+- award MCUs;
+- issue legal ownership;
+- guarantee that the Mission creator will accept the human.
+
+A human may express interest at most once per Work item in this initial slice.
+
+The Mission creator cannot express interest in their own Mission’s Work.
+
+Because 99pct does not yet have a public profile identity layer, the useful private contact identity is the human’s verified email. That email may be shown to the Mission creator **only after the human explicitly consents in the interest action**.
+
+An optional interest note is private to the interested human and the Mission creator. It is not public content.
+
+Public Work pages may show an aggregate interest count. They must not expose:
+
+- verified email;
+- Firebase uid;
+- private interest note;
+- session/auth data.
+
+WO-0011 has no acceptance/decline state. Creator acceptance, agreement terms, assignment, Contribution, compensation, MCU rules, and ownership are separate later decisions.
