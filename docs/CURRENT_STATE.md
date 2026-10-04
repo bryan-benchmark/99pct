@@ -5,53 +5,70 @@ Updated: 2026-10-04
 ## 99pct repository
 
 - Public control plane and application repository: `bryan-benchmark/99pct`
-- Sanitized application snapshot imported and accepted in WO-0003
-- WO-0003 merged at `5486675`
+- Sanitized application snapshot accepted in WO-0003 and merged at `5486675`
+- Security + CI baseline accepted in WO-0004 and merged at `edf10a6`
 - Source provenance: private predecessor tracked tree `321d4b6`, imported without private Git history
-- No 99pct production deployment yet
-- Existing Firebase/domain/database production remains untouched
+- No 99pct deployment has been cut over to `99pct.com`
+- Existing predecessor Firebase/domain/database production remains untouched
 - `spec/canonical.json` remains the canonical short-claim source
 - Application source license: `AGPL-3.0-only`
 
-## Imported application baseline
+## Application baseline
 
-The repository now contains the preserved Next.js/Firebase/PostgreSQL application baseline:
+The repository contains the preserved Next.js/Firebase/PostgreSQL baseline:
 
 - Next.js 16 / React 19 / Node 22
-- Firebase Auth and Firebase App Hosting configuration from the predecessor
+- Firebase Auth and App Hosting configuration inherited from the predecessor
 - PostgreSQL Mission Workspace
-- append-only workspace history
-- server-side authorization
+- append-only workspace history and server-side authorization
 - migrations 0001–0007
 - experimental Sparks/Pilots/Teamups/Toolshare/Mission Units code
 - explanatory Missionism site and simulators
 
 These imported systems are baseline/prototype code. They are not automatically the final 99pct product model.
 
-## Verification at WO-0003
+## Verification at WO-0004
 
-After the publication-safety rework:
+GitHub Actions run `37210557154` passed both independent jobs.
 
-- `npm ci`: pass
-- `npm run verify`: 81 passed, 0 failed
-- `npm run lint`: pass
-- `npx tsc --noEmit`: pass locally
-- `npm run build`: pass locally
-- privacy/publication review: pass after neutralizing person-identifying financial/ownership examples
-- standard secret scan: pass before public import
+Functional CI passed:
 
-GitHub Actions currently fails at `npm audit --audit-level=moderate`, so later functional CI steps are skipped.
+- install
+- 81 tests
+- lint
+- Next type generation
+- TypeScript
+- staging-marked build
+- disposable PostgreSQL migration
+- environment binding
+- restricted runtime-role checks
+- customer smoke
+- audit-integrity check
+- logical backup/restore
+- restored-record verification
 
-## Known dependency-security state
+Dependency-security CI passed the repository audit policy.
 
-`npm audit` currently reports 10 high-severity findings.
+## Dependency-security state
 
-Two distinct classes are already visible:
+Safe brace-expansion findings were patched.
 
-1. Firebase's installed Firestore dependency pins an older `@grpc/grpc-js` line even though 99pct currently uses Firebase Auth rather than Firestore.
-2. Lint/glob tooling includes high-severity brace/glob advisories; at least one current `braces` advisory has no patched release.
+Two temporary ADR-010 exceptions remain, both expiring 2026-11-03:
 
-Do not hide or broadly suppress these findings. Do not run `npm audit fix --force` blindly.
+- `GHSA-m9gg-hp2v-232j` on `@grpc/grpc-js 1.9.16`, installed only through the unused Firebase client Firestore path; a source guard fails if Firestore becomes used.
+- `GHSA-vfj7-8cjw-p6xm` on `braces 3.0.3`, development-only through the lint toolchain and currently unpatched upstream.
+
+The audit checker rejects a new moderate-or-higher advisory, an expired exception, a changed accepted path/version, or another install of an excepted package that falls inside that advisory's affected range.
+
+These exceptions are not permission to weaken security policy and must be reviewed before expiry.
+
+## Deployment boundary
+
+The imported configuration still points at the predecessor Missionism Firebase project/backend.
+
+ADR-011 requires the first 99pct deployment to use separate 99pct-controlled Firebase infrastructure, Firebase's generated App Hosting URL, and manual rollouts. The predecessor deployment and `99pct.com` must not be changed during the baseline deployment.
+
+The public application must expose a clear AGPL source-code link before any network rollout.
 
 ## Product not yet implemented here
 
@@ -63,6 +80,6 @@ Also not implemented: public contribution profiles, production MCU ledger, passk
 
 ## Active next step
 
-Execute `docs/work-orders/WO-0004-security-ci-baseline.md`.
+Execute `docs/work-orders/WO-0005-deployment-baseline.md`.
 
-No deployment, Firebase retargeting, domain cutover, or shared-database migration is authorized by WO-0004.
+No custom-domain cutover or predecessor-infrastructure modification is authorized by WO-0005.
