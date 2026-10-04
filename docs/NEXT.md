@@ -1,21 +1,21 @@
 # Next
 
-Updated: 2026-10-03
+Updated: 2026-10-04
 
 ## Active
 
-`WO-0003 — Sanitized application snapshot`
+`WO-0004 — Security + CI baseline`
 
-See `docs/work-orders/WO-0003-sanitized-application-snapshot.md`.
+See `docs/work-orders/WO-0004-security-ci-baseline.md`.
 
-Goal: import a public-safe, license-correct snapshot of the existing private application into this repository without publishing private Git history or changing production.
+Goal: make the imported application trustworthy enough to become the deployable baseline by resolving fixable dependency findings, explicitly bounding any unavoidable temporary exceptions, and making the full functional + security CI pipeline green.
 
-## After WO-0003 acceptance
+## After WO-0004 acceptance
 
-1. CI/security gates in 99pct
-2. deploy an unchanged baseline from 99pct
-3. verify a visible AGPL source link before public cutover
-4. point 99pct.com at the verified baseline
+1. deployment-baseline work order
+2. deploy an unchanged 99pct baseline without moving the public domain
+3. verify health, rollback, and corresponding-source link
+4. cut 99pct.com to the verified baseline
 5. start/discover a Mission
 6. Projects + needed Work
 7. Join
