@@ -30,6 +30,7 @@ Mission Units code remains experimental. It is not an issued-equity ledger.
 ## Migration-only edits
 
 - Experimental scorecard and scenario identifiers that named a private party were renamed to non-identifying labels, including the barrel re-export. Tests were updated to those labels. Numeric expectations were not changed.
+- A follow-up publication pass replaced remaining named-person identities on simulator compensation, cash, investment, and ownership examples with neutral labels such as Founder A, Founder B, and Contributor A. Amounts, dates, and test expectations were not changed. Dependency versions were not changed.
 - A CI Firebase web API key fixture matched gitleaks rule `generic-api-key`. It was replaced with the example fixture string already used by the workspace build-config test. Loopback database userinfo for the disposable Actions Postgres service was not flagged and was left in place.
 - `package.json` `license` is `AGPL-3.0-only`. Third-party packages were not relicensed. `docs/` and `spec/` were not placed under AGPL.
 
@@ -44,7 +45,11 @@ Credential scan, before copy into this worktree:
 
 A later worktree scan also matched generated `.next` build output. That output is gitignored and is not in the commit.
 
-Privacy/publication review of the candidate after the edits found no remaining named-person compensation documents, no private legal records, no personal email domains beyond example and upstream lockfile metadata, no local-machine absolute paths, no database dumps, no environment files, and no review archives.
+The first privacy/publication review was not sufficient. It checked named-person compensation documents, private legal records, personal email domains, local-machine absolute paths, database dumps, environment files, and review archives, and it missed named-person identities attached to illustrative simulator and ownership inputs.
+
+A follow-up review checked that additional category: person names placed beside annual-reference, cash, investment, or ownership examples. Those identities were replaced with neutral labels. The numeric inputs were left in place. The review did not treat generic teaching names in protocol explanations as that category, and it did not change the public repository name.
+
+`npm audit` still reports 10 high severity issues. They stay unresolved in this order. No dependency was added, removed, or upgraded to clear them.
 
 ## Verification
 
@@ -58,7 +63,9 @@ Node v22.23.3, in this repository after the import:
 | `npx tsc --noEmit` | Exit 0, after Next generated its gitignored types file |
 | `npm run build` | Exit 0 |
 
-Tests were not deleted or weakened. `npm audit` reported 10 high severity issues and was not used as a merge gate. Those issues were not changed in this order.
+The same four commands were run again on 2026-10-04 after the named-person simulator and ownership labels were neutralized. `npm ci`, verify, lint, typecheck, and build each exited 0. Tests were not deleted or weakened.
+
+`npm audit` reported 10 high severity issues on both runs and was not used as a merge gate. Those issues were not changed in this order.
 
 ## History and control plane
 

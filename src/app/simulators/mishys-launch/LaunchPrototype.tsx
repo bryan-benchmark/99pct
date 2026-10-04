@@ -122,7 +122,7 @@ const DEFAULTS: Answers = {
   whoPays: "Healthcare organizations",
   whyPay:
     "They need to train clinicians faster and know they're ready",
-  founders: [{ name: "Bryan", role: "Founder" }],
+  founders: [{ name: "Founder", role: "Founder" }],
   ownership: "progressive",
   location: "us-de",
   funding: "customers-then-investors",

@@ -136,7 +136,7 @@ Mission bridge: Better scalable training → more excellent workers → Mission 
 
 PEOPLE
 
-Bryan — founder
+Founder A
 Future contributors: Progressively earn ownership from lasting value.
 
 

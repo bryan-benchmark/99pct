@@ -174,7 +174,7 @@ No investors; founder earns no new Builder equity; 50/50 pools:
 **Boring (30y):** founding 100%→50% by year 30; clinicians/builders ~25% each.  
 **Fun (10y):** founding 100%→50% by year 10; same long-run ~50/50 doer/builder of *mined* pie.
 
-**Founding Bryan ≠ Total Bryan.** Diluted founding block + later Builder MCU = total ownership. Fine to own 32% after founding fell to 25% + 7% mined.
+**Founding stake ≠ total stake.** Diluted founding block + later Builder MCU = total ownership. Fine for Founder A to own 32% after founding fell to 25% + 7% mined.
 
 Long-run with 1M clinicians and 500 builders still sharing 50/50 of *new* mining: individual builders can earn substantial ownership — incentive not to balloon 500→5000 unless mission expands dramatically.
 

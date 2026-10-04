@@ -92,7 +92,7 @@ Exponential sweep: **2, 5, 10, 20, 40** year half-lives.
 
 Do **not** implement type-specific persistence yet (labor vs cash vs succession). Preserve the possibility.
 
-Do **not** ask “which makes Bryan look fair?” Ask which behavior stays coherent under radical org/timescale variation.
+Do **not** ask “which makes Founder A look fair?” Ask which behavior stays coherent under radical org/timescale variation.
 
 ---
 

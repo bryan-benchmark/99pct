@@ -200,7 +200,7 @@ Healthcare Workforce
         ← MU from —
 Benchmark
    /    |    \
-Bryan Alice Riley
+Founder A   Contributor A   Contributor B
 ```
 
 Same ledger primitive: people → teams → companies → missions → larger missions.

@@ -26,16 +26,16 @@ export function scenarioBenchmarkLike(): SimulationInput {
     endPeriod: "2025-12",
     contributors: [
       {
-        id: "bryan",
-        name: "Bryan (founder)",
+        id: "founder-a",
+        name: "Founder A",
         referenceAnnual: 180_000,
         cashAnnual: 40_000,
         startDate: "2024-01-01",
         isFounder: true,
       },
       {
-        id: "riley",
-        name: "Riley (founder)",
+        id: "founder-b",
+        name: "Founder B",
         referenceAnnual: 160_000,
         cashAnnual: 80_000,
         startDate: "2024-01-01",
@@ -59,27 +59,27 @@ export function scenarioBenchmarkLike(): SimulationInput {
     ],
     cashInvestments: [
       {
-        id: "cash-bryan",
-        contributorId: "bryan",
+        id: "cash-founder-a",
+        contributorId: "founder-a",
         date: "2024-01-15",
         amount: 50_000,
         explanation: "Founder cash at risk",
       },
       {
-        id: "cash-riley",
-        contributorId: "riley",
+        id: "cash-founder-b",
+        contributorId: "founder-b",
         date: "2024-02-01",
         amount: 25_000,
         explanation: "Founder cash at risk",
       },
     ],
     genesisImports: [
-      genesisLabor("bryan", 18, 180_000, 40_000, "2023-12", {
+      genesisLabor("founder-a", 18, 180_000, 40_000, "2023-12", {
         amount: 40_000,
         date: "2023-06-01",
         explanation: "Documented pre-ledger cash",
       }),
-      genesisLabor("riley", 12, 160_000, 80_000, "2023-12"),
+      genesisLabor("founder-b", 12, 160_000, 80_000, "2023-12"),
     ],
   };
 }
@@ -94,7 +94,7 @@ export function scenarioCashHeavy(): SimulationInput {
       ...base.cashInvestments,
       {
         id: "whale",
-        contributorId: "bryan",
+        contributorId: "founder-a",
         date: "2024-06-01",
         amount: 500_000,
         explanation: "Large cash injection",
