@@ -260,17 +260,20 @@ test("public pages keep the empty state and do not offer a job, contract, or joi
   assert.equal(projectCopy.emptyWork, "No open work has been posted yet.");
   assert.match(projectCopy.workBoundary, /not yet a job offer, contract, promise of pay/);
   assert.match(workCopy.postingBoundary, /does not create a contract, compensation, MCUs, or ownership/);
-  assert.equal(workCopy.joinUnavailable, "Joining this work is not available yet.");
+  assert.equal(workCopy.wantToHelp, "I want to help");
+  assert.match(workCopy.interestBoundary, /does not create a job, contract, assignment, compensation, MCUs, or ownership/);
   assert.match(workCopy.readBoundary, /not a binding job or contract/);
   const pages = [
     "src/app/missions/[slug]/page.tsx",
     "src/app/missions/[slug]/projects/[projectSlug]/page.tsx",
     "src/app/missions/[slug]/projects/[projectSlug]/work/[workSlug]/page.tsx",
+    "src/app/missions/[slug]/projects/[projectSlug]/work/[workSlug]/InterestForm.tsx",
     "src/app/missions/[slug]/projects/[projectSlug]/work/new/page.tsx",
   ].map((path) => readFileSync(new URL(`../../${path}`, import.meta.url), "utf8")).join("\n");
   assert.match(pages, /missionEmptyStates.projects/);
   assert.match(pages, /projectCopy.workBoundary/);
-  assert.match(pages, /workCopy.joinUnavailable/);
+  assert.match(pages, /workCopy.wantToHelp/);
+  assert.match(pages, /workCopy.interestBoundary/);
   assert.match(pages, /workCopy.readBoundary/);
   assert.match(pages, /workCopy.postingBoundary/);
   assert.equal(pages.includes("Apply"), false);

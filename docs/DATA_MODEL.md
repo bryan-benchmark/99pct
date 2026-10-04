@@ -35,14 +35,15 @@ The dedicated Mission database now stores public Missions, Projects, and Work. T
 | Table | What it holds |
 |---|---|
 | `human_accounts` | Firebase uid and verified email. Public pages do not read this table. |
-| `missions` | One forming Mission. `creator_uid` is the only create authority until Join exists. |
+| `missions` | One forming Mission. `creator_uid` can create Projects and Work. It is not membership. |
 | `mission_revisions` | Append-only public Mission description. |
 | `projects` | One bounded outcome of exactly one Mission. Status is `active`. Slug is unique within the Mission. |
 | `project_revisions` | Append-only title and outcome. Updates and deletes are rejected. |
 | `work_items` | One `task` or `role` under exactly one Project. Status is `open`. Slug is unique within the Project. |
 | `work_revisions` | Append-only title, description, and done-when. Updates and deletes are rejected. |
+| `work_interests` | One immutable interest per human and Work item. The private note stays here. The verified email stays in `human_accounts` and is not copied onto the interest. |
 
-Only the Mission creator can create a Project or Work. The server compares the authenticated Firebase uid with `missions.creator_uid`. A client-supplied uid is ignored. Everyone can read the public fields. Posting Work does not create employment, a contract, pay, an MCU award, or ownership. Join, Contribution, and MCU records are not in this schema.
+Only the Mission creator can create a Project or Work. A different verified human can express interest in open Work after explicitly consenting to share their verified email with that creator. Interest is not Mission membership, Work assignment, a contract, pay, an MCU award, or ownership. Public Work data includes an interest count only. The note and email are visible to the interested human and the Mission creator. Contribution and MCU records are not in this schema.
 
 ## Predecessor: public site and simulators
 
