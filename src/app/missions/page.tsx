@@ -19,7 +19,7 @@ export default async function MissionsPage() {
     <article className="mx-auto w-full max-w-[40rem] px-5 py-12 md:py-16">
       <h1 className="text-[2rem] font-semibold leading-tight tracking-tight text-[var(--ink)]">Missions</h1>
       <p className="mt-5 text-lg leading-relaxed text-[var(--body)]">
-        Forming Missions are public starting points. A Mission here is not a company, a contract, or an ownership grant.
+        A Mission is something people are trying to make real. Forming is a public starting state. Starting one does not create a company, a fundraiser, ownership, or a legal entity.
       </p>
       <p className="mt-6 font-[family-name:var(--font-sans)]">
         <Link href="/missions/new" className="font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4">Start a Mission</Link>

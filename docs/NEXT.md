@@ -82,9 +82,11 @@ Build and test, without production deployment:
 
 6. Resume Mission blueprints / Utility Mission work on top of the economic kernel.
 
-## Deferred
+## Completed alongside the kernel priority
 
-`WO-0013 — 99pct product-shell reset` is deferred, not discarded.
+`WO-0013 — 99pct product-shell reset` is accepted and live as `build-2026-10-04-015`.
+
+It does not change the active priority: WO-0014 remains the economic-kernel foundation.
 
 ## Waiting externally
 

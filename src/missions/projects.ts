@@ -196,6 +196,86 @@ export async function listPublicWork(db: MissionDb, missionSlug: string, project
   return result.rows.map(publishedWork);
 }
 
+export type PublicOpenWork = {
+  missionName: string;
+  missionSlug: string;
+  projectTitle: string;
+  projectSlug: string;
+  slug: string;
+  kind: "task" | "role";
+  title: string;
+  description: string;
+  doneWhen: string;
+  createdAt: string;
+  interestCount: number;
+  helpingCount: number;
+};
+
+type OpenWorkRow = {
+  mission_slug: string;
+  mission_name: string;
+  project_slug: string;
+  project_title: string;
+  slug: string;
+  kind: "task" | "role";
+  created_at: Date | string;
+  title: string;
+  description: string;
+  done_when: string;
+  interest_count: number | string;
+  helping_count: number | string;
+};
+
+const openWorkSelect = `
+  SELECT missions.slug AS mission_slug, mission_revisions.name AS mission_name,
+         projects.slug AS project_slug, project_revisions.title AS project_title,
+         work_items.slug, work_items.kind, work_items.created_at,
+         work_revisions.title, work_revisions.description, work_revisions.done_when,
+         (SELECT count(*) FROM work_interests WHERE work_interests.work_id = work_items.id)::int AS interest_count,
+         (SELECT count(*) FROM work_confirmations
+            JOIN work_invitations ON work_invitations.id = work_confirmations.invitation_id
+            JOIN work_interests ON work_interests.id = work_invitations.interest_id
+            WHERE work_interests.work_id = work_items.id)::int AS helping_count
+  FROM work_items
+  JOIN projects ON projects.id = work_items.project_id
+  JOIN missions ON missions.id = projects.mission_id
+  JOIN mission_revisions ON mission_revisions.mission_id = missions.id
+  JOIN (
+    SELECT mission_id, MAX(revision) AS revision FROM mission_revisions GROUP BY mission_id
+  ) latest_mission ON latest_mission.mission_id = mission_revisions.mission_id AND latest_mission.revision = mission_revisions.revision
+  JOIN project_revisions ON project_revisions.project_id = projects.id
+  JOIN (
+    SELECT project_id, MAX(revision) AS revision FROM project_revisions GROUP BY project_id
+  ) latest_project ON latest_project.project_id = project_revisions.project_id AND latest_project.revision = project_revisions.revision
+  JOIN work_revisions ON work_revisions.work_id = work_items.id
+  JOIN (
+    SELECT work_id, MAX(revision) AS revision FROM work_revisions GROUP BY work_id
+  ) latest_work ON latest_work.work_id = work_revisions.work_id AND latest_work.revision = work_revisions.revision
+  WHERE work_items.status = 'open'
+`;
+
+function publishedOpenWork(row: OpenWorkRow): PublicOpenWork {
+  return {
+    missionName: row.mission_name,
+    missionSlug: row.mission_slug,
+    projectTitle: row.project_title,
+    projectSlug: row.project_slug,
+    slug: row.slug,
+    kind: row.kind,
+    title: row.title,
+    description: row.description,
+    doneWhen: row.done_when,
+    createdAt: new Date(row.created_at).toISOString(),
+    interestCount: Number(row.interest_count),
+    helpingCount: Number(row.helping_count),
+  };
+}
+
+export async function listOpenWork(db: MissionDb): Promise<PublicOpenWork[]> {
+  const result = await db.query<OpenWorkRow>(`${openWorkSelect} ORDER BY work_items.created_at DESC, work_items.slug ASC LIMIT 100`);
+  return result.rows.map(publishedOpenWork);
+}
+
 export async function getPublicWork(db: MissionDb, missionSlug: string, projectSlug: string, workSlug: string): Promise<PublicWork | null> {
   const result = await db.query<WorkRow>(
     `${workSelect} WHERE missions.slug = $1 AND projects.slug = $2 AND work_items.slug = $3`,

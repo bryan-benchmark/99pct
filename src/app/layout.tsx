@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { IBM_Plex_Mono, Source_Sans_3, Source_Serif_4 } from "next/font/google";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteNav } from "@/components/SiteNav";
-import { shortDefinition } from "@/content/voice";
+import { productCopy } from "@/content/99pct";
 import "./globals.css";
 
 const serif = Source_Serif_4({
@@ -23,14 +23,10 @@ const mono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Missionism",
-    template: "%s · Missionism",
+    default: "99pct",
+    template: "%s · 99pct",
   },
-  description: shortDefinition,
-  icons: {
-    icon: [{ url: "/missionism_icon_vector.svg", type: "image/svg+xml" }],
-    apple: [{ url: "/logo.png" }],
-  },
+  description: productCopy.description,
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

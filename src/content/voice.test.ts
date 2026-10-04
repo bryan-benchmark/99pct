@@ -3,8 +3,8 @@
  * See docs/proposals/MISSIONISM_COMMUNICATION.md — Definition discipline.
  */
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
-import { homeHero } from "./home";
 import { whyNowMeta } from "./whyNow";
 import { longDefinition, shortDefinition } from "./voice";
 
@@ -14,8 +14,10 @@ describe("Missionism definition discipline", () => {
     assert.doesNotMatch(shortDefinition, /movement|ideology|philosophy|socialism|capitalism/i);
   });
 
-  it("homepage hero uses shortDefinition verbatim", () => {
-    assert.equal(homeHero.definition, shortDefinition);
+  it("the Missionism hub uses shortDefinition verbatim", () => {
+    const page = readFileSync(new URL("../app/missionism/page.tsx", import.meta.url), "utf8");
+    assert.match(page, /shortDefinition/);
+    assert.equal(page.includes("<h1>Missionism</h1>") || page.includes("missionismHubCopy.title"), true);
   });
 
   it("why-now lede begins from shortDefinition (no competing category lead)", () => {

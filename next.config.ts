@@ -12,6 +12,7 @@ const nextConfig: NextConfig = {
     "/api/missions": ["./src/missions/db/migrations/*.sql"],
     "/api/missions/health": ["./src/missions/db/migrations/*.sql"],
     "/missions": ["./src/missions/db/migrations/*.sql"],
+    "/work": ["./src/missions/db/migrations/*.sql"],
     "/missions/new": ["./src/missions/db/migrations/*.sql"],
     "/missions/[slug]": ["./src/missions/db/migrations/*.sql"],
     "/missions/[slug]/projects/new": ["./src/missions/db/migrations/*.sql"],
