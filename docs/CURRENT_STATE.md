@@ -16,17 +16,13 @@ Updated: 2026-10-04
 - Mutual Work participation accepted in WO-0012 and merged at `fcde732`
 - Application source license: `AGPL-3.0-only`
 
-## Product identity — corrected boundary
+## Product identity
 
 99pct and Missionism are related but different.
 
-**99pct is the product, platform, and Mission being built.**
+**99pct is the product, platform, network, and Mission being built.**
 
-Its purpose is to make it easy for ordinary people to build the future together: start Missions, organize Projects, publish needed Work, join one another, record Contribution, earn MCUs under transparent rules, and eventually connect recognized contribution to legally valid ownership where a Mission implements that machinery.
-
-**Missionism is the underlying organizational protocol / operating philosophy.**
-
-Missionism explains how mission, human dignity, contribution, ownership, authority, governance, and incentives should fit together. 99pct uses Missionism; 99pct is not a renamed Missionism website.
+**Missionism is the organizational protocol underneath it.**
 
 A useful shorthand:
 
@@ -34,9 +30,106 @@ A useful shorthand:
 
 99pct itself is one Mission built using Missionism.
 
-The imported Missionism explanatory shell is predecessor material that gave the repository a starting application. It must not define the public 99pct product chrome going forward.
+## North star — a network for human commerce
 
-ADR-018 and WO-0013 make this distinction explicit.
+99pct is intended to become a shared open-source commerce substrate with three human modes:
+
+### Use
+
+Ordinary people use 99pct alternatives for ordinary life:
+
+- rides;
+- stays;
+- music;
+- delivery;
+- tools;
+- care;
+- local services;
+- future utilities created by Missions.
+
+The long-term consumer experience should feel simple: before using an incumbent, a human can check whether a useful 99pct option exists.
+
+### Operate
+
+Humans provide the real-world service:
+
+- drivers;
+- hosts;
+- artists;
+- couriers;
+- clinicians where legally appropriate;
+- local operators;
+- other domain-specific service providers.
+
+Operator software can be specialized for the utility while sharing identity, Mission, contribution, and economic rails.
+
+### Build
+
+Humans build and maintain the infrastructure:
+
+- software;
+- design;
+- operations;
+- legal/compliance work;
+- safety systems;
+- mapping;
+- support;
+- local launch work;
+- research;
+- other Projects, Work, and eventual bounties.
+
+The current Mission → Project → Work → participation system is the beginning of this Build surface.
+
+One human account may use more than one mode.
+
+## Utility Missions and the spiderweb
+
+99pct should not hard-code one giant Uber/Airbnb/Spotify clone into the core platform.
+
+The target architecture is:
+
+```text
+99pct shared substrate
+├── identity / trust
+├── Mission graph
+├── Projects / Work / bounties
+├── Contribution / MCU history
+├── rules / governance
+├── money + legal rails (separate)
+├── open-source artifacts / repositories
+├── locality / discovery
+└── reusable Mission blueprints
+      ├── Rideshare 99
+      ├── Stay 99
+      ├── Music 99
+      └── future utility Missions
+```
+
+A Utility Mission owns its domain-specific service experience. The shared substrate supplies the recurring human/economic infrastructure.
+
+Long term, reusable blueprints may spawn new Missions or local Mission instances with explicit governance and safety gates. Example:
+
+`Rideshare 99 blueprint → Atlanta Rideshare 99 → Decatur/local operating layer`
+
+Automation may propose or instantiate infrastructure from a blueprint, but economic/legal activation must remain governed and auditable.
+
+## Economic direction
+
+The target is to keep useful economic value with the humans and communities creating it rather than defaulting to passive outside extraction.
+
+For a Utility Mission:
+
+- customers pay for a real service;
+- operators earn for providing the service;
+- infrastructure contributors can earn recognized Contribution / MCUs under published rules;
+- Mission revenue and costs remain on a money ledger;
+- MCUs remain a contribution ledger;
+- legal ownership remains a separate legal ledger;
+- the Mission publishes how revenue, reserves, infrastructure, operators, and any legal ownership interact.
+
+99pct must not pretend that revenue, MCUs, and legal equity are the same asset.
+
+The default design direction remains customer/revenue/non-equity financing rather than outside investor equity taking permanent control of Missions.
 
 ## Live product
 
@@ -59,7 +152,7 @@ Mission → Project → Work → Interest → Creator invitation → Human confi
 
 Production contains labeled alpha records from WO-0009 through WO-0012, including one confirmed helper on the test Work item.
 
-These product objects are 99pct infrastructure. They are not evidence that the public shell should be branded Missionism.
+These are shared 99pct primitives, not a Missionism website.
 
 ## Production Mission persistence
 
@@ -77,34 +170,13 @@ Dedicated Cloud SQL remains:
 - public IP used through Cloud SQL Connector
 - authorized networks empty
 
-Database `missions` is migrated through:
-
-- `0001_missions.sql`
-- `0002_environment.sql`
-- `0003_projects_work.sql`
-- `0004_work_interests.sql`
-- `0005_work_participation.sql`
+Database `missions` is migrated through `0005_work_participation.sql`.
 
 Runtime role remains least privilege.
 
 ## Release compatibility rule
 
-Mission health is forward-compatible with later additive migrations:
-
-- every migration known to the running build must exist in order with the expected checksum;
-- later migrations unknown to that build may exist;
-- missing, reordered, or changed known migrations fail readiness;
-- the migration runner itself remains strict.
-
-While an older build is retained as a healthy rollback target, new production schema migrations must remain backward-compatible/additive with that retained build.
-
-## Firebase Auth
-
-Email/Password is enabled.
-
-The generated App Hosting host is authorized. `99pct.com` and `www.99pct.com` remain authorized for a future custom-domain cutover.
-
-No service-account JSON is used.
+Mission health is forward-compatible with later additive migrations. While an older build is retained as a healthy rollback target, new production schema migrations must remain additive/backward-compatible with it.
 
 ## Domain cutover — waiting externally
 
@@ -112,22 +184,23 @@ WO-0006 / PR #11 remains parked while Afternic/Firebase ownership and certificat
 
 Do not move apex/www traffic records until Firebase preparation is ready.
 
-## Current product problem
+## Immediate product problem
 
-The underlying product loop is now useful, but the public shell still looks like the predecessor:
+The underlying Build primitives are useful, but the public shell still looks like the predecessor Missionism site.
 
-- homepage H1 is `Missionism`;
-- global nav uses Missionism logo/wordmark assets;
-- metadata defaults to Missionism;
-- footer describes Missionism and exposes predecessor prototypes;
-- `PRODUCT.md` previously described 99pct as merely “the product surface for Missionism.”
+The public application needs to explain the actual 99pct network:
 
-That framing is wrong for 99pct.
+- **Use 99pct** — customer utility layer;
+- **Build 99pct** — Missions, Projects, Work, infrastructure;
+- **Start a Mission** — create something that should exist;
+- Missionism — protocol/supporting layer.
+
+No 99pct consumer utility is live yet. The UI must say that rather than invent fake services.
 
 ## Active engineering work
 
 Execute `docs/work-orders/WO-0013-99pct-product-shell.md`.
 
-WO-0013 resets the public product shell around 99pct, adds a real public Find Work surface, moves Missionism into a supporting protocol hub, preserves all accepted product data/behavior, and manually deploys the corrected shell after green CI.
+WO-0013 resets the shell around 99pct, introduces the Use / Build / Start architecture, adds public Work discovery, gives the future utility network an honest consumer entry surface, moves Missionism into a supporting protocol hub, and deploys the corrected shell.
 
-WO-0013 has no database migration and must not add Contribution, MCUs, equity, payments, or custom-domain changes.
+WO-0013 has no database migration and must not add Contribution, MCUs, bounties/rewards, payments, equity, or custom-domain changes.
