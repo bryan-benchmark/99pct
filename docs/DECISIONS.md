@@ -112,3 +112,25 @@ If a current advisory cannot safely be removed immediately, a temporary exceptio
 - enforced mechanically so any new or changed moderate-or-higher advisory still fails CI.
 
 Prefer remediation over exception. Exceptions are debt with an owner and expiry, not a green-check workaround.
+
+## ADR-011 — First 99pct deployment is isolated and manually promoted
+
+Status: Accepted  
+Date: 2026-10-04
+
+The first 99pct network deployment must not reuse or retarget the predecessor Missionism Firebase project/backend.
+
+Create or select a separate Firebase project dedicated to 99pct and connect its App Hosting backend to `bryan-benchmark/99pct`.
+
+Until the baseline and domain-cutover work orders are accepted:
+
+- use Firebase's generated App Hosting domain, not `99pct.com`;
+- keep automatic rollouts disabled;
+- promote a specific reviewed Git commit manually;
+- keep the predecessor deployment untouched as an independent reference/rollback system;
+- do not configure a shared production database merely to make the public explanatory site deploy;
+- workspace functionality may remain fail-closed until its own environment is deliberately provisioned.
+
+Before the first network rollout, the public UI must provide a clear link to the corresponding AGPL source repository.
+
+Reason: separate infrastructure and commit-specific manual promotion minimize accidental production coupling while 99pct is establishing its own release boundary.
