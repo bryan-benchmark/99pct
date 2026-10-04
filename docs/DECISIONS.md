@@ -337,3 +337,42 @@ This mutual participation record does **not** by itself create:
 Public pages may expose aggregate helping count. Private participant identity remains visible only where already authorized: the participant themself and the Mission creator.
 
 The confirmed participation relation exists so later Contribution records have a clear human + Mission + Project + Work context. Formal legal agreements are selected later when the actual activity requires them; they are not fabricated merely because two humans agreed to collaborate.
+
+## ADR-018 — 99pct is the product/Mission; Missionism is the protocol underneath it
+
+Status: Accepted  
+Date: 2026-10-04
+
+99pct and Missionism are not interchangeable brands.
+
+**99pct** is the open-source product, platform, community surface, and Mission being built so people can build useful things together for the 99%, by the 99%.
+
+Its product loop includes Missions, Projects, Work, human participation, Contribution records, MCUs, and—only where legally implemented—ownership and other economic rails.
+
+**Missionism** is the open organizational protocol / operating philosophy that 99pct uses.
+
+Missionism defines or explores rules for:
+
+- mission alignment;
+- human dignity and non-coercion;
+- contribution recognition;
+- progressive ownership;
+- authority and agency;
+- governance;
+- incentives and long-term stewardship.
+
+99pct itself is one Mission implemented using Missionism.
+
+Consequences for the public product:
+
+- the root application brand is 99pct, not Missionism;
+- `99pct.com` is the canonical future product host;
+- Missionism must not be the homepage H1, global wordmark, default metadata brand, or primary product navigation identity;
+- Missionism remains accessible as supporting protocol material;
+- existing Principles, How It Works, Specification, Open Questions, Changes, canonical claims, and protocol files remain available and should not be rewritten merely to market 99pct;
+- predecessor Missionism demos/simulators may remain reachable for research/history but should not occupy primary 99pct product chrome;
+- 99pct product copy must distinguish implemented features from future Contribution, MCU, ownership, governance, funding, or legal rails.
+
+Short internal test:
+
+> 99pct is what we are building. Missionism is how it works.
