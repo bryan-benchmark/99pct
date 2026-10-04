@@ -94,3 +94,21 @@ Date: 2026-10-03
 Agents read `AGENTS.md`, `CURRENT_STATE.md`, and the assigned work order by default. The work order explicitly names any additional architecture/security/product context required.
 
 Reason: canonical docs remain durable without paying the token cost of loading all of them on every implementation turn.
+
+## ADR-010 — Dependency-security exceptions are explicit and expiring
+
+Status: Accepted  
+Date: 2026-10-04
+
+A red dependency audit may not be solved by deleting the audit gate, broadly ignoring severity, or running a breaking automatic fix without review.
+
+If a current advisory cannot safely be removed immediately, a temporary exception is allowed only when it is:
+
+- advisory-specific and package-specific;
+- tied to the exact dependency path/version being accepted;
+- classified as runtime, build-time, development-only, or unreachable;
+- supported by evidence explaining why the vulnerable code path is not exposed or why no patched version exists;
+- bounded by an expiration/review date no more than 30 days away;
+- enforced mechanically so any new or changed moderate-or-higher advisory still fails CI.
+
+Prefer remediation over exception. Exceptions are debt with an owner and expiry, not a green-check workaround.
