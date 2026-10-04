@@ -6,9 +6,9 @@ Correct the public product identity before building Contribution or MCU rails.
 
 99pct is not a renamed Missionism website.
 
-The live application must become unmistakably **99pct**:
+The live application must become unmistakably **99pct**: an open-source human-commerce network where people will eventually be able to **Use**, **Operate**, and **Build** shared utilities for the 99%, by the 99%.
 
-> an open-source place for people to build what should exist, for the 99%, by the 99%.
+This order does not build a utility vertical. It establishes the correct product doors so later Utility Missions fit naturally.
 
 Missionism remains the underlying protocol / operating philosophy used by 99pct.
 
@@ -21,7 +21,7 @@ After green CI, manually deploy the exact reviewed commit to the existing 99pct 
 In addition to `AGENTS.md` and `docs/CURRENT_STATE.md`:
 
 - `docs/PRODUCT.md`
-- ADR-018 in `docs/DECISIONS.md`
+- ADR-018 and ADR-019 in `docs/DECISIONS.md`
 - `docs/ARCHITECTURE.md`
 - `docs/SECURITY_INVARIANTS.md`
 - current root page, layout metadata, nav, footer
@@ -129,13 +129,23 @@ Do not say MCUs or ownership are already live.
 
 Primary actions:
 
-- **Explore Missions** → `/missions`
-- **Find Work** → `/work`
+- **Use 99pct** → `/use`
+- **Build 99pct** → `/work`
 - **Start a Mission** → `/missions/new`
 
-### Product explanation
+Keep **Explore Missions** as a visible secondary path to `/missions`.
 
-Add one compact “How 99pct works” sequence.
+### Three-mode explanation
+
+Explain the network simply:
+
+- **Use** — choose 99pct utilities for ordinary life.
+- **Operate** — provide the actual service inside a Utility Mission.
+- **Build** — build and maintain Missions/infrastructure through Projects and Work.
+
+State truthfully that no consumer Utility Mission is live yet and operator surfaces arrive with the first real utility vertical.
+
+Add one compact “How 99pct grows” sequence.
 
 Show implementation state honestly.
 
@@ -198,8 +208,9 @@ Replace the current protocol-heavy global navigation.
 
 Primary nav:
 
+- **Use** → `/use`
+- **Build** → `/work`
 - **Missions** → `/missions`
-- **Work** → `/work`
 - **Start** → `/missions/new`
 - **Missionism** → `/missionism`
 
@@ -213,7 +224,47 @@ Do not include Principles, Why Now, Specification, Open Questions, Mishys, demos
 
 Those resources remain reachable through the Missionism hub/footer as appropriate.
 
-## 5. Add a real Find Work surface
+## 5. Add an honest Use 99pct surface
+
+Add:
+
+`/use`
+
+This is the customer-side entry point for the future Utility Mission network.
+
+WO-0013 must **not** invent live services.
+
+H1:
+
+**Use 99pct**
+
+Lede:
+
+> A place to find everyday services built for the 99%, by the 99%.
+
+Explain with a compact set of clearly labeled future examples:
+
+- Rideshare 99
+- Stay 99
+- Music 99
+
+They are examples / future Utility Missions, not clickable fake live marketplaces.
+
+Primary empty-state truth:
+
+> No 99pct utilities are live yet. We are building the shared infrastructure first.
+
+Then provide useful actions:
+
+- **Build the infrastructure** → `/work`
+- **Start a Mission** → `/missions/new`
+- **Explore Missions** → `/missions`
+
+Add one sentence explaining that future customer services can use different interfaces while sharing the same 99pct substrate.
+
+Do not add fake ratings, inventory, prices, drivers, hosts, artists, bookings, or transaction counts.
+
+## 6. Add a real Find Work / Build surface
 
 Add:
 
@@ -282,7 +333,7 @@ CTA:
 
 Do not build search/filter infrastructure unless trivial. A clean first browse list is enough.
 
-## 6. Add a Missionism protocol hub
+## 7. Add a Missionism protocol hub
 
 Add:
 
@@ -315,7 +366,7 @@ This is the appropriate place for canonical/protocol maturity framing.
 
 Do not duplicate the entire specification into this page.
 
-## 7. Preserve protocol routes
+## 8. Preserve protocol routes
 
 Existing routes remain available:
 
@@ -332,7 +383,7 @@ Do not convert their canonical claims into 99pct marketing claims.
 
 Metadata template may naturally become `· 99pct` because they live inside the 99pct application.
 
-## 8. Remove predecessor experiments from primary chrome
+## 9. Remove predecessor experiments from primary chrome
 
 The following may remain reachable but must not be promoted in the main nav/footer:
 
@@ -348,7 +399,7 @@ Do not delete them in WO-0013.
 
 They remain research/history until a later cleanup order decides their fate.
 
-## 9. Footer
+## 10. Footer
 
 Replace the Missionism-heavy footer.
 
@@ -372,7 +423,7 @@ Do not put the full Missionism protocol status, simulator catalog, Mishys links,
 
 The source link must remain.
 
-## 10. Missions surface alignment
+## 11. Missions surface alignment
 
 Keep existing Mission creation/data semantics unchanged.
 
@@ -386,7 +437,7 @@ Do not rewrite the Mission schema or authorization.
 
 No large redesign is required.
 
-## 11. Work page alignment
+## 12. Work page alignment
 
 Keep all accepted WO-0010 through WO-0012 behavior.
 
@@ -403,7 +454,7 @@ Do not regress those flows while changing the shell.
 
 The global 99pct chrome should make these pages feel like part of the 99pct product rather than embedded inside a Missionism brochure.
 
-## 12. Content/source organization
+## 13. Content/source organization
 
 Prefer a new product content module such as:
 
@@ -418,7 +469,7 @@ Keep:
 
 Do not overload Missionism voice files with 99pct marketing/product copy.
 
-## 13. Product documentation
+## 14. Product documentation
 
 `docs/PRODUCT.md` and ADR-018 already establish the corrected relationship.
 
@@ -426,14 +477,15 @@ Implementation must conform to them.
 
 If implementation discovers a conflict, stop and raise it rather than silently reverting to “99pct is the product surface for Missionism.”
 
-## 14. Regression tests — brand separation
+## 15. Regression tests — brand separation
 
 Add focused tests that fail if the old drift returns.
 
 At minimum prove:
 
 - root page identifies 99pct and does not render `<h1>Missionism</h1>`;
-- root page exposes Explore Missions / Find Work / Start a Mission;
+- root page exposes Use 99pct / Build 99pct / Start a Mission and a path to Explore Missions;
+- `/use` truthfully says no Utility Mission is live yet and does not render fake transactional data;
 - root page links Missionism as supporting protocol;
 - global nav does not reference `missionism_icon_vector.svg` or `missionism_wordmark_vector.svg`;
 - root metadata default brand is 99pct;
@@ -442,7 +494,7 @@ At minimum prove:
 - footer does not list predecessor simulators/demos;
 - `/missionism` uses the locked Missionism definition and links protocol resources.
 
-## 15. Find Work privacy tests
+## 16. Find Work privacy tests
 
 Test the new public Work discovery query/page with known private values.
 
@@ -466,7 +518,7 @@ No new DB grants should be needed beyond the existing SELECT permissions.
 
 If a grant change appears necessary, explain why before broadening anything.
 
-## 16. Full regression
+## 17. Full regression
 
 Run:
 
@@ -482,7 +534,7 @@ Both required GitHub Actions jobs must be green.
 
 Existing Mission/Auth/Project/Work/interest/participation tests remain green.
 
-## 17. Production rules
+## 18. Production rules
 
 WO-0013 has **no database migration**.
 
@@ -495,7 +547,7 @@ Before rollout:
 
 No migration/grant step is needed.
 
-## 18. Manual App Hosting rollout
+## 19. Manual App Hosting rollout
 
 Automatic rollouts remain off.
 
@@ -513,12 +565,13 @@ Retain build-014 as rollback target.
 
 No custom-domain cutover.
 
-## 19. Live smoke
+## 20. Live smoke
 
 On the generated App Hosting URL verify:
 
 - `/` → 200, clearly 99pct
 - root does not present Missionism as the product brand
+- `/use` → 200 with truthful no-utilities-live state
 - `/missions` → 200
 - `/work` → 200 and displays the existing WO-0010 test task
 - `/missionism` → 200 and clearly identifies Missionism as protocol
@@ -531,7 +584,7 @@ On the generated App Hosting URL verify:
 - source link visible
 - no private email/note appears in public shell/discovery
 
-## 20. Rollback
+## 21. Rollback
 
 Application rollback may return to build-014.
 
@@ -539,7 +592,7 @@ There is no schema change in WO-0013, so rollback is application-only.
 
 Do not alter the existing production Mission data merely to validate branding.
 
-## 21. Durable report
+## 22. Durable report
 
 Create:
 
@@ -560,20 +613,21 @@ Include:
 ## Acceptance
 
 1. Root application is branded 99pct, not Missionism.
-2. Homepage explains 99pct as an open-source place to build what should exist.
-3. Homepage primary actions are Explore Missions, Find Work, Start a Mission.
-4. Homepage truthfully separates live product from future Contribution/MCU/ownership rails.
-5. Global nav uses 99pct identity and no Missionism logo assets.
-6. Global metadata defaults to 99pct and no Missionism favicon.
-7. Public `/work` discovery exists and contains no private data.
-8. `/missionism` clearly presents Missionism as the protocol underneath 99pct.
-9. Existing Missionism protocol routes remain available.
-10. Predecessor demos/simulators leave primary nav/footer without being deleted.
-11. AGPL source link remains visible.
-12. Existing Mission → Project → Work → Interest → Invitation → Confirmation behavior remains green.
-13. No database schema, production rows, DB grants, Auth, DNS, Contribution, MCU, ownership, or payment behavior changes.
-14. Exact green commit is manually deployed with automatic rollouts off.
-15. Live generated-host smoke proves the new product shell.
+2. Homepage explains 99pct as a shared human-commerce network with Use / Operate / Build modes.
+3. Homepage primary actions are Use 99pct, Build 99pct, Start a Mission, with Explore Missions still easy to reach.
+4. `/use` exists and truthfully states that no consumer Utility Mission is live yet.
+5. Homepage truthfully separates current Build primitives from future consumer utilities, Contribution, MCU, money, and ownership rails.
+6. Global nav uses 99pct identity and no Missionism logo assets.
+7. Global metadata defaults to 99pct and no Missionism favicon.
+8. Public `/work` discovery exists and contains no private data.
+9. `/missionism` clearly presents Missionism as the protocol underneath 99pct.
+10. Existing Missionism protocol routes remain available.
+11. Predecessor demos/simulators leave primary nav/footer without being deleted.
+12. AGPL source link remains visible.
+13. Existing Mission → Project → Work → Interest → Invitation → Confirmation behavior remains green.
+14. No database schema, production rows, DB grants, Auth, DNS, Contribution, bounty rewards, MCU, ownership, or payment behavior changes.
+15. Exact green commit is manually deployed with automatic rollouts off.
+16. Live generated-host smoke proves the new product shell.
 
 ## Return
 
