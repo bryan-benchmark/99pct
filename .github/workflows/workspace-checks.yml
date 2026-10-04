@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  verify:
+  functional:
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -26,15 +26,15 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version-file: .nvmrc
           package-manager-cache: false
       - run: npm ci
       - run: npm run verify
       - run: npm run lint
-      - run: npm audit --audit-level=moderate
+      - run: npx tsc --noEmit
       - name: Build staging configuration
         run: npm run build
         env:
@@ -79,3 +79,15 @@ jobs:
         run: |
           npm run workspace:restore-check
           npm run workspace:check-audit
+
+  dependency-security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - run: npm ci
+      - run: node --test scripts/check-npm-audit.test.mjs
+      - run: npm run check:npm-audit

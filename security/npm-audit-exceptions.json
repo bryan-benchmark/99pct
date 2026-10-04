@@ -1,0 +1,28 @@
+{
+  "exceptions": [
+    {
+      "advisoryId": "GHSA-m9gg-hp2v-232j",
+      "package": "@grpc/grpc-js",
+      "installedVersion": "1.9.16",
+      "dependencyPath": "firebase@12.19.0 > @firebase/firestore@4.17.2 > @grpc/grpc-js@1.9.16",
+      "carriedBy": ["@firebase/firestore", "@firebase/firestore-compat", "firebase"],
+      "classification": "unreachable",
+      "evidence": "Application source imports Firebase Auth only. The vulnerable 1.9.16 copy is required solely by @firebase/firestore, whose package range is ~1.9.0, so it cannot move to the 1.13.6 fix without leaving that line. firebase-admin's Firestore client resolves @grpc/grpc-js 1.14.5, which is outside this advisory. No application module imports the Firestore client, so the Node getAuthContext path is not reached. A source guard fails if a Firestore import appears while this exception exists.",
+      "upstream": "https://github.com/advisories/GHSA-m9gg-hp2v-232j",
+      "acceptedDate": "2026-10-04",
+      "reviewDate": "2026-11-03"
+    },
+    {
+      "advisoryId": "GHSA-vfj7-8cjw-p6xm",
+      "package": "braces",
+      "installedVersion": "3.0.3",
+      "dependencyPath": "eslint-config-next@16.3.8 > @next/eslint-plugin-next@16.3.8 > fast-glob@3.3.1 > micromatch@4.0.8 > braces@3.0.3",
+      "carriedBy": ["micromatch", "fast-glob", "@next/eslint-plugin-next", "eslint-config-next"],
+      "classification": "development-only",
+      "evidence": "braces 3.0.3 is the installed micromatch dependency and the advisory has no patched release. The only install path is the ESLint config used by npm run lint. Application source does not import braces, micromatch, or fast-glob, and request handling does not pass user input into brace expansion. Removing it would require downgrading eslint-config-next to 14.2.35.",
+      "upstream": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+      "acceptedDate": "2026-10-04",
+      "reviewDate": "2026-11-03"
+    }
+  ]
+}
