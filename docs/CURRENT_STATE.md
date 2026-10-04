@@ -5,16 +5,38 @@ Updated: 2026-10-04
 ## 99pct repository
 
 - Public control plane and application repository: `bryan-benchmark/99pct`
-- Sanitized application snapshot accepted in WO-0003 and merged at `5486675`
+- Sanitized predecessor snapshot accepted in WO-0003 and merged at `5486675`
 - Security + CI baseline accepted in WO-0004 and merged at `edf10a6`
-- Isolated deployment baseline accepted in WO-0005 and merged at `8d4c9b3`
+- Isolated 99pct deployment baseline accepted in WO-0005 and merged at `8d4c9b3`
 - Mission foundation Start + Discover accepted in WO-0007 and merged at `6872a8c`
 - Mission production-persistence readiness accepted in WO-0008 and merged at `754d785`
 - Start + Discover production release accepted in WO-0009 and merged at `4643b4f`
 - Projects + needed Work accepted in WO-0010 and merged at `2756ebd`
 - Work interest accepted in WO-0011 and merged at `2fbfb93`
-- `spec/canonical.json` remains the canonical short-claim source
+- Mutual Work participation accepted in WO-0012 and merged at `fcde732`
 - Application source license: `AGPL-3.0-only`
+
+## Product identity — corrected boundary
+
+99pct and Missionism are related but different.
+
+**99pct is the product, platform, and Mission being built.**
+
+Its purpose is to make it easy for ordinary people to build the future together: start Missions, organize Projects, publish needed Work, join one another, record Contribution, earn MCUs under transparent rules, and eventually connect recognized contribution to legally valid ownership where a Mission implements that machinery.
+
+**Missionism is the underlying organizational protocol / operating philosophy.**
+
+Missionism explains how mission, human dignity, contribution, ownership, authority, governance, and incentives should fit together. 99pct uses Missionism; 99pct is not a renamed Missionism website.
+
+A useful shorthand:
+
+> 99pct is what we are building. Missionism is how it works.
+
+99pct itself is one Mission built using Missionism.
+
+The imported Missionism explanatory shell is predecessor material that gave the repository a starting application. It must not define the public 99pct product chrome going forward.
+
+ADR-018 and WO-0013 make this distinction explicit.
 
 ## Live product
 
@@ -24,27 +46,20 @@ Generated App Hosting URL:
 
 Live release:
 
-- deployed application commit: `1c3f4f4`
-- App Hosting build: `build-2026-10-04-013`
+- deployed application commit: `28e2ff2`
+- App Hosting build: `build-2026-10-04-014`
 - automatic rollouts: off
 - `/api/health`: ready
 - `/api/missions/health`: ready
 - `/api/workspace/health`: unavailable by design
 
-The live product loop is now:
+The live functional loop is:
 
-Mission → Project → Work → expressed interest
+Mission → Project → Work → Interest → Creator invitation → Human confirmation → Helping
 
-Production contains labeled alpha records:
+Production contains labeled alpha records from WO-0009 through WO-0012, including one confirmed helper on the test Work item.
 
-- `WO-0009 test Mission`
-- `WO-0010 test Project`
-- `WO-0010 test task`
-- one labeled WO-0011 interest from a second verified human
-
-A verified non-creator can say “I want to help” on an open Work item after explicitly consenting to share their verified email with the Mission creator.
-
-Public pages expose only aggregate interest count. The interested human sees their own private state. The Mission creator privately sees interested email + note. Interest is immutable and does not create membership, assignment, contract, compensation, MCU, or ownership.
+These product objects are 99pct infrastructure. They are not evidence that the public shell should be branded Missionism.
 
 ## Production Mission persistence
 
@@ -68,6 +83,7 @@ Database `missions` is migrated through:
 - `0002_environment.sql`
 - `0003_projects_work.sql`
 - `0004_work_interests.sql`
+- `0005_work_participation.sql`
 
 Runtime role remains least privilege.
 
@@ -81,8 +97,6 @@ Mission health is forward-compatible with later additive migrations:
 - the migration runner itself remains strict.
 
 While an older build is retained as a healthy rollback target, new production schema migrations must remain backward-compatible/additive with that retained build.
-
-WO-0011 proved this in production: `0004` was applied while build-012 still served, and Mission health remained ready before build-013 rolled out.
 
 ## Firebase Auth
 
@@ -98,33 +112,22 @@ WO-0006 / PR #11 remains parked while Afternic/Firebase ownership and certificat
 
 Do not move apex/www traffic records until Firebase preparation is ready.
 
-## Product boundary
+## Current product problem
 
-The broader target remains:
+The underlying product loop is now useful, but the public shell still looks like the predecessor:
 
-Mission → Project → Work → Join → Contribution → MCU history.
+- homepage H1 is `Missionism`;
+- global nav uses Missionism logo/wordmark assets;
+- metadata defaults to Missionism;
+- footer describes Missionism and exposes predecessor prototypes;
+- `PRODUCT.md` previously described 99pct as merely “the product surface for Missionism.”
 
-ADR-017 defines the next slice as mutual Work participation:
-
-1. Mission creator privately invites a human who already expressed interest.
-2. That human separately confirms: **I’ll help on this Work.**
-3. Only after both immutable records exist does the product say the human is **helping on this Work**.
-
-This is a collaboration/participation record only. It is not Mission membership, employment, contractor status, a legal contract, compensation, an MCU grant, or ownership.
-
-Multiple humans may eventually help the same Work item. Work remains open in this slice.
-
-## Dependency-security state
-
-Two temporary ADR-010 exceptions remain, both expiring 2026-11-03:
-
-- `GHSA-m9gg-hp2v-232j` on `@grpc/grpc-js 1.9.16`, unused Firestore path and guarded against Firestore imports;
-- `GHSA-vfj7-8cjw-p6xm` on `braces 3.0.3`, development-only lint tooling and currently unpatched upstream.
-
-The dependency-security CI policy remains required.
+That framing is wrong for 99pct.
 
 ## Active engineering work
 
-Execute `docs/work-orders/WO-0012-work-participation.md`.
+Execute `docs/work-orders/WO-0013-99pct-product-shell.md`.
 
-WO-0012 may add an additive production migration and manually deploy after green CI. It must not create Mission membership, employment/contractor status, legal agreements, compensation, Contribution records, MCUs, equity, or custom-domain changes.
+WO-0013 resets the public product shell around 99pct, adds a real public Find Work surface, moves Missionism into a supporting protocol hub, preserves all accepted product data/behavior, and manually deploys the corrected shell after green CI.
+
+WO-0013 has no database migration and must not add Contribution, MCUs, equity, payments, or custom-domain changes.
