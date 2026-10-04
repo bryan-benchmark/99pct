@@ -1,61 +1,61 @@
 # Current State
 
-Updated: 2026-10-03
+Updated: 2026-10-04
 
 ## 99pct repository
 
-- Public control plane: `bryan-benchmark/99pct`
-- No application code yet
-- No deployment yet
-- No application CI yet
+- Public control plane and application repository: `bryan-benchmark/99pct`
+- Sanitized application snapshot imported and accepted in WO-0003
+- WO-0003 merged at `5486675`
+- Source provenance: private predecessor tracked tree `321d4b6`, imported without private Git history
+- No 99pct production deployment yet
+- Existing Firebase/domain/database production remains untouched
 - `spec/canonical.json` remains the canonical short-claim source
-- Accepted architecture: MCUs, legal equity, and money are separate ledgers
-- WO-0002 migration preflight accepted and merged at `3171e6f`
-- ADR-007 accepted: application source license is `AGPL-3.0-only`
+- Application source license: `AGPL-3.0-only`
 
-## License boundary
+## Imported application baseline
 
-Application source, application tests, build/runtime scripts, and application configuration are AGPL-3.0-only unless explicitly noted.
+The repository now contains the preserved Next.js/Firebase/PostgreSQL application baseline:
 
-Third-party dependencies retain their own licenses.
-
-`docs/` and `spec/` are not automatically licensed under AGPL by sharing this repository. Protocol/document licensing remains a separate future decision.
-
-Before a publicly hosted 99pct application goes live, users must have a clear path to the corresponding AGPL source.
-
-## Migration findings
-
-The private predecessor can be migrated only as a sanitized tracked snapshot, not by publishing its Git history or copying a developer working directory.
-
-Proposed source tree: `321d4b6` on `feat/mission-workspace-v1`.
-
-Before the application snapshot is accepted:
-
-- use a clean tracked archive;
-- apply the private publication denylist;
-- preserve 99pct control-plane paths;
-- run a standard credential/secret scanner;
-- run a privacy/publication scan for personal compensation/employment/legal material and other private artifacts;
-- run verify, lint, typecheck, and build;
-- do not retarget Firebase, move the domain, or touch a shared database in the import.
-
-The detailed preflight is `docs/implementation-reports/WO-0002-migration-preflight.md`.
-
-## Private predecessor
-
-`bryan-benchmark/missionism` remains the live/private predecessor.
-
-- production `main` tip inspected: `4747bf3`
-- feature branch is 9 commits ahead
 - Next.js 16 / React 19 / Node 22
-- Firebase App Hosting/Auth
+- Firebase Auth and Firebase App Hosting configuration from the predecessor
 - PostgreSQL Mission Workspace
-- append-only workspace history and server-side authorization
-- preflight verification: 81 tests passed; lint, typecheck, build exit 0
+- append-only workspace history
+- server-side authorization
+- migrations 0001–0007
+- experimental Sparks/Pilots/Teamups/Toolshare/Mission Units code
+- explanatory Missionism site and simulators
 
-These are migration candidates, not automatically the 99pct product model.
+These imported systems are baseline/prototype code. They are not automatically the final 99pct product model.
+
+## Verification at WO-0003
+
+After the publication-safety rework:
+
+- `npm ci`: pass
+- `npm run verify`: 81 passed, 0 failed
+- `npm run lint`: pass
+- `npx tsc --noEmit`: pass locally
+- `npm run build`: pass locally
+- privacy/publication review: pass after neutralizing person-identifying financial/ownership examples
+- standard secret scan: pass before public import
+
+GitHub Actions currently fails at `npm audit --audit-level=moderate`, so later functional CI steps are skipped.
+
+## Known dependency-security state
+
+`npm audit` currently reports 10 high-severity findings.
+
+Two distinct classes are already visible:
+
+1. Firebase's installed Firestore dependency pins an older `@grpc/grpc-js` line even though 99pct currently uses Firebase Auth rather than Firestore.
+2. Lint/glob tooling includes high-severity brace/glob advisories; at least one current `braces` advisory has no patched release.
+
+Do not hide or broadly suppress these findings. Do not run `npm audit fix --force` blindly.
 
 ## Product not yet implemented here
+
+The first intended 99pct loop remains:
 
 Mission → Project → Work → Join → Contribution → MCU history.
 
@@ -63,6 +63,6 @@ Also not implemented: public contribution profiles, production MCU ledger, passk
 
 ## Active next step
 
-Execute `docs/work-orders/WO-0003-sanitized-application-snapshot.md`.
+Execute `docs/work-orders/WO-0004-security-ci-baseline.md`.
 
-No production deployment or infrastructure cutover is authorized by WO-0003.
+No deployment, Firebase retargeting, domain cutover, or shared-database migration is authorized by WO-0004.
