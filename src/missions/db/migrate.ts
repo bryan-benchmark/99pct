@@ -13,10 +13,23 @@ async function migrationFiles() {
   }));
 }
 
+export type MissionMigrationRecord = { name: string; sha256: string };
+
+export function missionMigrationPrefixCurrent(known: MissionMigrationRecord[], installed: MissionMigrationRecord[]) {
+  if (installed.length < known.length) return false;
+  for (let index = 0; index < known.length; index += 1) {
+    if (installed[index]?.name !== known[index].name || installed[index]?.sha256 !== known[index].sha256) return false;
+  }
+  for (let index = known.length; index < installed.length; index += 1) {
+    if (installed[index].name <= installed[index - 1].name) return false;
+  }
+  return known.length > 0 || installed.length === 0;
+}
+
 export async function missionMigrationsCurrent(db: MissionDb) {
   const files = await migrationFiles();
-  const installed = await db.query<{ name: string; sha256: string }>("SELECT name, sha256 FROM mission_schema_migrations ORDER BY name");
-  return files.length === installed.rows.length && files.every((file, index) => file.name === installed.rows[index]?.name && file.sha256 === installed.rows[index]?.sha256);
+  const installed = await db.query<MissionMigrationRecord>("SELECT name, sha256 FROM mission_schema_migrations ORDER BY name");
+  return missionMigrationPrefixCurrent(files, installed.rows);
 }
 
 export async function migrateMissions(db: MissionDb) {

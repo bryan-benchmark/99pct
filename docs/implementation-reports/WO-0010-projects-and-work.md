@@ -60,7 +60,7 @@ Using the existing `missions_migrate` identity through the Cloud SQL Auth Proxy:
 5. `npm run mission:prod-check` rolled back its inserts and rejected revision updates. Counts were unchanged.
 6. No operator SQL wrote a lasting Project or Work row.
 
-The previous application does not include `0003` in its migration list, so `/api/missions/health` returned unavailable after the migration and before the new build was serving. It returned `{"status":"ready"}` again once `build-2026-10-04-011` was live. The instance, tier, region, and storage were not changed.
+The first serving build required the database migration list to match its bundled files exactly, so `/api/missions/health` returned unavailable after `0003` landed and before `build-2026-10-04-011` was serving. Health now accepts a database that is ahead by later additive migrations. A migration known to the running build still fails health when it is missing, reordered, or checksum-changed. The migration command itself still refuses a history that is not a prefix of the files it is running. The instance, tier, region, and storage were not changed.
 
 ## Live journey
 
@@ -86,7 +86,7 @@ After sign-out, unsigned requests still returned all three pages. They did not s
 
 ## Rollback
 
-If this application fails, roll the backend back to `build-2026-10-04-010` (`efc6a26`). Do not reverse `0003` after the live Project and Work rows exist. That previous build does not read the new tables. Because its health check expects the migration list to match the files it ships, Mission health would stay unavailable until this build, or a later build that includes `0003`, is serving again. Backups and point-in-time recovery remain incident recovery, not the ordinary rollback.
+If this application fails, roll the backend back to `build-2026-10-04-010` (`efc6a26`). Do not reverse `0003` after the live Project and Work rows exist. That previous build does not read the new tables. Health on a retained build stays ready when the database is ahead only by later additive migrations, and stays unavailable if a migration that build knows is missing, reordered, or checksum-changed. Production migrations must stay backward-compatible with the retained rollback build. Backups and point-in-time recovery remain incident recovery, not the ordinary rollback.
 
 ## Left unchanged
 
