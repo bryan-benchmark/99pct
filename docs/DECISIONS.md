@@ -134,3 +134,31 @@ Until the baseline and domain-cutover work orders are accepted:
 Before the first network rollout, the public UI must provide a clear link to the corresponding AGPL source repository.
 
 Reason: separate infrastructure and commit-specific manual promotion minimize accidental production coupling while 99pct is establishing its own release boundary.
+
+## ADR-012 — 99pct.com is canonical; domain cutover preserves non-web DNS
+
+Status: Accepted  
+Date: 2026-10-04
+
+The canonical public application host is:
+
+`https://99pct.com`
+
+`www.99pct.com` redirects to the apex.
+
+The custom-domain cutover uses Firebase App Hosting's domain migration/preparation flow before web-routing records move.
+
+Domain ownership and DNS are separate concerns. A registrar transfer, nameserver transfer, or DNS-provider migration is not required merely to connect the web application.
+
+Before changing DNS:
+
+- determine the authoritative nameservers and actual DNS provider from live DNS, not from assumptions about the registrar UI;
+- snapshot the existing apex/www web records plus NS, MX, TXT, and CAA records;
+- preserve email, verification, DKIM/SPF/DMARC, and other unrelated DNS records;
+- use the exact verification/routing records Firebase provides for this backend rather than hard-coded remembered values.
+
+During traffic cutover, change only web-routing records that conflict with App Hosting for the apex and `www`.
+
+The generated App Hosting domain remains an independent fallback endpoint. DNS rollback means restoring the prior captured web-routing records; propagation is not assumed to be instantaneous.
+
+Reason: domain launch should not create collateral risk to email, ownership, or unrelated services.
