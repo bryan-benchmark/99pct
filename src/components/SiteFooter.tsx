@@ -33,6 +33,8 @@ export function SiteFooter() {
           <Link href="/simulators/mishys-launch">Mishys Launch</Link>
           {" · "}
           <a href="https://mishys.com">Mishys</a>
+          {" · "}
+          <a href="https://github.com/bryan-benchmark/99pct">Source (AGPL-3.0)</a>
         </p>
       </div>
     </footer>
