@@ -1,0 +1,93 @@
+# WO-0010 — Projects and needed Work
+
+## Result
+
+The live loop is now Mission → Project → Work on the existing Mission database and the existing `pct99` backend.
+
+- Pull request: https://github.com/bryan-benchmark/99pct/pull/19
+- Deployed commit: `1b3c7dccc71a21c7d3571fbf319b2c43b612c340`
+- Build: `build-2026-10-04-011`, state `READY`
+- URL: `https://pct99--pct-99.us-central1.hosted.app`
+- Automatic rollouts: off (`rolloutPolicy` null)
+- Previous successful build retained for application rollback: `build-2026-10-04-010` of `efc6a26`
+
+Posting Work does not create employment, a contract, pay, an MCU award, or ownership. Join was not started.
+
+## Migration and schema
+
+`0001_missions.sql` and `0002_environment.sql` were not edited.
+
+`0003_projects_work.sql` adds:
+
+| Table | Rule |
+|---|---|
+| `projects` | One bounded outcome of one Mission. Status `active` only. Slug unique within the Mission. |
+| `project_revisions` | Append-only title and outcome. Updates and deletes are rejected. |
+| `work_items` | One `task` or `role` under one Project. Status `open` only. Slug unique within the Project. |
+| `work_revisions` | Append-only title, description, and done-when. Updates and deletes are rejected. |
+
+Length checks match the server validators. The Mission creator is the only writer until Join exists. Public queries do not select the creator email or Firebase uid.
+
+## Authorization
+
+`POST /api/missions/[slug]/projects` and `POST /api/missions/[slug]/projects/[projectSlug]/work` use the public-origin CSRF rule, require a verified human session, validate the draft before opening the database, and compare the session uid with `missions.creator_uid`. A uid in the JSON body is ignored. Work creation also requires the Project to belong to that Mission.
+
+Signed-out create routes redirect to sign-in with a return path. An authenticated non-creator receives 404 on the create pages. Server tests cover signed-out rejection, non-creator rejection, a cross-Mission mismatch, and an invalid origin.
+
+## Grants
+
+The runtime role gained SELECT and INSERT on `projects`, `project_revisions`, `work_items`, and `work_revisions`. It still has no table-wide UPDATE, DELETE, TRUNCATE, REFERENCES, or TRIGGER, and it does not own the tables. Column UPDATE remains limited to `human_accounts.verified_email`.
+
+## CI
+
+GitHub Actions run `37230406673` passed both jobs on `1b3c7dccc71a21c7d3571fbf319b2c43b612c340`:
+
+- functional, including Mission migrate, bind, restricted-role check, Project/Work smoke, logical backup, and restore
+- dependency-security
+
+An earlier run, `37230201470`, failed only because the smoke user id was the same text as the public Mission slug. That assertion was corrected before the production migration. Workspace PostgreSQL checks stayed green.
+
+Local `npm ci`, `npm run verify`, `npm run lint`, `npx next typegen`, `npx tsc --noEmit`, `npm run build`, and `npm run check:npm-audit` passed before the pull request. Audit policy remained `high=9 moderate=0 critical=0`.
+
+## Production migration
+
+Using the existing `missions_migrate` identity through the Cloud SQL Auth Proxy:
+
+1. The pending migration applied. `mission_schema_migrations` now lists `0001_missions.sql`, `0002_environment.sql`, and `0003_projects_work.sql`.
+2. Environment binding was already bound and stayed `production` / `pct-99` / `missions` / `pct-99:us-central1:pct99-missions-prod`.
+3. Runtime grants were reapplied.
+4. `missions_runtime` passed the restricted-role check.
+5. `npm run mission:prod-check` rolled back its inserts and rejected revision updates. Counts were unchanged.
+6. No operator SQL wrote a lasting Project or Work row.
+
+The previous application does not include `0003` in its migration list, so `/api/missions/health` returned unavailable after the migration and before the new build was serving. It returned `{"status":"ready"}` again once `build-2026-10-04-011` was live. The instance, tier, region, and storage were not changed.
+
+## Live journey
+
+The existing verified WO-0009 test account created these records on `WO-0009 test Mission`:
+
+- Project `WO-0010 test Project` at `/missions/wo-0009-test-mission/projects/wo-0010-test-project`
+- Task `WO-0010 test task` at `/missions/wo-0009-test-mission/projects/wo-0010-test-project/work/wo-0010-test-task`
+
+While signed in, the Mission page showed the Project, its outcome, and `1 open work item`, plus `Create a Project`. The Project page showed Active, the outcome, the Task, and `Post needed Work`. The Work page showed Task, the description, done-when, Open, and `Joining this work is not available yet.`
+
+After sign-out, unsigned requests still returned all three pages. They did not show `Create a Project`, `Post needed Work`, Apply, or a join action. The HTML did not contain the creator email. Contribution, ownership, and governance rails stayed empty. The labeled records were kept.
+
+## Operational state after the live write
+
+- `GET /api/missions/health` returned 200 `{"status":"ready"}`.
+- `GET /` and `GET /missions` returned 200.
+- The runtime role check passed again.
+- Backups enabled, 7 retained, point-in-time recovery enabled, deletion protection enabled, instance `RUNNABLE`, tier unchanged.
+- Automatic rollouts remain off.
+- `apphosting.yaml` still references only `mission-db-password` for the serving runtime.
+- Workspace health stayed unavailable, which is the existing separate path.
+- DNS, `99pct.com`, the predecessor Missionism project, and the Workspace database were not changed.
+
+## Rollback
+
+If this application fails, roll the backend back to `build-2026-10-04-010` (`efc6a26`). Do not reverse `0003` after the live Project and Work rows exist. That previous build does not read the new tables. Because its health check expects the migration list to match the files it ships, Mission health would stay unavailable until this build, or a later build that includes `0003`, is serving again. Backups and point-in-time recovery remain incident recovery, not the ordinary rollback.
+
+## Left unchanged
+
+Join, Contribution, MCU grants, equity issuance, custom-domain work, and WO-0006 stayed out of this change.
