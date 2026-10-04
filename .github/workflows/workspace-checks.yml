@@ -80,6 +80,40 @@ jobs:
         run: |
           npm run workspace:restore-check
           npm run workspace:check-audit
+      - name: Migrate disposable Mission database
+        run: |
+          docker exec "${{ job.services.postgres.id }}" createdb -U missionism_ci mission_check
+          npm run mission:migrate
+        env:
+          MISSION_MIGRATION_DATABASE_URL: postgresql://missionism_ci:missionism_ci@localhost:5432/mission_check
+      - name: Bind staging Mission database
+        run: npm run mission:bind-environment
+        env:
+          MISSION_RELEASE_TARGET: staging
+          MISSION_EXPECTED_DATABASE_NAME: mission_check
+          MISSION_EXPECTED_FIREBASE_PROJECT_ID: missionism-ci-staging
+          MISSION_EXPECTED_INSTANCE: pct-99:us-central1:pct99-missions-ci
+          MISSION_MIGRATION_DATABASE_URL: postgresql://missionism_ci:missionism_ci@localhost:5432/mission_check
+      - name: Grant restricted Mission runtime role
+        run: |
+          docker exec "${{ job.services.postgres.id }}" psql -U missionism_ci -d mission_check -v ON_ERROR_STOP=1 -c "CREATE ROLE mission_ci_runtime LOGIN PASSWORD 'mission_ci_runtime'"
+          docker exec -i "${{ job.services.postgres.id }}" psql -U missionism_ci -d mission_check -v ON_ERROR_STOP=1 -v app_role=mission_ci_runtime < scripts/mission-runtime-grants.sql
+      - name: Verify Mission runtime role and smoke
+        env:
+          MISSION_RUNTIME_DATABASE_URL: postgresql://mission_ci_runtime:mission_ci_runtime@localhost:5432/mission_check
+        run: |
+          npm run mission:check-runtime-role
+          npm run mission:pg-smoke
+      - name: Restore a Mission logical backup into a second database
+        run: |
+          docker exec "${{ job.services.postgres.id }}" pg_dump -Fc -U missionism_ci -d mission_check > /tmp/pct99-missions-ci.dump
+          docker exec "${{ job.services.postgres.id }}" createdb -U missionism_ci mission_restore_check
+          docker exec -i "${{ job.services.postgres.id }}" pg_restore --no-owner --no-acl --exit-on-error -U missionism_ci -d mission_restore_check < /tmp/pct99-missions-ci.dump
+      - name: Verify restored Mission records
+        env:
+          MISSION_TEST_DATABASE_URL: postgresql://missionism_ci:missionism_ci@localhost:5432/mission_check
+          MISSION_RESTORE_DATABASE_URL: postgresql://missionism_ci:missionism_ci@localhost:5432/mission_restore_check
+        run: npm run mission:restore-check
 
   dependency-security:
     runs-on: ubuntu-latest

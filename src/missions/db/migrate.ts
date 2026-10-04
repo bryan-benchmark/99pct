@@ -13,6 +13,12 @@ async function migrationFiles() {
   }));
 }
 
+export async function missionMigrationsCurrent(db: MissionDb) {
+  const files = await migrationFiles();
+  const installed = await db.query<{ name: string; sha256: string }>("SELECT name, sha256 FROM mission_schema_migrations ORDER BY name");
+  return files.length === installed.rows.length && files.every((file, index) => file.name === installed.rows[index]?.name && file.sha256 === installed.rows[index]?.sha256);
+}
+
 export async function migrateMissions(db: MissionDb) {
   await db.exec("CREATE TABLE IF NOT EXISTS mission_schema_migrations (name TEXT PRIMARY KEY, sha256 TEXT NOT NULL, applied_at TIMESTAMPTZ NOT NULL DEFAULT now());");
   const files = await migrationFiles();
