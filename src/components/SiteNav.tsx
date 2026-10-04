@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 
 const links = [
+  { href: "/missions", label: "Missions" },
+  { href: "/missions/new", label: "Start" },
   { href: "/principles", label: "Principles" },
   { href: "/how-it-works", label: "How It Works" },
   { href: "/why-now", label: "Why Now" },

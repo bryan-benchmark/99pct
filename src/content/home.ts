@@ -13,8 +13,10 @@ import {
 export const homeHero = {
   ...tagline,
   definition: shortDefinition,
-  primaryCta: { href: "/how-it-works", label: "See how it works" },
-  secondaryCta: { href: "https://mishys.com", label: "Build with Missionism", external: true },
+  product: "People can start something that should exist, build it together, and record contribution. Later, that contribution can connect to real ownership through the appropriate legal process. Starting a Mission does not issue ownership.",
+  primaryCta: { href: "/missions", label: "Explore Missions" },
+  secondaryCta: { href: "/missions/new", label: "Start a Mission" },
+  explainerCta: { href: "/how-it-works", label: "See how it works" },
 };
 
 export const whyThisMatters = {
