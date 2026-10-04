@@ -34,6 +34,12 @@ Migration `0002_environment.sql` adds one `mission_environment` row: release tar
 | `mission_revisions` | SELECT, INSERT |
 | `mission_schema_migrations` | SELECT |
 | `mission_environment` | SELECT |
+| `projects` | SELECT, INSERT |
+| `project_revisions` | SELECT, INSERT |
+| `work_items` | SELECT, INSERT |
+| `work_revisions` | SELECT, INSERT |
+
+Projects and Work use this same dedicated Mission database and runtime role. The role still has no table-wide UPDATE, DELETE, TRUNCATE, REFERENCES, or TRIGGER, and it does not own the tables. Project and Work revision rows stay append-only.
 
 No schema ownership, CREATE, DROP, mission update/delete, revision update/delete, or migration writes. The append-only revision triggers remain.
 
@@ -83,3 +89,5 @@ Created after the 2026-10-04 spend approval:
 5. IAM for `firebase-app-hosting-compute@pct-99.iam.gserviceaccount.com`: Cloud SQL Client, and Secret Accessor on `mission-db-password` only.
 
 The live App Hosting configuration is `apphosting.yaml`. Automatic rollouts stay off.
+
+WO-0010 adds Projects and Work in migration `0003_projects_work.sql` on this same database. It does not create another instance or change the machine size, region, backups, or deletion protection.

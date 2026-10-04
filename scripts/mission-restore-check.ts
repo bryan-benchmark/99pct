@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { configuredMissionDb } from "../src/missions/db/client";
 import { missionMigrationsCurrent } from "../src/missions/db/migrate";
 
-const tables = ["mission_schema_migrations", "human_accounts", "missions", "mission_revisions", "mission_environment"] as const;
+const tables = ["mission_schema_migrations", "human_accounts", "missions", "mission_revisions", "mission_environment", "projects", "project_revisions", "work_items", "work_revisions"] as const;
 
 function dedicatedCheckUrl(value: string | undefined, name: string) {
   if (!value) throw new Error(`${name} is required.`);
@@ -29,10 +29,16 @@ async function main() {
       assert.deepEqual(normalized(after.rows), normalized(before.rows), `${table} differs after restore`);
     }
     const revision = (await restored.query<{ mission_id: string }>("SELECT mission_id FROM mission_revisions LIMIT 1")).rows[0];
+    const projectRevision = (await restored.query<{ project_id: string }>("SELECT project_id FROM project_revisions LIMIT 1")).rows[0];
+    const workRevision = (await restored.query<{ work_id: string }>("SELECT work_id FROM work_revisions LIMIT 1")).rows[0];
     const binding = (await restored.query<{ release_target: string }>("SELECT release_target FROM mission_environment WHERE singleton = 1")).rows[0];
-    assert.ok(revision && binding, "Restore drill needs a Mission revision and environment binding");
+    assert.ok(revision && projectRevision && workRevision && binding, "Restore drill needs Mission, Project, and Work revisions and an environment binding");
     await assert.rejects(restored.query("UPDATE mission_revisions SET name = name WHERE mission_id = $1", [revision.mission_id]), /append-only/);
     await assert.rejects(restored.query("DELETE FROM mission_revisions WHERE mission_id = $1", [revision.mission_id]), /append-only/);
+    await assert.rejects(restored.query("UPDATE project_revisions SET title = title WHERE project_id = $1", [projectRevision.project_id]), /append-only/);
+    await assert.rejects(restored.query("DELETE FROM project_revisions WHERE project_id = $1", [projectRevision.project_id]), /append-only/);
+    await assert.rejects(restored.query("UPDATE work_revisions SET title = title WHERE work_id = $1", [workRevision.work_id]), /append-only/);
+    await assert.rejects(restored.query("DELETE FROM work_revisions WHERE work_id = $1", [workRevision.work_id]), /append-only/);
     process.stdout.write("Mission backup restore check passed.\n");
   } finally {
     await Promise.all([source.close(), restored.close()]);

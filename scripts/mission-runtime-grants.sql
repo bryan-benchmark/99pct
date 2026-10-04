@@ -7,9 +7,9 @@ BEGIN;
 GRANT CONNECT ON DATABASE :"DBNAME" TO :"app_role";
 GRANT USAGE ON SCHEMA public TO :"app_role";
 
-REVOKE ALL ON TABLE mission_schema_migrations, human_accounts, missions, mission_revisions, mission_environment FROM :"app_role";
+REVOKE ALL ON TABLE mission_schema_migrations, human_accounts, missions, mission_revisions, mission_environment, projects, project_revisions, work_items, work_revisions FROM :"app_role";
 
 GRANT SELECT ON mission_schema_migrations, mission_environment TO :"app_role";
-GRANT SELECT, INSERT ON human_accounts, missions, mission_revisions TO :"app_role";
+GRANT SELECT, INSERT ON human_accounts, missions, mission_revisions, projects, project_revisions, work_items, work_revisions TO :"app_role";
 GRANT UPDATE (verified_email) ON human_accounts TO :"app_role";
 COMMIT;
