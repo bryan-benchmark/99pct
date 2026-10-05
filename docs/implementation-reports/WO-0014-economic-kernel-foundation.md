@@ -105,6 +105,11 @@ Money remains outside this kernel. There is no custodial cash balance. Legal own
 
 ## CI
 
-The first kernel head passed run `37244439753`. This revision changes the writer role, event timestamp hash, rule-publication binding, and command idempotency hash, so that run does not cover the rework.
+The first kernel head passed run `37244439753`. That run does not cover this revision.
 
-Local `npm` economic tests passed after the revision. A disposable PostgreSQL 18 cluster passed the application, kernel-writer, and verifier role checks, and passed the concurrent reward test together with the application-role insert refusals. Both GitHub Actions jobs must pass on the pull request head that contains this revision.
+Run `37248942318` on `15db268103084dbcd1db2f4829e67d79171c569c`:
+
+- `dependency-security` passed
+- `functional` passed, including disposable `economic_check` migration, application, kernel-writer, and verifier role checks, and the concurrent reward test
+
+Local economic tests and typecheck passed. A disposable PostgreSQL 18 cluster passed the same role checks and the concurrent reward test, including the application-role insert refusals.
