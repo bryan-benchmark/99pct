@@ -1,7 +1,7 @@
 import { configuredEconomicDb } from "../src/economic/db/client";
 
-const tables = ["schema_migrations", "command_intents", "intent_outcomes", "commands", "events", "rule_versions", "reward_keys"] as const;
-const kernelInsert = new Set(["commands", "events", "rule_versions", "reward_keys", "intent_outcomes"]);
+const tables = ["schema_migrations", "command_intents", "intent_outcomes", "commands", "events", "rule_versions", "reward_keys", "checkpoints"] as const;
+const kernelInsert = new Set(["commands", "events", "rule_versions", "reward_keys", "intent_outcomes", "checkpoints"]);
 const functions = {
   human: "economic.submit_human_intent(uuid,text,text,jsonb)",
   recognition: "economic.submit_recognition_intent(uuid,text,text,jsonb)",

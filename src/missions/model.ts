@@ -98,6 +98,15 @@ export const workCopy = {
   illHelp: "I’ll help on this Work",
   youreHelping: "You’re helping on this Work",
   futureContributions: "Future contribution records for this Work can be tied to your participation.",
+  recordContribution: "Record a Contribution",
+  contributionSummary: "What did you contribute?",
+  contributionEvidence: "Evidence or reference",
+  contributionBoundary: "Recording a Contribution does not itself create MCUs. Recognition happens separately.",
+  recognizeContribution: "Recognize Contribution",
+  recognitionBoundary: "Recognition makes this Contribution eligible for the Mission's active MCU rule. The rule—not this button—determines the MCU amount.",
+  mcuMeaning: "MCUs record recognized Mission contribution. They are not legal shares or cash.",
+  awaitingAnchor: "Recognition is recorded. The MCU grant is not released until the economic checkpoint is anchored.",
+  anchoredGrant: "Anchored MCU grant",
   confirmBoundary: "This records that you and the Mission creator intend to work together on this item. It does not create employment, contractor status, a legal contract, compensation, MCUs, or ownership.",
   readBoundary: "Open work is a request for help, not a binding job or contract. No compensation, MCUs, or ownership have been promised by this posting.",
 } as const;
@@ -107,6 +116,35 @@ export type ParticipationState = "interested" | "invited" | "helping";
 export function confirmDraft(input: Record<string, unknown>): { confirm: true } {
   if (input.confirm !== true) throw new MissionInputError("Confirm that you will help on this Work.");
   return { confirm: true };
+}
+
+const contributionKey = /^[A-Za-z0-9._:-]{1,200}$/;
+
+export function contributionDraft(input: Record<string, unknown>) {
+  if ("amount" in input || "ruleId" in input || "ruleVersion" in input || "uid" in input || "humanUid" in input) {
+    throw new MissionInputError("A Contribution cannot choose an MCU amount or identity.");
+  }
+  if (typeof input.summary !== "string" || input.summary.trim().length < 1 || input.summary.trim().length > 500) {
+    throw new MissionInputError("Describe the Contribution in 500 characters or fewer.");
+  }
+  if (input.evidence !== undefined && typeof input.evidence !== "string") throw new MissionInputError("Evidence must be text.");
+  if (typeof input.evidence === "string" && input.evidence.length > 500) throw new MissionInputError("Evidence must be 500 characters or fewer.");
+  if (typeof input.idempotencyKey !== "string" || !contributionKey.test(input.idempotencyKey)) {
+    throw new MissionInputError("Contribution idempotency key is invalid.");
+  }
+  return {
+    summary: input.summary.trim(),
+    evidence: typeof input.evidence === "string" ? input.evidence.trim() : "",
+    idempotencyKey: input.idempotencyKey,
+  };
+}
+
+export function recognitionDraft(input: Record<string, unknown>) {
+  if ("amount" in input || "ruleId" in input || "ruleVersion" in input || "uid" in input || "humanUid" in input) {
+    throw new MissionInputError("Recognition cannot choose an MCU amount.");
+  }
+  if (input.recognize !== true) throw new MissionInputError("Confirm recognition.");
+  return { recognize: true as const };
 }
 
 export const interestLimits = { note: { max: 500 } } as const;

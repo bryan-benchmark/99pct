@@ -193,7 +193,7 @@ test("invite and confirm routes stay scoped to the session", async () => {
 test("the work page names mutual help without employment or membership language", () => {
   const page = readFileSync(new URL("../app/missions/[slug]/projects/[projectSlug]/work/[workSlug]/page.tsx", import.meta.url), "utf8");
   const confirm = readFileSync(new URL("../app/missions/[slug]/projects/[projectSlug]/work/[workSlug]/ConfirmHelpForm.tsx", import.meta.url), "utf8");
-  const source = `${page}\n${confirm}`;
+  const source = `${page}\n${confirm}\n${readFileSync(new URL("../app/missions/[slug]/projects/[projectSlug]/work/[workSlug]/ContributionForm.tsx", import.meta.url), "utf8")}\n${readFileSync(new URL("../app/missions/[slug]/projects/[projectSlug]/work/[workSlug]/RecognizeForm.tsx", import.meta.url), "utf8")}`;
   for (const word of ["Apply", "Applicant", "Hired", "Candidate", "Employee", "Contractor", "Assigned", "Member"]) {
     assert.equal(source.includes(word), false, word);
   }
@@ -205,5 +205,8 @@ test("the work page names mutual help without employment or membership language"
   assert.match(confirm, /workCopy.confirmBoundary/);
   assert.match(confirm, /workCopy.illHelp/);
   assert.match(workCopy.confirmBoundary, /does not create employment, contractor status, a legal contract/);
+  assert.match(source, /workCopy.contributionBoundary/);
+  assert.match(source, /workCopy.recognitionBoundary/);
+  assert.match(source, /workCopy.mcuMeaning/);
   assert.equal(workCopy.futureContributions.includes("MCU"), false);
 });

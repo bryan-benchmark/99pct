@@ -4,7 +4,7 @@ import { economicMigrationsCurrent } from "../src/economic/db/migrate";
 import { exportMission } from "../src/economic/export/export";
 import { verifyExport } from "../src/economic/verify/verify";
 
-const tables = ["schema_migrations", "command_intents", "intent_outcomes", "commands", "events", "rule_versions", "reward_keys"] as const;
+const tables = ["schema_migrations", "command_intents", "intent_outcomes", "commands", "events", "rule_versions", "reward_keys", "checkpoints"] as const;
 
 function checkUrl(value: string | undefined, name: string) {
   if (!value) throw new Error(`${name} is required.`);

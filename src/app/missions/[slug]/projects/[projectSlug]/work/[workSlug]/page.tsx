@@ -5,12 +5,15 @@ import { verifyHumanSession } from "@/human/auth/server";
 import { humanSessionCookieName } from "@/human/auth/session";
 import { getMissionDb } from "@/missions/db/runtime";
 import { getOwnInterest, listCreatorInterests, type CreatorInterest, type OwnInterest } from "@/missions/interest";
+import { listWorkContributions, type ContributionView } from "@/missions/contributions";
 import { helpingCountLabel, interestCountLabel, publicMissionUrl, publicProjectUrl, workCopy, type ParticipationState } from "@/missions/model";
 import { getPublicMission } from "@/missions/store";
 import { getPublicProject, getPublicWork, viewerMayCreate } from "@/missions/projects";
 import { ConfirmHelpForm } from "./ConfirmHelpForm";
+import { ContributionForm } from "./ContributionForm";
 import { InterestForm } from "./InterestForm";
 import { InviteForm } from "./InviteForm";
+import { RecognizeForm } from "./RecognizeForm";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +30,30 @@ function expressedAt(value: string) {
   return new Date(value).toLocaleDateString("en-US", { dateStyle: "long", timeZone: "UTC" });
 }
 
+function displayMcu(amount: string) {
+  const padded = amount.padStart(7, "0");
+  return `${padded.slice(0, -6)}.${padded.slice(-6)}`;
+}
+
+function ContributionList({ contributions, creatorView, missionSlug, projectSlug, workSlug }: { contributions: ContributionView[]; creatorView: boolean; missionSlug: string; projectSlug: string; workSlug: string }) {
+  if (contributions.length === 0) return null;
+  return (
+    <ul className="mt-4 space-y-4">
+      {contributions.map((contribution) => (
+        <li key={contribution.id}>
+          <p className="text-[var(--body)]">{contribution.summary}</p>
+          {contribution.amount ? (
+            <p className="mt-2 text-[var(--body)]">{workCopy.anchoredGrant}: {displayMcu(contribution.amount)} MCU. Rule {contribution.ruleId} version {contribution.ruleVersion}. {workCopy.mcuMeaning}</p>
+          ) : contribution.recognized ? (
+            <p className="mt-2 text-[var(--body)]">{workCopy.awaitingAnchor}</p>
+          ) : creatorView ? (
+            <RecognizeForm missionSlug={missionSlug} projectSlug={projectSlug} workSlug={workSlug} contributionId={contribution.id} />
+          ) : null}
+        </li>
+      ))}
+    </ul>
+  );
+}
 function participationLabel(state: ParticipationState) {
   if (state === "helping") return workCopy.stateHelping;
   if (state === "invited") return workCopy.stateInvited;
@@ -42,6 +69,7 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
   let interests: CreatorInterest[] = [];
   let ownInterest: OwnInterest | null = null;
   let signedIn = false;
+  let contributions: ContributionView[] = [];
   try {
     const db = await getMissionDb();
     work = await getPublicWork(db, slug, projectSlug, workSlug);
@@ -55,6 +83,7 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
           creatorView = await viewerMayCreate(db, slug, identity.uid);
           if (creatorView) interests = await listCreatorInterests(db, slug, projectSlug, workSlug, identity.uid);
           else ownInterest = await getOwnInterest(db, slug, projectSlug, workSlug, identity.uid);
+          if (creatorView || ownInterest?.state === "helping") contributions = await listWorkContributions(db, slug, projectSlug, workSlug, identity.uid);
         }
       } catch (error) {
         if (!(error instanceof Error) || error.message !== "Human authentication is not configured.") throw error;
@@ -102,11 +131,14 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
                 ))}
               </ul>
             )}
+            <ContributionList contributions={contributions} creatorView missionSlug={slug} projectSlug={projectSlug} workSlug={workSlug} />
           </>
         ) : ownInterest?.state === "helping" ? (
           <>
             <h2 className="text-lg font-semibold text-[var(--ink)]">{workCopy.youreHelping}</h2>
             <p className="mt-2 text-[var(--body)]">{workCopy.futureContributions}</p>
+            <ContributionForm missionSlug={slug} projectSlug={projectSlug} workSlug={workSlug} />
+            <ContributionList contributions={contributions} creatorView={false} missionSlug={slug} projectSlug={projectSlug} workSlug={workSlug} />
             {ownInterest.note ? <p className="mt-3 text-[var(--body)]">{ownInterest.note}</p> : null}
           </>
         ) : ownInterest?.state === "invited" ? (
