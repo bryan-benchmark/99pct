@@ -10,18 +10,23 @@ See `docs/work-orders/WO-0016-first-mcu.md`.
 
 Status:
 
-**BLOCKED — EXPLICIT CLOUD KMS SPEND APPROVAL REQUIRED**
+**ACTIVE — CLOUD KMS SPEND APPROVED 2026-10-04**
 
-### Approval gate
+### Approval gate — satisfied
 
-The first real MCU may not be issued until:
+Product owner explicitly approved on 2026-10-04:
 
-1. product owner explicitly approves the small recurring Cloud KMS spend;
-2. approval is recorded in the control plane;
-3. the non-exportable signing key is provisioned;
-4. worker-only signing IAM is verified;
-5. App Hosting has no signing permission;
-6. a signed checkpoint can be independently verified.
+> I approve the Cloud KMS spend for WO-0016.
+
+Before the first real MCU is issued:
+
+1. recheck current Cloud KMS pricing and `EC_SIGN_ED25519` support;
+2. provision the non-exportable signing key;
+3. verify worker-only signing IAM;
+4. verify App Hosting has no signing permission;
+5. prove a signed checkpoint can be independently verified.
+
+If the expected KMS configuration or cost changes materially from the approved envelope, stop for renewed approval.
 
 Current expected pricing is roughly $0.06/month for one active software key version plus $0.03 per 10,000 cryptographic operations, subject to current Google Cloud pricing at creation time.
 
