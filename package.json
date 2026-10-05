@@ -15,6 +15,7 @@
     "economy:check-runtime-role": "tsx scripts/economic-check-runtime-role.ts",
     "economy:pg": "node --import tsx --test --test-concurrency=1 src/economic/pg/race.test.ts src/economic/pg/capability.test.ts",
     "economy:worker": "tsx scripts/economy-worker.ts",
+    "economy:cloud": "tsx scripts/economy-cloud-exec.ts",
     "economy:health": "tsx scripts/economy-health.ts",
     "economy:export": "tsx scripts/economy-export.ts",
     "economy:restore-check": "tsx scripts/economy-restore-check.ts",
