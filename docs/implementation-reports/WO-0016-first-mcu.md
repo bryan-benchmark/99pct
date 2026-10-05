@@ -96,13 +96,55 @@ Project IAM has no Cloud KMS role. The setup signatures were made by a project `
 
 A live `asymmetricSign` call as those service accounts was not completed. A temporary `roles/iam.serviceAccountTokenCreator` binding was added so the operator could mint their tokens; `iam.serviceAccounts.getAccessToken` stayed denied, and both temporary bindings were removed. Each service account IAM policy is empty again.
 
-## What is still waiting
+## Live canary
 
-The first MCU grant has not been issued. It still waits for the confirmed helper to record a Contribution and the Mission creator to recognize it, after this revision is accepted and the exact commit is rolled out with automatic rollouts left off.
+`e477143abdd4a085f91193b8c4d4a8a76e68eab1` was rolled out as `build-2026-10-05-001`. That revision has 100% of traffic. Automatic rollouts stayed off. The rollback target remains `build-2026-10-04-015` of `3197dbee18cc092b183b1852cfb551bf10cd7155`.
+
+The serving build's only secret binding is `mission-db-password`. `GET /api/health` and `GET /api/missions/health` both returned ready. Economic health returned `ready events=4 grants=1`.
+
+On Work `wo-0010-test-task`:
+
+1. The confirmed helper recorded one Contribution. The page still said that recording a Contribution does not itself create MCUs, and it showed no amount.
+2. The Mission creator recognized it. The page then said the grant is not released until the economic checkpoint is anchored.
+3. The recognition bridge submitted one intent (`bridged 1`, `anchored 0`).
+4. The kernel worker, using `economy_kernel_writer`, processed that command and checkpointed it (`processed 1`).
+5. The bridge ran again and recorded the verified anchor (`bridged 0`, `anchored 1`).
+
+The canary checkpoint was signed through the same operator Cloud KMS path as the rule checkpoints. The worker service account still cannot be impersonated from this session, so this signature is the documented project-owner break-glass path. The key policy was not changed.
+
+| Item | Value |
+|---|---|
+| Contribution | `9da13d3a-c6a9-4bf3-9fb1-acc42f6b3dfb` |
+| Content hash | `756aa1201df91c69f39496ef9b63f413c3b542aa9423a10884c5ddedc7fececa` |
+| Recognition intent | `8928960a-9a4b-4556-83c7-ecec1d73ece9` |
+| Recognition command | `5847410d-60dc-4863-87b3-ad4a82ee3653` |
+| `contribution_recognized` | `662a8e0a-1518-40dc-81e5-ec246cff83e3`, sequence 3, hash `3bba7e3f71a21f2301a0249d71f45a548b88fe6a7eb2c3bb51ee2f015600dee2` |
+| `mcu_granted` | `d3bb975d-bdde-4f9a-b788-5d836b6b343f`, sequence 4, hash `23b698e0edce5455acb1a6f6c21c4fcb21b803348f3d2e70635953df365e3c99` |
+| Amount | `1000000` minor units, displayed as 1.000000 MCU |
+| Rule | `fixed-recognition` version 1 |
+| Checkpoint | sequence 4, event count 4, same hash, key version 1, `2026-10-05T03:32:56.802Z` |
+
+The verifier export plus that checkpoint plus the pinned public key returned `economic export verified`. The export contains no email address.
+
+Counts after the canary: 4 events, 1 `mcu_granted`, 1 reward key, 1 contribution, 1 recognition, 1 bridge outcome, 1 anchor. There is no bounty reward event.
+
+Retries left those counts unchanged:
+
+- kernel worker: `processed 0`
+- recognition bridge: `bridged 0`, `anchored 0`
+- a second creator recognition request returned the existing recognition
+- the same Contribution key and content returned the same Contribution id
+- the same key with different evidence returned 409
+
+The creator view and the helper view both show `Anchored MCU grant: 1.000000 MCU`, rule `fixed-recognition` version 1, and “MCUs record recognized Mission contribution. They are not legal shares or cash.” The signed-out Work page shows the interest and helping counts only.
+
+PR #33 stays open for the final audit. The Infrastructure Drip was not started.
 
 ## CI and operations
 
 Code CI on `b2499fd`, run `37256701356`: functional passed, dependency-security passed.
+
+Revised-head CI on `e477143`, run `37258863545`: both jobs passed before this rollout.
 
 Instance `pct99-missions-prod` is `RUNNABLE`. Backups are enabled with 7 retained backups, point-in-time recovery is on, transaction-log retention is 7 days, and deletion protection is on.
 
