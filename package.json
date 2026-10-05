@@ -21,7 +21,7 @@
     "economy:health": "tsx scripts/economy-health.ts",
     "economy:export": "tsx scripts/economy-export.ts",
     "economy:restore-check": "tsx scripts/economy-restore-check.ts",
-    "test:missions": "tsx --test src/missions/missions.test.ts src/missions/projects.test.ts src/missions/interest.test.ts src/missions/participation.test.ts src/missions/contributions.test.ts src/missions/discovery.test.ts src/missions/persistence.test.ts src/missions/db/migrate.test.ts src/human/auth/human-session.test.ts src/app/api/missions/health/route.test.ts",
+    "test:missions": "tsx --test src/missions/missions.test.ts src/missions/projects.test.ts src/missions/interest.test.ts src/missions/participation.test.ts src/missions/contributions.test.ts src/missions/anchor-trust.test.ts src/missions/discovery.test.ts src/missions/persistence.test.ts src/missions/db/migrate.test.ts src/human/auth/human-session.test.ts src/app/api/missions/health/route.test.ts",
     "test:public": "tsx --test src/components/site-footer.test.ts src/components/product-shell.test.ts src/app/api/health/route.test.ts",
     "check:canonical": "node scripts/check-canonical-badge.mjs",
     "check:npm-audit": "node scripts/check-npm-audit.mjs",

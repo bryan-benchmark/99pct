@@ -1,4 +1,5 @@
 import { randomBytes, randomUUID } from "node:crypto";
+import { canonicalize, sha256 } from "@/economic/canonical";
 import { firstRecognitionRule } from "@/economic/first-rule";
 import type { MissionDb, MissionSql } from "./db/client";
 import { InterestRequestError } from "./interest";
@@ -46,6 +47,10 @@ async function contributorRef(tx: MissionSql, uid: string) {
   const contributorRefValue = `contributor:${randomBytes(10).toString("hex")}`;
   await tx.query("INSERT INTO contributor_refs (firebase_uid, contributor_ref) VALUES ($1, $2)", [uid, contributorRefValue]);
   return contributorRefValue;
+}
+
+export function contributionContentHash(summary: string, evidence: string) {
+  return sha256(canonicalize({ evidence, summary }));
 }
 
 export type ContributionView = {
@@ -97,21 +102,22 @@ export async function submitContribution(
     const work = await targetWork(tx, missionSlug, projectSlug, workSlug);
     if (work.creator_uid === human.uid) throw new InterestRequestError(403, "The Mission creator records recognition, not their own Contribution.");
     if (!await confirmedHelper(tx, work.id, human.uid)) throw new InterestRequestError(403, "Only a confirmed helper can record a Contribution.");
-    const existing = await tx.query<{ id: string; summary: string }>(
-      "SELECT id, summary FROM contributions WHERE work_id = $1 AND participant_uid = $2 AND idempotency_key = $3",
+    const contentHash = contributionContentHash(draft.summary, draft.evidence);
+    const existing = await tx.query<{ id: string; content_hash: string }>(
+      "SELECT id, content_hash FROM contributions WHERE work_id = $1 AND participant_uid = $2 AND idempotency_key = $3",
       [work.id, human.uid, draft.idempotencyKey],
     );
     if (existing.rows[0]) {
-      if (existing.rows[0].summary !== draft.summary) throw new InterestRequestError(409, "That Contribution key was already used.");
+      if (existing.rows[0].content_hash !== contentHash) throw new InterestRequestError(409, "That Contribution key was already used.");
       return { id: existing.rows[0].id, status: "recorded" as const };
     }
     await contributorRef(tx, human.uid);
     const id = randomUUID();
     try {
       await tx.query(
-        `INSERT INTO contributions (id, work_id, participant_uid, submitted_by_uid, summary, evidence_note, idempotency_key)
-         VALUES ($1,$2,$3,$3,$4,$5,$6)`,
-        [id, work.id, human.uid, draft.summary, draft.evidence, draft.idempotencyKey],
+        `INSERT INTO contributions (id, work_id, participant_uid, submitted_by_uid, summary, evidence_note, idempotency_key, content_hash)
+         VALUES ($1,$2,$3,$3,$4,$5,$6,$7)`,
+        [id, work.id, human.uid, draft.summary, draft.evidence, draft.idempotencyKey, contentHash],
       );
     } catch (error) {
       if (error instanceof Error && /unique|duplicate/i.test(error.message)) throw new InterestRequestError(409, "That Contribution was already recorded.");

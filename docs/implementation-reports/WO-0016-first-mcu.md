@@ -78,9 +78,27 @@ Checkpoints, both signed by key version 1 and verified against the export with t
 
 `economic.reward_keys` is still empty. There is no `contribution_recognized` event and no `mcu_granted` event.
 
+## Pre-canary review
+
+The product-owner review on PR #33 asked for three fixes before the first MCU. No economic history was rewritten. The rule publication and sequence-2 checkpoint remain.
+
+The recognition bridge anchors a grant only after `grantsFromVerifiedCheckpoint` accepts the export, the latest checkpoint, and a signature. Verification uses the pinned public key in `src/economic/checkpoint/economy-ledger-public.pem` and key version 1. The `public_key_pem` column on the checkpoint row is not the trust anchor. A row with the right Mission, sequence, and hash is refused when the signature is invalid, the public key is substituted, or the checkpoint is stale. That regression is `src/missions/anchor-trust.test.ts`.
+
+Contribution replay now compares a SHA-256 of the canonical summary and evidence. The same idempotency key with different evidence returns 409. Migration `0007_contribution_content_hash.sql` stores that hash. Its SHA-256 is `6e7f631eda8e46af6ad94976eb9daf54c73aa897c4993f9d93a0762c5a9645e6`. It was applied to production `missions` while the previous build was still serving. The contributions table was empty, and Mission health stayed ready.
+
+### Who can sign
+
+The ledger key policy still has one binding: `roles/cloudkms.signerVerifier` for `economy-kernel-worker@pct-99.iam.gserviceaccount.com`.
+
+Project IAM has no Cloud KMS role. The setup signatures were made by a project `roles/owner` identity. Owner includes `cloudkms.cryptoKeyVersions.useToSign`, so those calls succeeded without a key-level binding. That owner path is break-glass administration and recovery. It is not the runtime signer, and it was left in place so key recovery stays possible.
+
+`firebase-app-hosting-compute@pct-99.iam.gserviceaccount.com` is not on the key policy. Its project roles are `roles/cloudsql.client`, `roles/developerconnect.readTokenAccessor`, `roles/firebase.sdkAdminServiceAgent`, `roles/firebaseapphosting.computeRunner`, and `roles/storage.objectViewer`. Policy Troubleshooter associated the worker with `roles/cloudkms.signerVerifier` and did not associate App Hosting with a KMS role.
+
+A live `asymmetricSign` call as those service accounts was not completed. A temporary `roles/iam.serviceAccountTokenCreator` binding was added so the operator could mint their tokens; `iam.serviceAccounts.getAccessToken` stayed denied, and both temporary bindings were removed. Each service account IAM policy is empty again.
+
 ## What is still waiting
 
-The first MCU grant has not been issued. It requires the confirmed helper to record a Contribution and the Mission creator to recognize it through the product, then the isolated bridge and kernel worker. That path is not available on the current serving build, and this change was not rolled out. Automatic rollout settings were left as they were.
+The first MCU grant has not been issued. It still waits for the confirmed helper to record a Contribution and the Mission creator to recognize it, after this revision is accepted and the exact commit is rolled out with automatic rollouts left off.
 
 ## CI and operations
 

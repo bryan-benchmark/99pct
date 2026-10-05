@@ -6,7 +6,7 @@ import { NextRequest } from "next/server";
 import { createRecognitionRequest } from "../app/api/missions/[slug]/projects/[projectSlug]/work/[workSlug]/contributions/[contributionId]/recognize/route";
 import { createContributionRequest } from "../app/api/missions/[slug]/projects/[projectSlug]/work/[workSlug]/contributions/route";
 import { bridgePendingRecognitions, recordAnchoredGrants } from "./bridge";
-import { recognizeContributionRecord, submitContribution } from "./contributions";
+import { contributionContentHash, recognizeContributionRecord, submitContribution } from "./contributions";
 import { embeddedMissionDb } from "./db/client";
 import { migrateMissions } from "./db/migrate";
 import { expressInterest, listCreatorInterests } from "./interest";
@@ -61,6 +61,7 @@ test("only a confirmed helper can record a Contribution, and recognition is crea
   const replay = await submitContribution(db, helper, mission.slug, project.slug, work.slug, draft);
   assert.equal(replay.id, recorded.id);
   await assert.rejects(() => submitContribution(db, helper, mission.slug, project.slug, work.slug, { ...draft, summary: "Different" }), /already used/);
+  await assert.rejects(() => submitContribution(db, helper, mission.slug, project.slug, work.slug, { ...draft, evidence: "A different bottle count." }), /already used/);
   await assert.rejects(() => recognizeContributionRecord(db, helper, mission.slug, project.slug, work.slug, recorded.id), /creator/);
   const recognized = await recognizeContributionRecord(db, creator, mission.slug, project.slug, work.slug, recorded.id);
   assert.equal(recognized.status, "recognized");
@@ -165,9 +166,9 @@ test("a creator cannot recognize a Contribution on another Mission, and the brid
   const workRow = await db.query<{ id: string }>("SELECT id FROM work_items WHERE slug = $1", [work.slug]);
   const unconfirmedId = randomUUID();
   await db.query(
-    `INSERT INTO contributions (id, work_id, participant_uid, submitted_by_uid, summary, idempotency_key)
-     VALUES ($1,$2,$3,$3,'Unconfirmed help','unconfirmed-1')`,
-    [unconfirmedId, workRow.rows[0].id, stranger.uid],
+    `INSERT INTO contributions (id, work_id, participant_uid, submitted_by_uid, summary, idempotency_key, content_hash)
+     VALUES ($1,$2,$3,$3,'Unconfirmed help','unconfirmed-1',$4)`,
+    [unconfirmedId, workRow.rows[0].id, stranger.uid, contributionContentHash("Unconfirmed help", "")],
   );
   await db.query(
     `INSERT INTO contribution_recognitions (contribution_id, recognized_by_uid, rule_id, rule_version, bridge_idempotency_key)
