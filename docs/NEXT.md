@@ -4,74 +4,101 @@ Updated: 2026-10-04
 
 ## Active engineering
 
-`WO-0016 — Contribution recognition + first MCU issuance`
+`WO-0017 — Infrastructure Drip`
 
-See `docs/work-orders/WO-0016-first-mcu.md`.
+See:
 
-Status:
+`docs/work-orders/WO-0017-infrastructure-drip.md`
 
-**ACTIVE — CLOUD KMS SPEND APPROVED 2026-10-04**
+Goal: make shared 99pct infrastructure economically visible by construction **without reducing human grants and without turning MCUs into money or transferable tokens**.
 
-### Approval gate — satisfied
+### The invariant
 
-Product owner explicitly approved on 2026-10-04:
+For a recognition whose primary rule grants 100 MCUs:
 
-> I approve the Cloud KMS spend for WO-0016.
+```text
+Contributor:               100 MCUs
+Infrastructure allocation:   1 MCU   # at a 1% policy
+```
 
-Before the first real MCU is issued:
+The contributor still receives 100.
 
-1. recheck current Cloud KMS pricing and `EC_SIGN_ED25519` support;
-2. provision the non-exportable signing key;
-3. verify worker-only signing IAM;
-4. verify App Hosting has no signing permission;
-5. prove a signed checkpoint can be independently verified.
+The Infrastructure Drip is additional issuance/accounting.
 
-If the expected KMS configuration or cost changes materially from the approved envelope, stop for renewed approval.
+### Initial policy
 
-Current expected pricing is roughly $0.06/month for one active software key version plus $0.03 per 10,000 cryptographic operations, subject to current Google Cloud pricing at creation time.
+Production canary target:
 
-### First real-value flow
+- starting MCU drip rate: **100 basis points = 1%**
+- initial protocol maximum: **200 basis points = 2%**
+- one initial dependency: **99pct Infrastructure Mission**
+- dependency weight: 100%
+- no recursive drip
+- no retroactive drip on the existing WO-0016 grant
 
-After the gate is satisfied:
+One percent is an initial rule version, not a permanent protocol constant.
 
-`confirmed helper → Contribution submission → creator/authorized recognition fact → isolated recognition bridge → kernel → MCU grant → signed checkpoint`
+Changing the configured rate/dependencies creates a new immutable policy version.
 
-Key separation:
+Changing the protocol maximum itself requires a future accepted protocol/code change.
 
-- helper submission is not economic value;
-- Mission-side recognition is an immutable human/product fact;
-- recognition service verifies the fact and submits through the recognition capability;
-- the web app never receives the recognition credential;
-- the kernel decides the MCU grant from the exact active rule;
-- signed checkpoints anchor the resulting economic history.
+### Mission-level allocation semantics
 
-### After WO-0016
+Do not create a fake human contributor for infrastructure.
 
-1. **WO-0017 — Infrastructure Drip**
-   Add the two-rail sustainability mechanism before general bounties:
-   - additional MCU issuance for shared infrastructure Contribution;
-   - separate cash protocol fee on the money ledger for real dollar costs;
-   - immutable/versioned dependency-allocation rules;
-   - protocol caps, delayed changes, public verification, and self-hosting without the hosted fee.
+Use a separate event such as:
 
-2. **WO-0018 — immutable bounty terms + autonomous MCU rewards**
-   General bounties inherit the Infrastructure Drip rather than having it bolted on afterward.
+`infrastructure_mcu_allocated`
 
-3. **WO-0019 — public checkpoint/transparency hardening**
-   Public signed checkpoints, recovery/rebuild drills, independent verifier packaging, and transparency publication.
+It belongs to the **source Mission's** append-only stream and points to:
 
-4. money bounty connector
+- the human grant that caused it;
+- the active infrastructure-policy version;
+- the dependency Mission receiving the allocation;
+- the exact amount;
+- a stable allocation key.
 
-5. rule-governance hardening
+The event is not included in the human's MCU total.
 
-6. Mission blueprints / Utility Missions
+There is no transfer/spend endpoint.
+
+Humans maintaining the Infrastructure Mission continue to earn their own personal MCUs only through normal Contribution → recognition → grant.
+
+### Two-rail rule
+
+WO-0017 implements the MCU allocation rail.
+
+It also freezes the future cash-rail contract:
+
+- dollars pay dollar costs;
+- target hosted fee may later be cost-targeting;
+- illustrative operating range remains approximately 25–100 bps;
+- hard cash maximum remains 100 bps unless a later accepted protocol decision changes it;
+- self-hosted/open-source operation does not owe the hosted network fee.
+
+WO-0017 moves **no money** and creates no cash ledger.
+
+### After WO-0017
+
+1. **WO-0018 — immutable bounty terms + autonomous MCU rewards**
+   Bounties inherit the Infrastructure Drip automatically.
+
+2. **WO-0019 — public checkpoint/transparency hardening**
+   Public signed checkpoint publication, recovery exercises, and independent verifier packaging.
+
+3. money bounty connector
+
+4. rule-governance hardening
+
+5. Mission blueprints / Utility Missions
 
 ## Completed
 
-- WO-0013 public 99pct shell
-- WO-0014 deterministic economic kernel
-- WO-0015 production economic shadow boundary
+- WO-0013 — public 99pct shell
+- WO-0014 — deterministic economic kernel
+- WO-0015 — production economic shadow boundary
+- WO-0016 — first real Contribution → MCU → signed checkpoint lifecycle
 
 ## Waiting externally
 
-WO-0006 — 99pct.com domain cutover remains parked.
+`WO-0006 — 99pct.com domain cutover` remains parked.

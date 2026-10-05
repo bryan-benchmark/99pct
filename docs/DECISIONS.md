@@ -811,3 +811,157 @@ MCUs do not pay Google Cloud invoices.
 Cash fees do not manufacture Contribution.
 
 Neither rail automatically creates legal equity.
+
+## ADR-024 — Infrastructure issuance is a Mission allocation, not a transferable treasury token
+
+Status: Accepted  
+Date: 2026-10-04
+
+ADR-023 defines the two-rail Infrastructure Drip.
+
+This ADR fixes the MCU semantics needed to implement it without violating ADR-001.
+
+### Human grants remain human contribution records
+
+A human MCU grant represents recognized human contribution.
+
+If the primary rule grants a human 100 MCUs, the human receives 100 MCUs.
+
+The Infrastructure Drip does not reduce, split, withhold, tax, or transfer any part of that human grant.
+
+### Infrastructure allocation is a distinct event
+
+The same economic command may append additional mission-level infrastructure allocation events.
+
+Use a distinct event semantic such as:
+
+`infrastructure_mcu_allocated`
+
+The event records that shared infrastructure contributed to the source Mission's ability to create the primary grant.
+
+It names:
+
+- source Mission;
+- originating human grant/event;
+- dependency Mission;
+- allocation amount;
+- immutable infrastructure-policy id/version;
+- stable allocation key.
+
+This is additional issuance/accounting.
+
+It is not represented as `mcu_granted` to a fabricated human.
+
+### No transferable Mission treasury
+
+An Infrastructure Mission allocation is not a bearer balance that administrators can transfer or spend.
+
+WO-0017 must not introduce:
+
+- MCU transfer;
+- MCU withdrawal;
+- arbitrary treasury payout;
+- conversion to cash;
+- conversion to legal equity;
+- generic admin distribution.
+
+Human maintainers of the Infrastructure Mission earn personal MCUs only when their own Contribution is submitted, recognized, and granted under that Mission's published rules.
+
+A later design may use public infrastructure-allocation totals as evidence/input for budgets or governance, but previously issued allocation events are never silently converted into human grants.
+
+### Source-Mission atomicity
+
+Infrastructure allocation events live in the **source Mission's economic stream**.
+
+The kernel must not attempt a distributed transaction that appends authoritative events to two Mission streams at once.
+
+This preserves:
+
+- per-Mission serialization;
+- one hash chain;
+- atomic primary grant + allocation;
+- deterministic replay;
+- independent export verification.
+
+Recipient-Mission totals are derived by aggregating verified source-Mission allocation events.
+
+### Initial rate and protocol cap
+
+The first production infrastructure policy is:
+
+- configured rate: 100 basis points = 1%;
+- protocol maximum: 200 basis points = 2%.
+
+The rate is stored in an immutable/versioned policy definition.
+
+One percent is not hard-coded as the permanent rate.
+
+A policy above the protocol maximum must fail closed.
+
+Changing the protocol maximum itself requires an accepted protocol/code change rather than an ordinary policy update.
+
+### Deterministic integer allocation
+
+Infrastructure allocation uses MCU minor units only.
+
+No floating point.
+
+For primary amount `P` and rate `R` basis points:
+
+```text
+drip_total = floor(P * R / 10_000)
+```
+
+A zero-minor-unit result emits no allocation event.
+
+For multiple dependency Missions:
+
+- dependency weights are positive integer basis points;
+- weights sum exactly to 10,000;
+- duplicate dependency Mission refs are invalid;
+- total dependency count is bounded;
+- integer remainder is assigned deterministically so allocations sum exactly to `drip_total`.
+
+Recommended remainder rule:
+
+1. compute each exact numerator;
+2. assign floor amounts;
+3. distribute remaining minor units by descending fractional remainder;
+4. break ties by canonical dependency Mission ref.
+
+### No recursive drip
+
+Infrastructure allocations do not themselves generate another Infrastructure Drip.
+
+Adjustments do not create a drip.
+
+WO-0017 applies the drip to normal recognized human MCU grants only.
+
+WO-0018 later extends the same policy to eligible bounty rewards.
+
+### Version changes and delay
+
+Infrastructure-policy versions are immutable.
+
+The first bootstrap version may activate after publication has been checkpointed.
+
+Any later replacement version must:
+
+- be published separately;
+- have a future activation boundary;
+- remain publicly inspectable before activation;
+- be checkpointed before it can affect grants.
+
+The production minimum replacement delay is 24 hours unless a later accepted protocol decision changes it.
+
+Tests may use an injected clock/trusted timestamp; production authority must derive timing from a trusted server-side source, not browser JSON.
+
+### Cash rail remains separate
+
+No MCU allocation pays a dollar expense.
+
+The future hosted cash fee remains a money-ledger mechanism with a hard maximum of 100 basis points under the current design.
+
+Self-hosting the open-source 99pct tree does not create an obligation to pay the hosted-network cash fee.
+
+WO-0017 moves no money.
