@@ -4,7 +4,6 @@ import test from "node:test";
 import { verifyChain } from "../chain";
 import { configuredEconomicDb } from "../db/client";
 import { commitCommand, listEconomicEvents } from "../db/commit";
-import { submitCommandIntent } from "../db/intent";
 import { migrateEconomic } from "../db/migrate";
 import { EconomicRefusal, type EconomicCommand } from "../model";
 
@@ -65,10 +64,22 @@ test("concurrent commands and bounty rewards produce one economic result", async
     const application = configuredEconomicDb(runtimeUrl!);
     try {
       const before = events.length;
-      await submitCommandIntent(application, command(bountyMission, "recognize_bounty_completion", "intent-only", "bounty-recognition", {
-        bountyRef: "bounty:race", beneficiaryRef: "human:ada", completionRef: "completion:other", evidenceRef: "evidence:note",
-      }));
+      await assert.rejects(() => application.query(
+        "SELECT economic.submit_recognition_intent($1, 'recognize_contribution', 'intent-only', '{\"contributionRef\":\"contribution:x\",\"contributorRef\":\"human:ada\",\"evidenceRef\":\"evidence:x\",\"ruleId\":\"fixed-recognition\",\"ruleVersion\":\"1\"}'::jsonb)",
+        [bountyMission],
+      ));
+      const submitted = await application.query<{ id: string }>(
+        "SELECT economic.submit_human_intent($1, 'join-shadow', 'human:ada', '{\"bountyRef\":\"bounty:race\",\"beneficiaryRef\":\"human:ada\"}'::jsonb) AS id",
+        [bountyMission],
+      );
+      assert.equal(typeof submitted.rows[0]?.id, "string");
       assert.equal((await listEconomicEvents(application, bountyMission)).length, before);
+      await assert.rejects(() => application.query(
+        `INSERT INTO economic.command_intents
+           (id, mission_id, command_type, idempotency_key, actor_kind, actor_ref, payload, submitted_at, submitter_capability)
+         VALUES ($1,$2,'recognize_contribution','forged-intent','process','recognition','{}'::jsonb,now(),'recognition')`,
+        [randomUUID(), bountyMission],
+      ));
       await assert.rejects(() => application.query(
         `INSERT INTO economic.events (
            id, mission_id, sequence, event_type, command_id, actor_kind, actor_ref, subject_kind, subject_ref,

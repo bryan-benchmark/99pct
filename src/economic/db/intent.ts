@@ -1,16 +1,47 @@
-import { randomUUID } from "node:crypto";
-import { canonicalize } from "../canonical";
 import type { EconomicDb } from "./client";
-import { assertCommand } from "../model";
 
-export async function submitCommandIntent(db: Pick<EconomicDb, "query">, input: unknown) {
-  const command = assertCommand(input);
-  const id = randomUUID();
-  await db.query(
-    `INSERT INTO economic.command_intents
-       (id, mission_id, command_type, idempotency_key, actor_kind, actor_ref, payload, submitted_at)
-     VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, now())`,
-    [id, command.missionId, command.type, command.idempotencyKey, command.actor.kind, command.actor.ref, canonicalize(command.payload)],
+type IntentId = { id: string };
+
+export async function submitHumanIntent(
+  db: Pick<EconomicDb, "query">,
+  input: { missionId: string; idempotencyKey: string; actorRef: string; payload: unknown },
+) {
+  const result = await db.query<IntentId>(
+    "SELECT economic.submit_human_intent($1, $2, $3, $4::jsonb) AS id",
+    [input.missionId, input.idempotencyKey, input.actorRef, JSON.stringify(input.payload)],
   );
-  return { id };
+  return { id: result.rows[0].id };
+}
+
+export async function submitRecognitionIntent(
+  db: Pick<EconomicDb, "query">,
+  input: { missionId: string; commandType: "recognize_contribution" | "adjust_mcu"; idempotencyKey: string; payload: unknown },
+) {
+  const result = await db.query<IntentId>(
+    "SELECT economic.submit_recognition_intent($1, $2, $3, $4::jsonb) AS id",
+    [input.missionId, input.commandType, input.idempotencyKey, JSON.stringify(input.payload)],
+  );
+  return { id: result.rows[0].id };
+}
+
+export async function submitGovernanceIntent(
+  db: Pick<EconomicDb, "query">,
+  input: { missionId: string; commandType: "publish_rule" | "activate_rule"; idempotencyKey: string; payload: unknown },
+) {
+  const result = await db.query<IntentId>(
+    "SELECT economic.submit_governance_intent($1, $2, $3, $4::jsonb) AS id",
+    [input.missionId, input.commandType, input.idempotencyKey, JSON.stringify(input.payload)],
+  );
+  return { id: result.rows[0].id };
+}
+
+export async function submitBountyRecognitionIntent(
+  db: Pick<EconomicDb, "query">,
+  input: { missionId: string; idempotencyKey: string; payload: unknown },
+) {
+  const result = await db.query<IntentId>(
+    "SELECT economic.submit_bounty_recognition_intent($1, $2, $3::jsonb) AS id",
+    [input.missionId, input.idempotencyKey, JSON.stringify(input.payload)],
+  );
+  return { id: result.rows[0].id };
 }

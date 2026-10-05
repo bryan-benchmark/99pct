@@ -1,22 +1,10 @@
 import { configuredEconomicDb } from "../src/economic/db/client";
-import { migrateEconomic } from "../src/economic/db/migrate";
-
-function assertDisposable(connection: string) {
-  let database = "";
-  try {
-    database = new URL(connection).pathname.replace(/^\//, "");
-  } catch {
-    throw new Error("Economic migration URL is invalid.");
-  }
-  if (database === "missions" || connection.includes("pct99-missions-prod")) {
-    throw new Error("Refusing to apply the economic kernel to the production Mission database.");
-  }
-}
+import { assertEconomicMigrationTarget, migrateEconomic } from "../src/economic/db/migrate";
 
 async function main() {
   const connection = process.env.ECONOMIC_MIGRATION_DATABASE_URL;
   if (!connection) throw new Error("ECONOMIC_MIGRATION_DATABASE_URL is required.");
-  assertDisposable(connection);
+  assertEconomicMigrationTarget(connection, process.env.ECONOMIC_PRODUCTION_SHADOW === "1");
   const db = configuredEconomicDb(connection);
   try {
     await migrateEconomic(db);
