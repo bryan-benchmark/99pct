@@ -4,89 +4,66 @@ Updated: 2026-10-04
 
 ## Active engineering
 
-`WO-0014 — Economic kernel foundation`
+`WO-0015 — Economic production boundary / shadow ledger`
 
-See `docs/work-orders/WO-0014-economic-kernel-foundation.md`.
+See `docs/work-orders/WO-0015-economic-production-boundary.md`.
 
-Goal: build the smallest trustworthy core that future Contribution, MCU, bounty, money-connector, and ownership-connector features can depend on.
+Goal: move the accepted kernel from disposable CI into a real production-grade boundary **without creating economic value**.
 
-### Kernel laws
+### What this order proves
 
-1. **Events are truth.**
-   No mutable MCU balance or bounty-status row is authoritative.
+- economic data lives in a separate database boundary from Mission product data;
+- the application-facing credential cannot append economic truth;
+- capability-specific submitters cannot impersonate each other;
+- recognition/rule authority comes from the trusted submission channel, not a browser-supplied actor string;
+- the private kernel writer is isolated from App Hosting;
+- intent processing is idempotent and auditable;
+- backups / restore / export / verifier work on the production economic database;
+- checkpoint-signing format and verifier are ready before first real MCU.
 
-2. **Commands are idempotent.**
-   One logical command produces at most one economic result, even through retries/races.
+### No-value rule
 
-3. **History is append-only.**
-   Corrections are new events referencing prior events.
+WO-0015 must leave production with:
 
-4. **Rules are immutable + versioned.**
-   Every automated outcome names the exact rule/version used.
+- zero real MCU grants;
+- zero production bounty rewards;
+- zero money movement;
+- zero legal-ownership events;
+- no public endpoint that can mint value.
 
-5. **Automation is deterministic.**
-   Given the same prior events + command + rule, every correct implementation reaches the same economic result.
+## Planned sequence after WO-0015
 
-6. **AI cannot mint value.**
-   Model output may become evidence/proposal input; deterministic policy decides economic events.
+1. **WO-0016 — Contribution submission + recognition + first MCU issuance**
+   A confirmed helper submits Contribution; a separate recognition authority records recognition; the kernel deterministically creates the first real MCU grant.
 
-7. **No floating-point economics.**
-   MCU arithmetic uses integer smallest units.
+2. **WO-0017 — Bounty terms + autonomous MCU rewards**
+   Work can publish immutable MCU bounty terms. Recognized completion triggers exactly-once reward through the kernel.
 
-8. **No direct admin override.**
-   There is no ordinary capability to set a balance, rewrite an event, or mark a reward paid.
-
-9. **External side effects happen after commit.**
-   Money/legal connectors are idempotent effects of recorded events, not part of the rule transaction.
-
-10. **Independent verification is possible.**
-    Exported history can be checked without trusting the running 99pct application.
-
-### WO-0014 scope
-
-Build and test, without production deployment:
-
-- isolated economic schema/migrations;
-- command receipt/idempotency model;
-- append-only per-Mission event stream;
-- deterministic sequence/hash chain;
-- immutable/versioned rule registry + activation events;
-- exact integer MCU unit type;
-- pure command/rule engine boundary;
-- derived MCU totals, never direct balance mutation;
-- compensating adjustment model;
-- reference bounty state machine in test/sandbox;
-- exactly-once reward-key invariant;
-- export format + offline verifier;
-- tamper/deletion/reorder tests;
-- concurrency/race tests;
-- database role/trigger protections;
-- documented threat model.
-
-## Planned sequence after kernel acceptance
-
-1. **WO-0015 — Contribution recognition + MCU issuance**
-   Real Contribution submission/recognition uses the kernel; no bounties yet.
-
-2. **WO-0016 — Bounty contracts + autonomous MCU rewards**
-   Immutable bounty terms and completion conditions trigger exactly-once MCU rewards.
-
-3. **WO-0017 — Transparency hardening**
-   Signed/checkpointed ledger roots, public/verifiable exports, recovery/rebuild exercises.
+3. **WO-0018 — Transparency/checkpoint hardening**
+   Public signed checkpoints, recovery/rebuild drills, independent verifier packaging, and transparency publication.
 
 4. **Money bounty connector**
-   Cash rewards use external funded/escrow/payment infrastructure and idempotent provider events; no editable internal cash balance.
+   Cash rewards use external funded/escrow/payment infrastructure and idempotent provider events; 99pct does not maintain an editable custodial cash balance.
 
 5. **Rule governance**
-   Safe rule publication/activation, future approval thresholds, delays, freezes, and challenge/correction events.
+   Multi-party publication/activation, delays, freezes, challenges, and compensating corrections.
 
-6. Resume Mission blueprints / Utility Mission work on top of the economic kernel.
+6. Mission blueprints / Utility Missions build on the same kernel.
 
-## Completed alongside the kernel priority
+## KMS / checkpoint gate
 
-`WO-0013 — 99pct product-shell reset` is accepted and live as `build-2026-10-04-015`.
+Before the first production MCU is considered durable economic history, use a non-exportable signing/checkpoint authority such as Cloud KMS and publish verifiable checkpoint material outside the mutable event database.
 
-It does not change the active priority: WO-0014 remains the economic-kernel foundation.
+WO-0015 should implement and test the signing/checkpoint interface and exact deployment plan.
+
+**Do not create a new paid KMS key/resource unless product-owner approval is explicitly recorded.**
+
+If approval is absent, WO-0015 may finish with checkpoint infrastructure code/config ready and WO-0016 remains blocked on that approval.
+
+## Completed
+
+- WO-0013 product shell is live as `build-2026-10-04-015`.
+- WO-0014 economic kernel is accepted at `208f2be`.
 
 ## Waiting externally
 
