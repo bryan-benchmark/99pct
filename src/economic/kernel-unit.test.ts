@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { CanonicalError, canonicalize } from "./canonical";
+import { commandHash } from "./model";
 import { MCU_MAX_MINOR, QuantityError, addMcu, formatMcu, parseMcu } from "./quantity";
 import { verifyChain, sealDrafts } from "./chain";
 
@@ -42,6 +43,9 @@ test("an event chain detects payload, link, sequence, and deletion changes", () 
     recordedAt: "2026-10-04T00:00:00.000Z",
   });
   verifyChain(sealed);
+  const retimed = structuredClone(sealed);
+  retimed[0].recordedAt = "1999-01-01T00:00:00.000Z";
+  assert.throws(() => verifyChain(retimed));
   const mutated = structuredClone(sealed);
   mutated[0].payload.version = "9";
   assert.throws(() => verifyChain(mutated));
@@ -60,4 +64,15 @@ test("the decision module does not reach for time, randomness, network, or an AI
   }
   const app = readFileSync(new URL("../app/layout.tsx", import.meta.url), "utf8");
   assert.equal(app.includes("economic"), false);
+});
+
+test("the command hash binds the idempotency key", () => {
+  const command = {
+    missionId: "11111111-1111-4111-8111-111111111111",
+    type: "publish_rule" as const,
+    idempotencyKey: "rule-v1",
+    actor: { kind: "process" as const, ref: "rule-publisher" },
+    payload: { ruleId: "fixed" },
+  };
+  assert.notEqual(commandHash(command), commandHash({ ...command, idempotencyKey: "rule-v2" }));
 });

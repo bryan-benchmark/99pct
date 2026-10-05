@@ -32,8 +32,9 @@ export function sealDrafts(input: {
       ruleVersion: draft.ruleVersion,
       payloadHash: hashedPayload,
       previousEventHash: previous,
+      recordedAt: input.recordedAt,
     };
-    const event: EconomicEvent = { ...partial, payload: draft.payload, eventHash: eventHash(partial), recordedAt: input.recordedAt };
+    const event: EconomicEvent = { ...partial, payload: draft.payload, eventHash: eventHash(partial) };
     sealed.push(event);
     previous = event.eventHash;
   }

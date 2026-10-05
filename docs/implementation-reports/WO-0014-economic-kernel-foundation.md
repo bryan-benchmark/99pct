@@ -38,11 +38,11 @@ Rule activation is an event. The reference rule kind is `fixed_mcu_on_recognitio
 
 MCU amounts are `bigint` minor units. The fixed scale constant is `6` (1 MCU = 1,000,000 minor units). That scale is recorded on the rule version and is not a UI promise. Wire and export amounts are canonical integer strings. The safe range is `-(10^38-1)` through `10^38-1`, matching `numeric`-scale room without using JavaScript `number`.
 
-Payload hash and event hash are lowercase SHA-256 hex of the shared canonical form. Writer, export, and verifier use that same canonicalizer.
+Payload hash and event hash are lowercase SHA-256 hex of the shared canonical form. The event hash includes `recordedAt`, so a timestamp edit breaks the chain. Writer, export, and verifier use that same canonicalizer. No production history used the earlier hash shape.
 
 ## Idempotency and concurrency
 
-Uniqueness of `(mission_id, idempotency_key)` is enforced in PostgreSQL. Processing also takes a per-Mission advisory transaction lock and runs at serializable isolation. A retried command returns the original command id and event ids.
+Uniqueness of `(mission_id, idempotency_key)` is enforced in PostgreSQL. The canonical command hash includes that idempotency key, so changing only the key in an export breaks the receipt. Processing also takes a per-Mission advisory transaction lock and runs at serializable isolation. A retried command returns the original command id and event ids.
 
 Every grant carries a stable reward key. Contribution rewards use `contribution:{mission}:{contribution}:{contributor}`. Bounty rewards use `{mission}:{bounty}:{beneficiary}:{completion}`. The `reward_keys` primary key is the backstop if two workers pass the in-memory check.
 
@@ -54,17 +54,25 @@ Disposable PostgreSQL 18, locally and in CI, ran two concurrent connections:
 
 ## Database roles
 
-CI creates `economic_ci_runtime` and `economic_ci_verifier` on database `economic_check` only.
+CI creates three login roles on disposable database `economic_check`:
 
-The runtime role may `SELECT` and `INSERT` on command, event, rule, and reward tables. It may only `SELECT` the migration table. It cannot update, delete, truncate, own the tables, or create schema objects. The verifier role is `SELECT` only. Negative SQL checks cover runtime update, delete, and truncate, plus a verifier insert.
+| Role | Authority |
+|---|---|
+| `economic_ci_runtime` | Application-facing. It may insert a command intent and read economic tables. It cannot insert commands, events, rule versions, or reward keys. |
+| `economic_ci_kernel` | Private kernel writer. It may append sealed commands, events, rule versions, and reward keys. It cannot edit or delete them. |
+| `economic_ci_verifier` | `SELECT` only. |
+
+`economic.command_intents` is an intake mailbox. A submitted intent is not a grant, a rule, or a reward. `commitCommand` still evaluates in the kernel and is the only path that appends authoritative rows, using the writer role.
+
+Negative SQL checks show the application role cannot insert a fabricated MCU grant, rule version, reward key, or command, while the kernel writer still commits a real grant and the concurrent bounty reward stays exactly once.
 
 ## Export and verifier
 
-`exportMission` writes one Mission as `economic-export-v1` NDJSON: header, rule definitions, command receipts, then events in sequence. Amounts stay decimal strings. The export has no email, Firebase uid, session, or note fields.
+`exportMission` writes one Mission as `economic-export-v1` NDJSON: header, rule definitions, command receipts, then events in sequence. Each rule row carries `publishedEventId` and `publishedSequence`. The verifier finds that `rule_published` event and requires the Mission, rule id, version, definition hash, kind, amount, and scale to agree. An orphaned, mismatched, or duplicate publication fails. Amounts stay decimal strings. The export has no email, Firebase uid, session, or note fields.
 
 `npm run economy:verify -- <file>` checks format, sequence, payload hashes, event hashes, previous-hash links, rule definition hashes, command hashes, command references, integer amounts, and unique reward keys. It does not need database credentials and returns non-zero on failure.
 
-Tamper copies fail for an edited amount, edited subject, edited rule version, deleted event, reordered events, a duplicated event, a broken previous hash, an altered rule definition, and a duplicated reward key.
+Tamper copies fail for an edited amount, edited subject, edited rule version, deleted event, reordered events, a duplicated event, a broken previous hash, an altered rule definition, a self-consistent rule-row rewrite that leaves the event stream untouched, a changed `recordedAt`, a changed idempotency key, and a duplicated reward key.
 
 ## Reference flows
 
@@ -97,9 +105,6 @@ Money remains outside this kernel. There is no custodial cash balance. Legal own
 
 ## CI
 
-Run `37244439753` on `5947e65c6bcc8f44cd6f29457303571f0ef659e3`:
+The first kernel head passed run `37244439753`. This revision changes the writer role, event timestamp hash, rule-publication binding, and command idempotency hash, so that run does not cover the rework.
 
-- `dependency-security` passed
-- `functional` passed, including Workspace and Mission PostgreSQL paths, economic migration of disposable `economic_check`, runtime and verifier role checks, and the concurrent reward test
-
-Local `npm ci`, `npm run verify`, `npm run lint`, `npx next typegen`, `npx tsc --noEmit`, `npm run build`, and `npm run check:npm-audit` passed before the pull request. Audit policy remained `high=9 moderate=0 critical=0`. A separate disposable PostgreSQL 18 cluster also passed the role check and the race test before CI.
+Local `npm` economic tests passed after the revision. A disposable PostgreSQL 18 cluster passed the application, kernel-writer, and verifier role checks, and passed the concurrent reward test together with the application-role insert refusals. Both GitHub Actions jobs must pass on the pull request head that contains this revision.

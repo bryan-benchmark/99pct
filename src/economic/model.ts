@@ -87,6 +87,7 @@ export function commandHash(command: EconomicCommand) {
     actorKind: command.actor.kind,
     actorRef: command.actor.ref,
     format: "economic-command-v1",
+    idempotencyKey: command.idempotencyKey,
     missionId: command.missionId,
     payload: command.payload,
     type: command.type,
@@ -97,7 +98,7 @@ export function payloadHash(payload: CanonicalValue) {
   return sha256(canonicalize(payload));
 }
 
-export function eventHash(event: Omit<EconomicEvent, "payload" | "eventHash" | "recordedAt"> & { payloadHash: string }) {
+export function eventHash(event: Omit<EconomicEvent, "payload" | "eventHash"> & { payloadHash: string }) {
   return sha256(canonicalize({
     actorKind: event.actorKind,
     actorRef: event.actorRef,
@@ -108,6 +109,7 @@ export function eventHash(event: Omit<EconomicEvent, "payload" | "eventHash" | "
     missionId: event.missionId,
     payloadHash: event.payloadHash,
     previousEventHash: event.previousEventHash,
+    recordedAt: event.recordedAt,
     ruleId: event.ruleId,
     ruleVersion: event.ruleVersion === null ? null : String(event.ruleVersion),
     sequence: String(event.sequence),

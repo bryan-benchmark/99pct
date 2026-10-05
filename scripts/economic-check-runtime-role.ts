@@ -1,6 +1,7 @@
 import { configuredEconomicDb } from "../src/economic/db/client";
 
-const tables = ["schema_migrations", "commands", "events", "rule_versions", "reward_keys"] as const;
+const tables = ["schema_migrations", "command_intents", "commands", "events", "rule_versions", "reward_keys"] as const;
+const kernelInsert = new Set(["commands", "events", "rule_versions", "reward_keys"]);
 
 type TablePrivilege = {
   relname: string;
@@ -14,7 +15,7 @@ type TablePrivilege = {
   can_trigger: boolean;
 };
 
-async function assertRole(connection: string, insert: boolean, label: string) {
+async function assertRole(connection: string, label: "application" | "kernel" | "verifier") {
   const db = configuredEconomicDb(connection);
   try {
     const role = await db.query<{ role_name: string; superuser: boolean; create_role: boolean; create_db: boolean; create_schema: boolean; create_in_database: boolean }>(
@@ -42,7 +43,7 @@ async function assertRole(connection: string, insert: boolean, label: string) {
     );
     if (result.rows.length !== tables.length) throw new Error("Economic schema tables are missing.");
     for (const table of result.rows) {
-      const canInsert = insert && table.relname !== "schema_migrations";
+      const canInsert = label === "application" ? table.relname === "command_intents" : label === "kernel" ? kernelInsert.has(table.relname) : false;
       if (table.owner_member || !table.can_select || table.can_insert !== canInsert || table.can_update || table.can_delete
         || table.can_truncate || table.can_references || table.can_trigger) {
         throw new Error(`${label} role has incorrect privileges on ${table.relname}.`);
@@ -55,11 +56,13 @@ async function assertRole(connection: string, insert: boolean, label: string) {
 }
 
 async function main() {
-  const runtime = process.env.ECONOMIC_RUNTIME_DATABASE_URL;
+  const application = process.env.ECONOMIC_RUNTIME_DATABASE_URL;
+  const kernel = process.env.ECONOMIC_KERNEL_DATABASE_URL;
   const verifier = process.env.ECONOMIC_VERIFIER_DATABASE_URL;
-  if (!runtime || !verifier) throw new Error("Economic runtime and verifier database URLs are required.");
-  await assertRole(runtime, true, "runtime");
-  await assertRole(verifier, false, "verifier");
+  if (!application || !kernel || !verifier) throw new Error("Economic application, kernel, and verifier database URLs are required.");
+  await assertRole(application, "application");
+  await assertRole(kernel, "kernel");
+  await assertRole(verifier, "verifier");
 }
 
 main().catch((error: unknown) => {

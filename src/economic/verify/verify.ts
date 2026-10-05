@@ -23,6 +23,38 @@ function text(row: Parsed, key: string) {
   return typeof value === "string" ? value : null;
 }
 
+function bindPublishedRules(rules: Map<string, Parsed>, events: EconomicEvent[], missionId: string, errors: string[]) {
+  const publications = new Set<string>();
+  for (const rule of rules.values()) {
+    const event = events.find((item) => item.id === text(rule, "publishedEventId"));
+    if (!event || event.eventType !== "rule_published") {
+      errors.push("Rule publication event is missing.");
+      continue;
+    }
+    if (String(event.sequence) !== text(rule, "publishedSequence") || event.missionId !== missionId || event.ruleId !== text(rule, "ruleId") || String(event.ruleVersion) !== text(rule, "version")) {
+      errors.push("Rule publication does not match the event.");
+    }
+    const definition = rule.definition;
+    if (!definition || typeof definition !== "object" || Array.isArray(definition)) {
+      errors.push("Rule definition is not canonical.");
+      continue;
+    }
+    if (event.payload.definitionHash !== text(rule, "definitionHash")
+      || event.payload.amount !== definition.amount
+      || event.payload.kind !== definition.kind
+      || event.payload.scale !== definition.scale
+      || event.payload.ruleId !== text(rule, "ruleId")
+      || event.payload.version !== text(rule, "version")) {
+      errors.push("Rule publication does not match the event.");
+    }
+    if (publications.has(event.id)) errors.push("Rule publication is duplicated.");
+    publications.add(event.id);
+  }
+  for (const event of events) {
+    if (event.eventType === "rule_published" && !publications.has(event.id)) errors.push("Rule publication event is missing a rule record.");
+  }
+}
+
 export function verifyExport(contents: string): Verification {
   const errors: string[] = [];
   const lines = contents.split("\n").filter((line) => line.length > 0);
@@ -128,6 +160,7 @@ export function verifyExport(contents: string): Verification {
       errors.push("Export records are out of order.");
     }
   }
+  bindPublishedRules(rules, events, missionId, errors);
   try {
     verifyChain(events);
     foldState(events);

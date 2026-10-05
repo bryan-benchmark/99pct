@@ -9,6 +9,8 @@ type RuleRow = {
   rule_kind: string;
   definition: CanonicalValue;
   definition_hash: string;
+  published_event_id: string;
+  published_sequence: string | number;
 };
 
 type CommandRow = {
@@ -29,7 +31,7 @@ function iso(value: Date | string) {
 export async function exportMission(db: EconomicDb, missionId: string) {
   assertUuid(missionId, "Mission");
   const rules = await db.query<RuleRow>(
-    `SELECT rule_id, version, rule_kind, definition, definition_hash
+    `SELECT rule_id, version, rule_kind, definition, definition_hash, published_event_id, published_sequence
        FROM economic.rule_versions WHERE mission_id = $1 ORDER BY rule_id, version`,
     [missionId],
   );
@@ -45,6 +47,8 @@ export async function exportMission(db: EconomicDb, missionId: string) {
       definition: rule.definition,
       definitionHash: rule.definition_hash,
       missionId,
+      publishedEventId: rule.published_event_id,
+      publishedSequence: String(rule.published_sequence),
       record: "rule",
       ruleId: rule.rule_id,
       ruleKind: rule.rule_kind,

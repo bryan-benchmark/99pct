@@ -6,6 +6,7 @@ import { spawnSync } from "node:child_process";
 import test from "node:test";
 import { PGlite } from "@electric-sql/pglite";
 import { authorizeAiProposal } from "./ai/boundary";
+import { canonicalize, sha256 } from "./canonical";
 import { embeddedEconomicDb, type EconomicDb } from "./db/client";
 import { commitCommand, listEconomicEvents } from "./db/commit";
 import { migrateEconomic } from "./db/migrate";
@@ -105,6 +106,20 @@ test("recognition grants once, corrections compensate, and a new rule does not r
   const rule = ruleEdited.find((line) => line.record === "rule");
   (rule?.definition as { amount: string }).amount = "42";
   fail(ruleEdited);
+  const rebound = structuredClone(lines);
+  const reboundRule = rebound.find((line) => line.record === "rule");
+  const reboundDefinition = reboundRule?.definition as { amount: string; kind: string; scale: string };
+  reboundDefinition.amount = "42";
+  if (reboundRule) reboundRule.definitionHash = sha256(canonicalize(reboundDefinition));
+  fail(rebound);
+  const retimed = structuredClone(lines);
+  const timed = retimed.find((line) => line.record === "event");
+  if (timed) timed.recordedAt = "1999-01-01T00:00:00.000Z";
+  fail(retimed);
+  const rekeyed = structuredClone(lines);
+  const receipt = rekeyed.find((line) => line.record === "command");
+  if (receipt) receipt.idempotencyKey = "replaced-key";
+  fail(rekeyed);
   const duplicated = structuredClone(lines);
   const last = duplicated.filter((line) => line.record === "event").at(-1);
   if (last) {
