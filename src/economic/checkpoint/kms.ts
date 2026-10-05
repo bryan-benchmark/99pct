@@ -9,6 +9,17 @@ export function plannedKmsKeyVersion() {
   return `projects/${project}/locations/${location}/keyRings/${keyRing}/cryptoKeys/${key}/cryptoKeyVersions/1`;
 }
 
+export function gcloudAccessToken(): TokenSource {
+  return {
+    async getAccessToken() {
+      const { execFileSync } = await import("node:child_process");
+      const token = execFileSync("gcloud", ["auth", "print-access-token"], { encoding: "utf8" }).trim();
+      if (!token) throw new Error("Cloud KMS authentication failed.");
+      return token;
+    },
+  };
+}
+
 export async function cloudKmsSigner(options?: { keyVersionName?: string; auth?: TokenSource; fetchImpl?: typeof fetch }) {
   const keyVersionName = options?.keyVersionName ?? plannedKmsKeyVersion();
   if (!keyVersionName.endsWith("/cryptoKeyVersions/1")) throw new Error("Checkpoint signer key version is not the planned key.");
@@ -17,7 +28,7 @@ export async function cloudKmsSigner(options?: { keyVersionName?: string; auth?:
   const fetchImpl = options?.fetchImpl ?? fetch;
   const token = await auth.getAccessToken();
   if (!token) throw new Error("Cloud KMS authentication failed.");
-  const published = await fetchImpl(`https://cloudkms.googleapis.com/v1/${keyVersionName}:getPublicKey`, {
+  const published = await fetchImpl(`https://cloudkms.googleapis.com/v1/${keyVersionName}/publicKey`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!published.ok) throw new Error("Cloud KMS public key is unavailable.");

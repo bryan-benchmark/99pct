@@ -1,7 +1,7 @@
 import { configuredEconomicDb } from "../src/economic/db/client";
 import { submitGovernanceIntent } from "../src/economic/db/intent";
 import { firstRecognitionRule } from "../src/economic/first-rule";
-import { cloudKmsSigner } from "../src/economic/checkpoint/kms";
+import { cloudKmsSigner, gcloudAccessToken } from "../src/economic/checkpoint/kms";
 import { processPendingIntents } from "../src/economic/worker/process";
 
 async function main() {
@@ -31,7 +31,7 @@ async function main() {
       idempotencyKey: "fixed-recognition-v1-activate",
       payload: { ruleId: firstRecognitionRule.ruleId, version: firstRecognitionRule.version },
     });
-    const signer = await cloudKmsSigner();
+    const signer = await cloudKmsSigner({ auth: process.env.ECONOMIC_KMS_AUTH === "gcloud" ? gcloudAccessToken() : undefined });
     const processed = await processPendingIntents(writer, "economy-kernel-worker", 8, signer);
     process.stdout.write(`published ${published.id}\nactivated ${activated.id}\nprocessed ${processed}\n`);
   } finally {

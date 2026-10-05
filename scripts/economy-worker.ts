@@ -1,5 +1,5 @@
 import { configuredEconomicDb } from "../src/economic/db/client";
-import { cloudKmsSigner } from "../src/economic/checkpoint/kms";
+import { cloudKmsSigner, gcloudAccessToken } from "../src/economic/checkpoint/kms";
 import { processPendingIntents } from "../src/economic/worker/process";
 
 async function main() {
@@ -10,7 +10,9 @@ async function main() {
     throw new Error("Production economic worker requires the Cloud KMS checkpoint signer.");
   }
   const workerRef = process.env.ECONOMIC_WORKER_REF ?? "economy-worker";
-  const signer = process.env.ECONOMIC_CHECKPOINT_SIGNER === "kms" ? await cloudKmsSigner() : null;
+  const signer = process.env.ECONOMIC_CHECKPOINT_SIGNER === "kms"
+    ? await cloudKmsSigner({ auth: process.env.ECONOMIC_KMS_AUTH === "gcloud" ? gcloudAccessToken() : undefined })
+    : null;
   const db = configuredEconomicDb(connection);
   try {
     const processed = await processPendingIntents(db, workerRef, 32, signer);

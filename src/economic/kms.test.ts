@@ -14,7 +14,7 @@ test("the Cloud KMS signer uses the approved key and verifies the raw Ed25519 si
   const { publicKey, privateKey } = generateKeyPairSync("ed25519");
   const pem = publicKey.export({ type: "spki", format: "pem" }).toString();
   const fetchImpl = (async (url: string, init?: RequestInit) => {
-    if (url.endsWith(":getPublicKey")) return response({ pem, algorithm: "EC_SIGN_ED25519" });
+    if (url.endsWith("/publicKey")) return response({ pem, algorithm: "EC_SIGN_ED25519" });
     const data = JSON.parse(String(init?.body)) as { data: string };
     const raw = Buffer.from(data.data, "base64");
     return response({ name: keyVersion, signature: sign(null, raw, privateKey).toString("base64") });
