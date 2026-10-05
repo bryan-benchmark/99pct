@@ -11,6 +11,7 @@ Updated: 2026-10-04
 - Work interest accepted in WO-0011
 - Mutual Work participation accepted in WO-0012 and merged at `fcde732`
 - 99pct product-shell reset accepted in WO-0013 and merged at `deccfae`
+- Economic kernel foundation accepted in WO-0014 and merged at `208f2be`
 - 99pct human-commerce network definition accepted in ADR-018 / ADR-019
 - Application source license: `AGPL-3.0-only`
 
@@ -46,88 +47,65 @@ The live functional loop reaches:
 
 The production Mission database is migrated through `0005_work_participation.sql`.
 
-## Economic-kernel priority
+## Economic kernel — accepted in source
 
-The next priority is **not** product-shell polish and not direct MCU/bounty UI.
+WO-0014 is accepted at `208f2be`.
 
-Before 99pct can autonomously issue contribution credit or operate bounty rewards, it needs a small economic kernel that is designed to fail closed.
+The kernel now has:
 
-The kernel must make these facts true by construction:
+- append-only per-Mission economic events;
+- command idempotency;
+- deterministic/versioned rules;
+- bounded integer MCU units;
+- stable exactly-once reward keys;
+- compensating adjustments instead of balance edits;
+- hash-linked history including timestamp provenance;
+- command hashes including idempotency identity;
+- exported rule rows bound to exact `rule_published` events;
+- offline export verification;
+- real concurrent PostgreSQL reward/idempotency tests;
+- application / private-kernel-writer / verifier role separation;
+- an intent mailbox that is not authoritative economic truth;
+- AI proposal separation from economic commands.
 
-- balances are derived, never authoritative mutable fields;
-- economic history is append-only;
-- corrections append compensating events;
-- commands are idempotent;
-- concurrent/retried execution cannot double-award;
-- every outcome cites the exact immutable rule version that produced it;
-- old rule versions remain reproducible;
-- rule changes never rewrite prior history;
-- economic automation is deterministic;
-- AI may propose evidence/commands but cannot directly mint value;
-- private identity does not enter public ledger exports;
-- history can be exported and independently verified;
-- tampering/reordering/deletion is detectable;
-- ordinary application administrators have no “set MCU balance” or “mark bounty paid” capability.
+No economic schema, route, worker, MCU, bounty, payment, or ownership behavior exists in production yet.
 
-“Unbreakable” is treated as a threat-model goal, not a literal claim. The kernel should resist bugs, retries, concurrency races, ordinary admin mistakes, silent row edits, stale workers, and post-hoc history rewriting. Compromise of every application/cloud/root credential simultaneously is outside that guarantee.
+## Economic deployment principle
 
-## Architecture direction
+The first production economic deployment is **shadow infrastructure only**.
 
-Economic state should be organized as:
+Before a real MCU can exist, 99pct must prove:
 
-```text
-Command
-  ↓ validate/auth/idempotency
-Deterministic rule engine
-  ↓
-Append-only economic events
-  ↓
-Derived views / projections
-  ├── MCU totals
-  ├── bounty state
-  └── audit/history
+- the public application cannot impersonate recognition/governance process authority;
+- separate submission capabilities exist for human, recognition, governance, and future bounty-recognition sources;
+- the web application does not possess the private kernel-writer credential;
+- a private worker can revalidate intents and append authoritative events;
+- rejected/accepted intent processing is auditable and idempotent;
+- production economic data can be exported, verified, backed up, and restored;
+- future real-value history can be externally checkpointed/signed.
 
-External effects
-  ↓
-idempotent outbox/connectors
-  ├── money provider
-  └── future legal/equity provider
-```
-
-No external network call belongs inside the transaction that decides an MCU outcome.
-
-Money, MCUs, and legal ownership remain separate ledgers.
+No real Contribution recognition, MCU issuance, bounty reward, money movement, or ownership event is allowed in WO-0015.
 
 ## Public shell
 
 WO-0013 is complete and live.
 
-The public application is now 99pct:
+The public application is 99pct:
 
 - homepage: **Build what should exist.**
 - primary paths: **Use 99pct**, **Build 99pct**, **Start a Mission**
 - `/use` truthfully states that no consumer Utility Mission is live yet
 - `/work` exposes public open Work with aggregate interest/helping counts only
 - `/missionism` keeps Missionism as the underlying protocol
-- Mission / Project / Work / interest / participation behavior is unchanged
-- no database migration or production-row mutation was part of the shell reset
 
 Application rollback remains `build-2026-10-04-014`.
 
 ## Active engineering work
 
-Execute `docs/work-orders/WO-0014-economic-kernel-foundation.md`.
+Execute `docs/work-orders/WO-0015-economic-production-boundary.md`.
 
-WO-0014 builds the economic kernel in code + disposable PostgreSQL CI only.
+WO-0015 prepares and, after all gates, may provision the production economic **shadow** boundary using the existing approved Cloud SQL instance without enabling user-facing economic mutation.
 
-It must not:
+It must mint zero production MCUs and publish zero production bounties.
 
-- change production schema;
-- deploy economic behavior;
-- issue production MCUs;
-- publish production bounties;
-- move money;
-- issue legal ownership;
-- change DNS/custom domains.
-
-The first production integration comes only after the kernel survives adversarial review.
+The first real-value work order comes only after WO-0015 is accepted.
