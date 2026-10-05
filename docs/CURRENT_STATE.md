@@ -5,27 +5,17 @@ Updated: 2026-10-04
 ## 99pct repository
 
 - Public control plane and application repository: `bryan-benchmark/99pct`
-- Security + CI baseline accepted in WO-0004
-- Dedicated 99pct App Hosting + PostgreSQL foundation accepted in WO-0005 through WO-0009
-- Mission → Project → Work accepted through WO-0010
-- Work interest accepted in WO-0011
-- Mutual Work participation accepted in WO-0012 and merged at `fcde732`
-- 99pct product-shell reset accepted in WO-0013 and merged at `deccfae`
-- Economic kernel foundation accepted in WO-0014 and merged at `208f2be`
-- 99pct human-commerce network definition accepted in ADR-018 / ADR-019
+- Mission → Project → Work → participation accepted through WO-0012
+- 99pct public shell accepted in WO-0013
+- Economic kernel foundation accepted in WO-0014 at `208f2be`
+- Production economic shadow boundary accepted in WO-0015 at `2a3e13c`
 - Application source license: `AGPL-3.0-only`
 
 ## Product identity
 
 **99pct is the product/network/Mission. Missionism is the protocol underneath it.**
 
-99pct is intended to become a shared human-commerce substrate with three modes:
-
-- **Use** — people consume useful services;
-- **Operate** — people deliver those services;
-- **Build** — people build the infrastructure.
-
-Utility Missions such as Rideshare 99, Stay 99, Music 99, and future local/service Missions sit on shared 99pct primitives rather than becoming unrelated products.
+99pct is being built as a shared human-commerce substrate with Use / Operate / Build modes and future Utility Missions.
 
 ## Live product
 
@@ -33,79 +23,107 @@ Generated App Hosting URL:
 
 `https://pct99--pct-99.us-central1.hosted.app`
 
-Live release:
+Live release remains:
 
-- deployed application commit: `3197dbee18cc092b183b1852cfb551bf10cd7155`
-- App Hosting build: `build-2026-10-04-015`
-- automatic rollouts: off
-- Mission health: ready
-- Workspace health: intentionally unavailable
+- application commit `3197dbee18cc092b183b1852cfb551bf10cd7155`
+- build `build-2026-10-04-015`
+- automatic rollouts off
+- Mission health ready
 
-The live functional loop reaches:
+No product rollout occurred in WO-0015.
+
+## Production Mission data
+
+Cloud SQL instance:
+
+- project `pct-99`
+- region `us-central1`
+- instance `pct99-missions-prod`
+
+Mission product database:
+
+`missions`
+
+The live product loop remains:
 
 `Mission → Project → Work → Interest → Invitation → Confirmation → Helping`
 
-The production Mission database is migrated through `0005_work_participation.sql`.
+## Production economic shadow boundary
 
-## Economic kernel — accepted in source
+WO-0015 created a separate production database:
 
-WO-0014 is accepted at `208f2be`.
+`economy`
 
-The kernel now has:
+It is isolated from `missions` by database name, roles, migrations, grants, secrets, and runtime authority.
 
-- append-only per-Mission economic events;
-- command idempotency;
-- deterministic/versioned rules;
-- bounded integer MCU units;
-- stable exactly-once reward keys;
-- compensating adjustments instead of balance edits;
-- hash-linked history including timestamp provenance;
-- command hashes including idempotency identity;
-- exported rule rows bound to exact `rule_published` events;
-- offline export verification;
-- real concurrent PostgreSQL reward/idempotency tests;
-- application / private-kernel-writer / verifier role separation;
-- an intent mailbox that is not authoritative economic truth;
-- AI proposal separation from economic commands.
+Current production economic state:
 
-No economic schema, route, worker, MCU, bounty, payment, or ownership behavior exists in production yet.
+- events: 0
+- commands: 0
+- command intents: 0
+- intent outcomes: 0
+- rule versions: 0
+- reward keys: 0
 
-## Economic deployment principle
+There are **zero real MCUs and zero production bounty rewards**.
 
-The first production economic deployment is **shadow infrastructure only**.
+## Economic authority boundary
 
-Before a real MCU can exist, 99pct must prove:
+Production roles are capability-separated:
 
-- the public application cannot impersonate recognition/governance process authority;
-- separate submission capabilities exist for human, recognition, governance, and future bounty-recognition sources;
-- the web application does not possess the private kernel-writer credential;
-- a private worker can revalidate intents and append authoritative events;
-- rejected/accepted intent processing is auditable and idempotent;
-- production economic data can be exported, verified, backed up, and restored;
-- future real-value history can be externally checkpointed/signed.
+- human/application submitter;
+- Contribution-recognition submitter;
+- governance/rule submitter;
+- bounty-recognition submitter;
+- private kernel writer;
+- read-only verifier.
 
-No real Contribution recognition, MCU issuance, bounty reward, money movement, or ownership event is allowed in WO-0015.
+Privileged process identity is derived from the trusted capability channel, not supplied by browser JSON.
 
-## Public shell
+The kernel writer is the only role that can append authoritative economic history.
 
-WO-0013 is complete and live.
+App Hosting has no access to the kernel-writer credential.
 
-The public application is 99pct:
+The private worker identity can access only the kernel-writer secret plus the Cloud SQL connection permission it needs.
 
-- homepage: **Build what should exist.**
-- primary paths: **Use 99pct**, **Build 99pct**, **Start a Mission**
-- `/use` truthfully states that no consumer Utility Mission is live yet
-- `/work` exposes public open Work with aggregate interest/helping counts only
-- `/missionism` keeps Missionism as the underlying protocol
+## Recovery and verification
 
-Application rollback remains `build-2026-10-04-014`.
+The production boundary now has:
+
+- checksum-tracked economic migrations;
+- append-only intent outcomes;
+- role/grant checks;
+- disposable backup/restore verification;
+- production read-only health tooling;
+- production export tooling;
+- the offline economic verifier;
+- `economic-checkpoint-v1` signing/verification format.
+
+Cloud SQL backups, PITR, and deletion protection remain enabled.
+
+## KMS gate
+
+No Cloud KMS key exists yet.
+
+The planned signer is a non-exportable software-backed asymmetric key using `EC_SIGN_ED25519`.
+
+Current public Google Cloud pricing is approximately:
+
+- $0.06/month per active software key version;
+- $0.03 per 10,000 cryptographic operations.
+
+Product-owner approval has **not** been recorded.
+
+Therefore the first real-value work order remains blocked.
 
 ## Active engineering work
 
-Execute `docs/work-orders/WO-0015-economic-production-boundary.md`.
+`WO-0016 — Contribution recognition + first MCU issuance`
 
-WO-0015 prepares and, after all gates, may provision the production economic **shadow** boundary using the existing approved Cloud SQL instance without enabling user-facing economic mutation.
+Status:
 
-It must mint zero production MCUs and publish zero production bounties.
+**BLOCKED — EXPLICIT CLOUD KMS SPEND APPROVAL REQUIRED**
 
-The first real-value work order comes only after WO-0015 is accepted.
+Do not execute WO-0016 until product-owner approval is recorded durably in the repository.
+
+No production MCU may be created before the KMS signing key/checkpoint path is provisioned and verified.
