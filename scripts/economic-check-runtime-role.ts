@@ -1,7 +1,13 @@
 import { configuredEconomicDb } from "../src/economic/db/client";
 
-const tables = ["schema_migrations", "command_intents", "commands", "events", "rule_versions", "reward_keys"] as const;
-const kernelInsert = new Set(["commands", "events", "rule_versions", "reward_keys"]);
+const tables = ["schema_migrations", "command_intents", "intent_outcomes", "commands", "events", "rule_versions", "reward_keys"] as const;
+const kernelInsert = new Set(["commands", "events", "rule_versions", "reward_keys", "intent_outcomes"]);
+const functions = {
+  human: "economic.submit_human_intent(uuid,text,text,jsonb)",
+  recognition: "economic.submit_recognition_intent(uuid,text,text,jsonb)",
+  governance: "economic.submit_governance_intent(uuid,text,text,jsonb)",
+  bounty: "economic.submit_bounty_recognition_intent(uuid,text,jsonb)",
+} as const;
 
 type TablePrivilege = {
   relname: string;
@@ -15,7 +21,7 @@ type TablePrivilege = {
   can_trigger: boolean;
 };
 
-async function assertRole(connection: string, label: "application" | "kernel" | "verifier") {
+async function assertRole(connection: string, label: string, insert: ReadonlySet<string>, execute: readonly string[]) {
   const db = configuredEconomicDb(connection);
   try {
     const role = await db.query<{ role_name: string; superuser: boolean; create_role: boolean; create_db: boolean; create_schema: boolean; create_in_database: boolean }>(
@@ -43,11 +49,16 @@ async function assertRole(connection: string, label: "application" | "kernel" | 
     );
     if (result.rows.length !== tables.length) throw new Error("Economic schema tables are missing.");
     for (const table of result.rows) {
-      const canInsert = label === "application" ? table.relname === "command_intents" : label === "kernel" ? kernelInsert.has(table.relname) : false;
+      const canInsert = insert.has(table.relname);
       if (table.owner_member || !table.can_select || table.can_insert !== canInsert || table.can_update || table.can_delete
         || table.can_truncate || table.can_references || table.can_trigger) {
         throw new Error(`${label} role has incorrect privileges on ${table.relname}.`);
       }
+    }
+    for (const signature of Object.values(functions)) {
+      const privilege = await db.query<{ ok: boolean }>("SELECT has_function_privilege(current_user, $1, 'EXECUTE') AS ok", [signature]);
+      const allowed = execute.includes(signature);
+      if (privilege.rows[0]?.ok !== allowed) throw new Error(`${label} role has incorrect execute privilege on ${signature}.`);
     }
     process.stdout.write(`Economic ${label} role ${account.role_name} has the expected limited privileges.\n`);
   } finally {
@@ -57,12 +68,20 @@ async function assertRole(connection: string, label: "application" | "kernel" | 
 
 async function main() {
   const application = process.env.ECONOMIC_RUNTIME_DATABASE_URL;
+  const recognition = process.env.ECONOMIC_RECOGNITION_DATABASE_URL;
+  const governance = process.env.ECONOMIC_GOVERNANCE_DATABASE_URL;
+  const bounty = process.env.ECONOMIC_BOUNTY_RECOGNITION_DATABASE_URL;
   const kernel = process.env.ECONOMIC_KERNEL_DATABASE_URL;
   const verifier = process.env.ECONOMIC_VERIFIER_DATABASE_URL;
-  if (!application || !kernel || !verifier) throw new Error("Economic application, kernel, and verifier database URLs are required.");
-  await assertRole(application, "application");
-  await assertRole(kernel, "kernel");
-  await assertRole(verifier, "verifier");
+  if (!application || !recognition || !governance || !bounty || !kernel || !verifier) {
+    throw new Error("Economic submitter, kernel, and verifier database URLs are required.");
+  }
+  await assertRole(application, "application", new Set(), [functions.human]);
+  await assertRole(recognition, "recognition", new Set(), [functions.recognition]);
+  await assertRole(governance, "governance", new Set(), [functions.governance]);
+  await assertRole(bounty, "bounty-recognition", new Set(), [functions.bounty]);
+  await assertRole(kernel, "kernel", kernelInsert, []);
+  await assertRole(verifier, "verifier", new Set(), []);
 }
 
 main().catch((error: unknown) => {

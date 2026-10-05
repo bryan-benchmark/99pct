@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
+import { commandFromIntent } from "./capability";
 import { CanonicalError, canonicalize } from "./canonical";
+import { assertEconomicMigrationTarget } from "./db/migrate";
 import { commandHash } from "./model";
 import { MCU_MAX_MINOR, QuantityError, addMcu, formatMcu, parseMcu } from "./quantity";
 import { verifyChain, sealDrafts } from "./chain";
@@ -75,4 +77,29 @@ test("the command hash binds the idempotency key", () => {
     payload: { ruleId: "fixed" },
   };
   assert.notEqual(commandHash(command), commandHash({ ...command, idempotencyKey: "rule-v2" }));
+});
+
+test("a client actor string cannot choose a privileged capability", () => {
+  const row = {
+    id: "33333333-3333-4333-8333-333333333333",
+    mission_id: "11111111-1111-4111-8111-111111111111",
+    command_type: "recognize_contribution",
+    idempotency_key: "one",
+    actor_kind: "process",
+    actor_ref: "recognition",
+    payload: { contributionRef: "contribution:one" },
+    submitter_capability: "recognition",
+  };
+  assert.equal(commandFromIntent(row).actor.ref, "recognition");
+  assert.throws(() => commandFromIntent({ ...row, actor_ref: "rule-publisher" }));
+  assert.throws(() => commandFromIntent({ ...row, submitter_capability: "human", actor_kind: "human" }));
+});
+
+test("production shadow migration is limited to the economy database", () => {
+  const production = "postgresql://verifier@127.0.0.1/economy?host=/cloudsql/pct-99:us-central1:pct99-missions-prod";
+  assert.throws(() => assertEconomicMigrationTarget("postgresql://verifier@127.0.0.1/missions"));
+  assert.throws(() => assertEconomicMigrationTarget(production));
+  assert.throws(() => assertEconomicMigrationTarget("postgresql://verifier@127.0.0.1/missions?host=/cloudsql/pct-99:us-central1:pct99-missions-prod", true));
+  assertEconomicMigrationTarget(production, true);
+  assertEconomicMigrationTarget("postgresql://verifier@127.0.0.1/economic_check");
 });

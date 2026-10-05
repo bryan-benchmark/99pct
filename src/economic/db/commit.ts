@@ -100,7 +100,7 @@ function pgError(error: unknown) {
   return { code: String(record.code ?? ""), constraint: String(record.constraint ?? "") };
 }
 
-export async function commitCommand(db: EconomicDb, input: unknown, ids: () => string = randomUUID, now: () => Date = () => new Date()): Promise<CommitResult> {
+export async function commitCommand(db: EconomicDb, input: unknown, ids: () => string = randomUUID, now: () => Date = () => new Date(), connection?: Pick<EconomicDb, "query">): Promise<CommitResult> {
   const command = assertCommand(input);
   let hash: string;
   try {
@@ -109,6 +109,7 @@ export async function commitCommand(db: EconomicDb, input: unknown, ids: () => s
     if (error instanceof CanonicalError) throw new EconomicRefusal("invalid_payload", error.message);
     throw error;
   }
+  if (connection) return writeCommand(connection, command, hash, ids, now);
   for (let attempt = 0; attempt < 5; attempt += 1) {
     try {
       return await db.transaction((tx) => writeCommand(tx, command, hash, ids, now));
