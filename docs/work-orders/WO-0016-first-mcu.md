@@ -2,13 +2,15 @@
 
 ## Status
 
-**BLOCKED — EXPLICIT CLOUD KMS SPEND APPROVAL REQUIRED**
+**ACTIVE — CLOUD KMS SPEND APPROVED 2026-10-04**
 
-Do not execute this work order until product-owner approval is recorded durably in the repository.
+Product-owner approval recorded:
 
-Approval of WO-0015, Cloud SQL, or the architecture is not approval of the KMS spend.
+> I approve the Cloud KMS spend for WO-0016.
 
-Before any KMS creation, recheck current Google Cloud KMS pricing and algorithm availability. If the expected configuration or cost changes materially, stop for renewed approval.
+Approval applies to the planned WO-0016 software-backed non-exportable Cloud KMS signing configuration and its small recurring/usage spend.
+
+Before any KMS creation, recheck current Google Cloud KMS pricing and `EC_SIGN_ED25519` availability. If the expected configuration or cost changes materially, stop for renewed approval.
 
 ## Goal
 
@@ -45,7 +47,6 @@ In addition to `AGENTS.md` and `docs/CURRENT_STATE.md`:
 
 Do not:
 
-- execute while the KMS gate is unsatisfied;
 - give App Hosting the recognition, governance, kernel-writer, or KMS-signing credentials;
 - let a browser/client pick process identity;
 - let a recognizer choose an arbitrary MCU amount per Contribution;
@@ -59,9 +60,13 @@ Do not:
 - change DNS/custom domains;
 - resume WO-0006.
 
-## 1. Record spend approval before resource creation
+## 1. Spend approval — satisfied
 
-The durable report must quote or cite the exact product-owner approval and date.
+Product-owner approval was recorded on 2026-10-04:
+
+> I approve the Cloud KMS spend for WO-0016.
+
+The durable implementation report must preserve this exact approval and date.
 
 Expected planned KMS:
 
