@@ -4,69 +4,56 @@ Updated: 2026-10-04
 
 ## Active engineering
 
-`WO-0015 — Economic production boundary / shadow ledger`
+`WO-0016 — Contribution recognition + first MCU issuance`
 
-See `docs/work-orders/WO-0015-economic-production-boundary.md`.
+See `docs/work-orders/WO-0016-first-mcu.md`.
 
-Goal: move the accepted kernel from disposable CI into a real production-grade boundary **without creating economic value**.
+Status:
 
-### What this order proves
+**BLOCKED — EXPLICIT CLOUD KMS SPEND APPROVAL REQUIRED**
 
-- economic data lives in a separate database boundary from Mission product data;
-- the application-facing credential cannot append economic truth;
-- capability-specific submitters cannot impersonate each other;
-- recognition/rule authority comes from the trusted submission channel, not a browser-supplied actor string;
-- the private kernel writer is isolated from App Hosting;
-- intent processing is idempotent and auditable;
-- backups / restore / export / verifier work on the production economic database;
-- checkpoint-signing format and verifier are ready before first real MCU.
+### Approval gate
 
-### No-value rule
+The first real MCU may not be issued until:
 
-WO-0015 must leave production with:
+1. product owner explicitly approves the small recurring Cloud KMS spend;
+2. approval is recorded in the control plane;
+3. the non-exportable signing key is provisioned;
+4. worker-only signing IAM is verified;
+5. App Hosting has no signing permission;
+6. a signed checkpoint can be independently verified.
 
-- zero real MCU grants;
-- zero production bounty rewards;
-- zero money movement;
-- zero legal-ownership events;
-- no public endpoint that can mint value.
+Current expected pricing is roughly $0.06/month for one active software key version plus $0.03 per 10,000 cryptographic operations, subject to current Google Cloud pricing at creation time.
 
-## Planned sequence after WO-0015
+### First real-value flow
 
-1. **WO-0016 — Contribution submission + recognition + first MCU issuance**
-   A confirmed helper submits Contribution; a separate recognition authority records recognition; the kernel deterministically creates the first real MCU grant.
+After the gate is satisfied:
 
-2. **WO-0017 — Bounty terms + autonomous MCU rewards**
-   Work can publish immutable MCU bounty terms. Recognized completion triggers exactly-once reward through the kernel.
+`confirmed helper → Contribution submission → creator/authorized recognition fact → isolated recognition bridge → kernel → MCU grant → signed checkpoint`
 
-3. **WO-0018 — Transparency/checkpoint hardening**
-   Public signed checkpoints, recovery/rebuild drills, independent verifier packaging, and transparency publication.
+Key separation:
 
-4. **Money bounty connector**
-   Cash rewards use external funded/escrow/payment infrastructure and idempotent provider events; 99pct does not maintain an editable custodial cash balance.
+- helper submission is not economic value;
+- Mission-side recognition is an immutable human/product fact;
+- recognition service verifies the fact and submits through the recognition capability;
+- the web app never receives the recognition credential;
+- the kernel decides the MCU grant from the exact active rule;
+- signed checkpoints anchor the resulting economic history.
 
-5. **Rule governance**
-   Multi-party publication/activation, delays, freezes, challenges, and compensating corrections.
+### After WO-0016
 
-6. Mission blueprints / Utility Missions build on the same kernel.
-
-## KMS / checkpoint gate
-
-Before the first production MCU is considered durable economic history, use a non-exportable signing/checkpoint authority such as Cloud KMS and publish verifiable checkpoint material outside the mutable event database.
-
-WO-0015 should implement and test the signing/checkpoint interface and exact deployment plan.
-
-**Do not create a new paid KMS key/resource unless product-owner approval is explicitly recorded.**
-
-If approval is absent, WO-0015 may finish with checkpoint infrastructure code/config ready and WO-0016 remains blocked on that approval.
+1. WO-0017 — immutable bounty terms + autonomous MCU rewards
+2. WO-0018 — public checkpoint/transparency hardening
+3. money bounty connector
+4. rule-governance hardening
+5. Mission blueprints / Utility Missions
 
 ## Completed
 
-- WO-0013 product shell is live as `build-2026-10-04-015`.
-- WO-0014 economic kernel is accepted at `208f2be`.
+- WO-0013 public 99pct shell
+- WO-0014 deterministic economic kernel
+- WO-0015 production economic shadow boundary
 
 ## Waiting externally
 
-`WO-0006 — 99pct.com domain cutover` remains parked.
-
-One economic invariant at a time.
+WO-0006 — 99pct.com domain cutover remains parked.
