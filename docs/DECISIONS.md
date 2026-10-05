@@ -605,3 +605,80 @@ The first production economic deployment is shadow infrastructure only.
 It may create the economic database, users, secrets, migration history, worker/runtime boundary, health/operator tooling, and checkpoint integration scaffolding.
 
 It must not create real MCU grants, bounty rewards, cash payouts, or ownership events.
+
+## ADR-022 — First real MCU requires recorded Contribution recognition and a signed economic checkpoint
+
+Status: Accepted  
+Date: 2026-10-04
+
+The first production MCU path must connect product facts to the economic kernel without giving the web application privileged economic credentials.
+
+### Contribution submission
+
+Only a human who is already mutually confirmed as helping on the target Work may submit a Contribution.
+
+A Contribution submission is an immutable claim/evidence record.
+
+Submission alone creates no MCU.
+
+### Recognition
+
+Recognition is a separate immutable fact.
+
+For the first implementation, the Mission creator may recognize a submitted Contribution for Work inside their own Mission.
+
+Recognition must record:
+
+- Contribution id;
+- Work / Project / Mission context;
+- contributor identity reference;
+- recognizer identity;
+- recognized timestamp;
+- evidence reference;
+- rule id/version intended for economic evaluation.
+
+Recognition cannot directly write the economic event stream.
+
+### Recognition bridge
+
+The web application records the recognition fact in Mission/product persistence.
+
+A separate isolated recognition bridge/process:
+
+1. reads only unbridged recognized Contributions;
+2. re-verifies Mission ownership, confirmed participation, Contribution identity, and recognition integrity;
+3. submits the deterministic `recognize_contribution` intent using the recognition capability;
+4. records an append-only bridge outcome/reference;
+5. is idempotent and safe to retry.
+
+App Hosting does not receive the recognition-submitter credential.
+
+### Rule publication
+
+Initial MCU rules are immutable/versioned economic rules.
+
+The first production rule may use the constrained `fixed_mcu_on_recognition` rule kind only.
+
+The rule amount is not chosen per Contribution by the recognizer.
+
+Rule publication/activation uses the governance capability and is not performed by ordinary web requests.
+
+### Signed checkpoint requirement
+
+Before any first production MCU grant is treated as released:
+
+- Cloud KMS signing must be provisioned;
+- the private signing key must be non-exportable;
+- App Hosting must have no signing permission;
+- the accepted economic history must be checkpoint-signed;
+- signature verification must succeed independently.
+
+External signing remains post-commit. If checkpoint creation fails, the economic event remains append-only but the product must not present the new MCU state as fully released/anchored until a valid checkpoint exists.
+
+### Product semantics
+
+MCUs remain recognized contribution units, not bearer securities or legal ownership.
+
+The UI must not display MCU percentages as legal equity.
+
+Money and legal ownership remain separate ledgers.
