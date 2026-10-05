@@ -15,7 +15,7 @@ function pgCode(error: unknown) {
   return String(error.code);
 }
 
-async function claim(tx: Pick<EconomicDb, "query">) {
+async function takePendingIntent(tx: Pick<EconomicDb, "query">) {
   const pending = await tx.query<IntentRow>(claimSql);
   for (const row of pending.rows) {
     const lock = await tx.query<{ locked: boolean }>("SELECT pg_try_advisory_xact_lock(hashtext($1::text)) AS locked", [row.id]);
@@ -41,7 +41,7 @@ async function recordOutcome(
 
 async function processOne(db: EconomicDb, workerRef: string) {
   return db.transaction(async (tx) => {
-    const row = await claim(tx);
+    const row = await takePendingIntent(tx);
     if (!row) return false;
     let accepted: { commandId: string } | null = null;
     let refusal: string | null = null;
