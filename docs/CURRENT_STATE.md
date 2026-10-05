@@ -112,9 +112,11 @@ Current public Google Cloud pricing is approximately:
 - $0.06/month per active software key version;
 - $0.03 per 10,000 cryptographic operations.
 
-Product-owner approval has **not** been recorded.
+Product-owner approval was explicitly recorded on 2026-10-04:
 
-Therefore the first real-value work order remains blocked.
+> I approve the Cloud KMS spend for WO-0016.
+
+The KMS spend gate is satisfied. Before creating the resource, WO-0016 must still recheck current Google Cloud KMS pricing and `EC_SIGN_ED25519` availability. A material pricing/configuration change requires renewed approval.
 
 ## Active engineering work
 
@@ -122,8 +124,8 @@ Therefore the first real-value work order remains blocked.
 
 Status:
 
-**BLOCKED — EXPLICIT CLOUD KMS SPEND APPROVAL REQUIRED**
+**ACTIVE — CLOUD KMS SPEND APPROVED 2026-10-04**
 
-Do not execute WO-0016 until product-owner approval is recorded durably in the repository.
+WO-0016 may execute under the approved KMS configuration/cost envelope, subject to its required current-price/availability recheck before resource creation.
 
 No production MCU may be created before the KMS signing key/checkpoint path is provisioned and verified.
