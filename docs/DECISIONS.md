@@ -507,3 +507,101 @@ Later hardening may add signed/KMS-backed checkpoints and public transparency ro
 The first kernel work order is code + disposable PostgreSQL only.
 
 No production MCU/bounty path is permitted until the kernel passes adversarial review and its invariants are mechanically tested.
+
+## ADR-021 — Production economics uses capability-separated submitters and a private kernel writer
+
+Status: Accepted  
+Date: 2026-10-04
+
+WO-0014 proved the deterministic economic kernel in source/disposable PostgreSQL.
+
+Production integration adds a stricter authority boundary.
+
+### Separate production database boundary
+
+Initial production economics uses a separate PostgreSQL database, recommended name:
+
+`economy`
+
+on the already-approved Cloud SQL instance `pct99-missions-prod`.
+
+This reuses the existing instance/backup/PITR/deletion-protection boundary while separating:
+
+- database name;
+- migrations;
+- database users;
+- secrets;
+- runtime grants;
+- operational tooling.
+
+The Mission application database remains `missions`.
+
+A later dedicated Cloud SQL instance may be justified for availability/blast-radius reasons without changing economic event semantics.
+
+### Application does not own economic truth
+
+App Hosting must not receive the private kernel-writer database credential.
+
+The normal web application may only invoke a narrowly scoped intent-submission capability.
+
+Intent rows are not authoritative economic events.
+
+### Capability-separated submission
+
+Authority must not come from a browser/client-supplied actor string.
+
+Production intent submission is separated by capability/source.
+
+At minimum distinguish:
+
+- **human/application submission** — only human-safe command types;
+- **recognition submission** — Contribution recognition / correction authority;
+- **governance submission** — rule publication / activation authority;
+- **bounty-recognition submission** — completion/satisfaction recognition authority.
+
+A submitter cannot claim another capability by changing JSON.
+
+Prefer database/API capabilities that derive process identity from the authenticated service/database role rather than accepting `actor.kind/ref` as user-controlled economic authority.
+
+The deterministic kernel still performs business validation; SQL capability checks are a privilege boundary, not a second economic rules engine.
+
+### Private kernel worker
+
+Only the private kernel worker may use the kernel-writer credential.
+
+The worker:
+
+1. reads an immutable command intent;
+2. derives/validates the trusted submission capability;
+3. reconstructs and revalidates the economic command;
+4. invokes the deterministic kernel;
+5. appends accepted authoritative history or an append-only intent outcome;
+6. is safe to retry or run concurrently.
+
+A worker crash after economic commit must recover idempotently.
+
+### Intent outcomes
+
+Accepted/refused processing outcomes are append-only operational/audit facts keyed uniquely to the intent.
+
+They do not replace the economic event stream.
+
+### External checkpoints
+
+Hash chaining detects mutation relative to an existing trusted root, but a database owner could theoretically rewrite and rehash the entire database.
+
+Before real production MCU value is relied upon, 99pct adds externally verifiable signed checkpoints.
+
+The signing key should be non-exportable and isolated from normal application credentials. Cloud KMS is the expected production implementation unless a later ADR chooses another authority.
+
+Checkpoint format/signature verification must be testable independently of the live application.
+
+Creating a new paid KMS resource requires explicit product-owner approval.
+
+### Shadow-first deployment
+
+The first production economic deployment is shadow infrastructure only.
+
+It may create the economic database, users, secrets, migration history, worker/runtime boundary, health/operator tooling, and checkpoint integration scaffolding.
+
+It must not create real MCU grants, bounty rewards, cash payouts, or ownership events.
