@@ -682,3 +682,132 @@ MCUs remain recognized contribution units, not bearer securities or legal owners
 The UI must not display MCU percentages as legal equity.
 
 Money and legal ownership remain separate ledgers.
+
+## ADR-023 — Infrastructure Drip uses separate MCU and cash rails
+
+Status: Accepted  
+Date: 2026-10-04
+
+The Infrastructure Drip is the next economic-kernel extension after WO-0016 and before general bounties.
+
+It exists to make shared 99pct infrastructure self-sustaining without turning MCUs into money or silently taxing a contributor's promised grant.
+
+### Two rails
+
+The Infrastructure Drip has two separate rails.
+
+#### MCU rail
+
+MCUs record recognized contribution.
+
+When a recognition rule grants a contributor an amount, the contributor receives the full advertised amount.
+
+Example:
+
+```text
+Contributor grant:        100 MCUs
+Infrastructure issuance:    1 MCU
+```
+
+The infrastructure issuance is **additional issuance**, not a deduction from the contributor.
+
+The starting design recommendation is 1 infrastructure MCU per 100 contributor MCUs, but the kernel must store the rate in an immutable/versioned rule. One percent is not a protocol constant.
+
+The beneficiary of the infrastructure issuance is a **99pct Infrastructure Mission**, not a person, founder, parent company, or conventional corporate treasury.
+
+That Infrastructure Mission exists to account for the shared work that makes downstream Missions possible: hosting, identity, maps, security, common software, support, legal/compliance infrastructure, and other shared dependencies.
+
+Infrastructure Mission MCUs do not create an admin-controlled transferable pool. Human maintainers receive MCU recognition only through the same Contribution → recognition → versioned grant path used everywhere else.
+
+### Dependency allocation
+
+A Mission may later publish an immutable dependency-allocation rule.
+
+Example:
+
+```text
+Infrastructure drip: 1%
+
+40% → 99pct Core
+25% → Open Maps Mission
+20% → Identity Mission
+10% → Safety Infrastructure Mission
+ 5% → other declared dependency Missions
+```
+
+The exact dependency set, rate, split, activation time, and version are part of the published economic rule.
+
+A later change creates a new rule version. It does not rewrite prior grants.
+
+No admin may edit dependency percentages in place.
+
+### Cash rail
+
+Dollars pay dollar costs.
+
+The cash rail lives on the money ledger and is distinct from MCU issuance.
+
+A hosted 99pct network may charge a small transparent protocol-maintenance fee on actual commerce. The intended design is cost-targeting rather than profit-maximizing.
+
+Conceptually:
+
+```text
+fee_rate =
+  clamp(
+    forecast_shared_cost + reserve_refill
+    -------------------------------
+    trailing_network_commerce,
+    protocol_min,
+    protocol_max
+  )
+```
+
+An illustrative starting range is approximately 0.25%–1.00% with a hard protocol maximum, but exact values remain future money-ledger rules and are not fixed by this ADR.
+
+The cash fee:
+
+- is not an MCU market;
+- is not an MCU conversion;
+- is not silently deducted from an advertised bounty reward;
+- must be visible as a separate economic rule/fee;
+- may decline as commerce grows faster than shared infrastructure cost.
+
+### Protocol constraints
+
+Both rails require:
+
+1. **Protocol maximums**
+   MCU-drip rate and hosted cash-fee rate have hard maximums.
+
+2. **Delayed/versioned changes**
+   Rate or dependency changes are new immutable versions with a future activation boundary; no instant silent edits.
+
+3. **Public verification**
+   Every MCU drip grant is exportable, hash-linked, checkpointed, and independently verifiable. Future money-fee settlement must be similarly auditable on the money rail.
+
+4. **Open-source exit**
+   The open-source 99pct tree can be operated independently without paying the hosted 99pct network fee. A hosted-network fee must compensate for hosted/shared services, not become a software-license toll.
+
+### Bounties
+
+General bounties are implemented only after the Infrastructure Drip.
+
+A bounty promising 100 MCUs still grants the beneficiary 100 MCUs when its conditions are satisfied.
+
+Any infrastructure issuance is separate, transparent, rule-derived additional issuance.
+
+This lets every later bounty inherit the sustainability mechanism by construction.
+
+### Three ledgers remain separate
+
+The Infrastructure Drip does not change ADR-002:
+
+- MCU/contribution ledger;
+- money ledger;
+- legal ownership ledger.
+
+MCUs do not pay Google Cloud invoices.
+
+Cash fees do not manufacture Contribution.
+
+Neither rail automatically creates legal equity.

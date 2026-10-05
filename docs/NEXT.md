@@ -47,11 +47,24 @@ Key separation:
 
 ### After WO-0016
 
-1. WO-0017 — immutable bounty terms + autonomous MCU rewards
-2. WO-0018 — public checkpoint/transparency hardening
-3. money bounty connector
-4. rule-governance hardening
-5. Mission blueprints / Utility Missions
+1. **WO-0017 — Infrastructure Drip**
+   Add the two-rail sustainability mechanism before general bounties:
+   - additional MCU issuance for shared infrastructure Contribution;
+   - separate cash protocol fee on the money ledger for real dollar costs;
+   - immutable/versioned dependency-allocation rules;
+   - protocol caps, delayed changes, public verification, and self-hosting without the hosted fee.
+
+2. **WO-0018 — immutable bounty terms + autonomous MCU rewards**
+   General bounties inherit the Infrastructure Drip rather than having it bolted on afterward.
+
+3. **WO-0019 — public checkpoint/transparency hardening**
+   Public signed checkpoints, recovery/rebuild drills, independent verifier packaging, and transparency publication.
+
+4. money bounty connector
+
+5. rule-governance hardening
+
+6. Mission blueprints / Utility Missions
 
 ## Completed
 

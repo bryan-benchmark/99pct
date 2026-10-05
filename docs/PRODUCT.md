@@ -234,6 +234,42 @@ This same kernel should eventually support infrastructure builders, Utility Miss
 
 AI can assist with proposals/evidence but cannot directly generate economic value.
 
+
+## Infrastructure Drip
+
+99pct's shared infrastructure should be sustained by protocol rules rather than donations or permanent outside-equity extraction.
+
+The design uses two separate rails.
+
+### MCU infrastructure issuance
+
+A recognition may create more than one rule-derived MCU grant.
+
+A contributor receives the full grant promised by their rule. A separate additional grant may recognize shared infrastructure.
+
+Example:
+
+```text
+Human Contribution recognized  → +100 MCUs to contributor
+Infrastructure dependency rule  →   +1 MCU to 99pct Infrastructure Mission
+```
+
+The starting recommendation is a 1-for-100 rate, but the rate is stored in an immutable/versioned rule and may change only through a later rule version.
+
+The Infrastructure Mission is not a founder treasury. Human infrastructure maintainers earn their own MCU recognition through normal Contribution → recognition → grant paths.
+
+Dependency allocations may later split the infrastructure issuance among declared upstream Missions such as 99pct Core, maps, identity, and safety infrastructure.
+
+### Cash infrastructure fee
+
+Real operating expenses remain on the money rail.
+
+Hosted 99pct services may eventually charge a small transparent cost-targeting protocol fee on real commerce. The fee is separately governed, capped, versioned, and intended to fall when shared costs grow more slowly than network commerce.
+
+The hosted fee is not required merely to run the open-source code independently.
+
+The MCU and cash rails must never be collapsed into one asset.
+
 ## Bounties
 
 Bounties are a later Work mechanism, not a synonym for all Work.
