@@ -1,5 +1,6 @@
 import { assertCanonical, canonicalize, sha256, type CanonicalValue } from "../canonical";
 import { verifyChain } from "../chain";
+import { checkpointMatches, verifyCheckpointSignature, type SignedCheckpoint } from "../checkpoint/checkpoint";
 import { foldState } from "../engine/evaluate";
 import { commandHash, eventHash, payloadHash, type CommandType, type EconomicEvent, type EventType } from "../model";
 import { parseMcu } from "../quantity";
@@ -168,4 +169,19 @@ export function verifyExport(contents: string): Verification {
     errors.push("Event chain does not verify.");
   }
   return errors.length === 0 ? { ok: true, events } : { ok: false, errors: [...new Set(errors)] };
+}
+
+export function verifyAnchoredExport(contents: string, signed: SignedCheckpoint, publicKeyPem: string): Verification {
+  const result = verifyExport(contents);
+  if (!result.ok) return result;
+  const errors: string[] = [];
+  const latest = result.events.at(-1);
+  const sequence = Number(signed.checkpoint.lastSequence);
+  if (!latest || sequence !== latest.sequence || signed.checkpoint.lastEventHash !== latest.eventHash) {
+    errors.push(sequence < result.events.length ? "Checkpoint is stale." : "Checkpoint does not match the export.");
+  } else if (!checkpointMatches(signed.checkpoint, result.events)) {
+    errors.push("Checkpoint does not match the export.");
+  }
+  if (!verifyCheckpointSignature(signed, publicKeyPem)) errors.push("Checkpoint signature does not verify.");
+  return errors.length === 0 ? result : { ok: false, errors };
 }

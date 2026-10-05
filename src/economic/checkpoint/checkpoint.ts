@@ -23,7 +23,7 @@ export type SignedCheckpoint = {
 export type CheckpointSigner = {
   signerRef: string;
   publicKeyPem: string;
-  sign(message: string): string;
+  sign(message: string): string | Promise<string>;
 };
 
 export const plannedCheckpointKms = {
@@ -34,7 +34,7 @@ export const plannedCheckpointKms = {
   purpose: "ASYMMETRIC_SIGN",
   algorithm: "EC_SIGN_ED25519",
   protection: "software",
-  status: "blocked_pending_product_owner_approval",
+  status: "spend_approved_2026-10-04",
 } as const;
 
 export function checkpointMessage(checkpoint: EconomicCheckpoint) {
@@ -80,7 +80,9 @@ export function checkpointMatches(checkpoint: EconomicCheckpoint, events: Econom
 
 export function signCheckpoint(checkpoint: EconomicCheckpoint, signer: CheckpointSigner): SignedCheckpoint {
   if (signer.signerRef !== checkpoint.signerRef) throw new Error("Checkpoint signer reference does not match.");
-  return { checkpoint, signature: signer.sign(checkpointMessage(checkpoint)) };
+  const signature = signer.sign(checkpointMessage(checkpoint));
+  if (typeof signature !== "string") throw new Error("Checkpoint signing must be synchronous for this helper.");
+  return { checkpoint, signature };
 }
 
 export function verifyCheckpointSignature(signed: SignedCheckpoint, publicKeyPem: string) {

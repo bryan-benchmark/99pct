@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { configuredMissionDb } from "../src/missions/db/client";
 import { missionMigrationsCurrent } from "../src/missions/db/migrate";
 
-const tables = ["mission_schema_migrations", "human_accounts", "missions", "mission_revisions", "mission_environment", "projects", "project_revisions", "work_items", "work_revisions", "work_interests", "work_invitations", "work_confirmations"] as const;
+const tables = ["mission_schema_migrations", "human_accounts", "missions", "mission_revisions", "mission_environment", "projects", "project_revisions", "work_items", "work_revisions", "work_interests", "work_invitations", "work_confirmations", "contributions", "contributor_refs", "contribution_recognitions", "contribution_bridge_outcomes", "contribution_anchors"] as const;
 
 function dedicatedCheckUrl(value: string | undefined, name: string) {
   if (!value) throw new Error(`${name} is required.`);

@@ -65,6 +65,6 @@ test("a signed checkpoint anchors one Mission and rejects tampering", () => {
   const corrupted = structuredClone(events);
   corrupted[1].eventHash = "cd".repeat(32);
   assert.equal(checkpointMatches(signed.checkpoint, corrupted), false);
-  assert.equal(plannedCheckpointKms.status, "blocked_pending_product_owner_approval");
+  assert.equal(plannedCheckpointKms.status, "spend_approved_2026-10-04");
   assert.equal(plannedCheckpointKms.project, "pct-99");
 });
