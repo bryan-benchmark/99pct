@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { generateKeyPairSync, sign } from "node:crypto";
 import test from "node:test";
+import { economyLedgerPublicKeyPem } from "./checkpoint/economy-ledger-public";
 import { cloudKmsSigner, plannedKmsKeyVersion } from "./checkpoint/kms";
 
 const keyVersion = plannedKmsKeyVersion();
@@ -36,6 +37,12 @@ test("the Cloud KMS signer refuses a different algorithm or key", async () => {
     auth: { getAccessToken: async () => "token" },
     fetchImpl,
   }), /planned ledger key/);
+});
+
+test("the pinned checkpoint key is a public key for the planned version", () => {
+  assert.equal(economyLedgerPublicKeyPem.includes("BEGIN PUBLIC KEY"), true);
+  assert.equal(economyLedgerPublicKeyPem.includes("PRIVATE"), false);
+  assert.equal(plannedKmsKeyVersion().endsWith("/cryptoKeyVersions/1"), true);
 });
 
 test("App Hosting does not receive economic or signing secrets", () => {

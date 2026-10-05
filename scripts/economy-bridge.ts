@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { economyLedgerPublicKeyPem } from "../src/economic/checkpoint/economy-ledger-public";
 import { plannedKmsKeyVersion } from "../src/economic/checkpoint/kms";
 import { grantsFromVerifiedCheckpoint } from "../src/economic/checkpoint/trust";
 import { configuredEconomicDb } from "../src/economic/db/client";
@@ -16,7 +16,7 @@ async function main() {
   if (!missionUrl || !recognitionUrl || !verifierUrl || !missionId) {
     throw new Error("The recognition bridge requires its Mission database, recognition database, verifier database, and canary Mission.");
   }
-  const trustedPublicKeyPem = readFileSync(new URL("../src/economic/checkpoint/economy-ledger-public.pem", import.meta.url), "utf8");
+  const trustedPublicKeyPem = economyLedgerPublicKeyPem;
   const trustedSignerRef = plannedKmsKeyVersion();
   const missions = configuredMissionDb(missionUrl);
   const recognition = configuredEconomicDb(recognitionUrl);

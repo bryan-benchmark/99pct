@@ -82,7 +82,7 @@ Checkpoints, both signed by key version 1 and verified against the export with t
 
 The product-owner review on PR #33 asked for three fixes before the first MCU. No economic history was rewritten. The rule publication and sequence-2 checkpoint remain.
 
-The recognition bridge anchors a grant only after `grantsFromVerifiedCheckpoint` accepts the export, the latest checkpoint, and a signature. Verification uses the pinned public key in `src/economic/checkpoint/economy-ledger-public.pem` and key version 1. The `public_key_pem` column on the checkpoint row is not the trust anchor. A row with the right Mission, sequence, and hash is refused when the signature is invalid, the public key is substituted, or the checkpoint is stale. That regression is `src/missions/anchor-trust.test.ts`.
+The recognition bridge anchors a grant only after `grantsFromVerifiedCheckpoint` accepts the export, the latest checkpoint, and a signature. Verification uses the pinned public key in `src/economic/checkpoint/economy-ledger-public.ts` and key version 1. The `public_key_pem` column on the checkpoint row is not the trust anchor. A row with the right Mission, sequence, and hash is refused when the signature is invalid, the public key is substituted, or the checkpoint is stale. That regression is `src/missions/anchor-trust.test.ts`.
 
 Contribution replay now compares a SHA-256 of the canonical summary and evidence. The same idempotency key with different evidence returns 409. Migration `0007_contribution_content_hash.sql` stores that hash. Its SHA-256 is `6e7f631eda8e46af6ad94976eb9daf54c73aa897c4993f9d93a0762c5a9645e6`. It was applied to production `missions` while the previous build was still serving. The contributions table was empty, and Mission health stayed ready.
 
