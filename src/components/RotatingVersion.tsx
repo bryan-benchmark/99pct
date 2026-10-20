@@ -24,7 +24,7 @@ export function RotatingVersion({ names }: { names: readonly string[] }) {
   const name = names[index] ?? names[0];
   return (
     <span aria-hidden="true">
-      The Taylor&apos;s version of <span className="underline decoration-[var(--line)] decoration-2 underline-offset-[0.18em]">{name}</span>.
+      The Taylor&apos;s version <span className="whitespace-nowrap">of {name}.</span>
     </span>
   );
 }

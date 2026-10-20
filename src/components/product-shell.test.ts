@@ -19,6 +19,9 @@ test("the root application is 99pct, with Missionism as supporting protocol", ()
   const use = source("src/app/use/page.tsx");
   assert.equal(page.includes("<h1>Missionism</h1>"), false);
   assert.equal(productCopy.headline, "The Taylor's version of Uber, Airbnb, DoorDash, and the rest.");
+  const hero = source("src/components/RotatingVersion.tsx");
+  assert.equal(hero.includes("underline"), false);
+  assert.match(hero, /whitespace-nowrap/);
   assert.equal(productCopy.eyebrow, "Built by the 99%, for the 99%.");
   assert.match(page, /productCopy.join/);
   assert.match(page, /productCopy.use/);
