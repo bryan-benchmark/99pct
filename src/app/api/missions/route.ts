@@ -3,6 +3,7 @@ import { verifyHumanSession, type HumanIdentity } from "@/human/auth/server";
 import { humanCsrfAccepted, humanCsrfCookieName, humanSessionCookieName } from "@/human/auth/session";
 import type { MissionDb } from "@/missions/db/client";
 import { getMissionDb } from "@/missions/db/runtime";
+import { seedFirstWeek } from "@/missions/growth";
 import { MissionInputError, missionDraft, publicMissionUrl } from "@/missions/model";
 import { createFormingMission } from "@/missions/store";
 import { readWorkspaceJsonObject } from "@/workspace/http-body";
@@ -35,7 +36,9 @@ export async function createMissionRequest(request: NextRequest, deps: MissionRe
     if (error instanceof MissionInputError) return rejected(400, error.message);
     throw error;
   }
-  const mission = await createFormingMission(await deps.openDb(), identity, draft);
+  const db = await deps.openDb();
+  const mission = await createFormingMission(db, identity, draft);
+  await seedFirstWeek(db, identity, mission.slug, draft.name);
   const response = NextResponse.json({ url: publicMissionUrl(mission.slug) }, { status: 201 });
   response.headers.set("Cache-Control", "no-store");
   return response;

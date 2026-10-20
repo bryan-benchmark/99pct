@@ -2,11 +2,10 @@ import Link from "next/link";
 import { productCopy } from "@/content/99pct";
 
 const links = [
-  { href: "/use", label: "Use" },
-  { href: "/work", label: "Build" },
+  { href: "/use", label: "Utilities" },
+  { href: "/help", label: "Help" },
   { href: "/missions", label: "Missions" },
-  { href: "/missions/new", label: "Start" },
-  { href: "/missionism", label: "Missionism" },
+  { href: "/sign-in?mode=create&next=/use", label: "Join" },
 ];
 
 export function SiteNav() {

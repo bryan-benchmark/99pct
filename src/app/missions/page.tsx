@@ -21,7 +21,8 @@ export default async function MissionsPage() {
       <p className="mt-5 text-lg leading-relaxed text-[var(--body)]">
         A Mission is something people are trying to make real. Forming is a public starting state. Starting one does not create a company, a fundraiser, ownership, or a legal entity.
       </p>
-      <p className="mt-6 font-[family-name:var(--font-sans)]">
+      <p className="mt-6 flex flex-wrap gap-x-4 gap-y-2 font-[family-name:var(--font-sans)]">
+        <Link href="/use" className="font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4">See the utilities</Link>
         <Link href="/missions/new" className="font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4">Start a Mission</Link>
       </p>
       {unavailable ? <p className="mt-10 text-[var(--muted)]">Missions are not available in this environment yet.</p> : null}

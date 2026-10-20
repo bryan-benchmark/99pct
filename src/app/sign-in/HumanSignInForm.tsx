@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { humanClientAuth } from "@/human/auth/client";
 
-export function HumanSignInForm({ nextPath }: { nextPath: string }) {
+export function HumanSignInForm({ nextPath, initialMode = "sign-in" }: { nextPath: string; initialMode?: "sign-in" | "create" }) {
   const router = useRouter();
-  const [mode, setMode] = useState<"sign-in" | "create">("sign-in");
+  const [mode, setMode] = useState<"sign-in" | "create">(initialMode);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
