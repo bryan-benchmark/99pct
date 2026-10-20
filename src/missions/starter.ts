@@ -1,4 +1,4 @@
-import type { Utility } from "@/content/utilities";
+import type { HelpKind, Utility } from "@/content/utilities";
 import { projectLimits, workLimits, type ProjectDraft, type WorkDraft } from "./model";
 
 const featured = "Rideshare 99";
@@ -6,6 +6,13 @@ const featured = "Rideshare 99";
 function fit(value: string, label: string, max: number) {
   if (value.trim().length < 8 || value.trim().length > max) throw new Error(`${label} is ${value.trim().length} characters.`);
   return value;
+}
+
+export function helpForPiece(title: string): HelpKind {
+  const text = title.toLowerCase();
+  if (text.startsWith("look after")) return "people";
+  if (text.startsWith("name the first")) return "place";
+  return "write";
 }
 
 export function firstWeek(utility: Utility): { project: ProjectDraft; work: WorkDraft[] } {

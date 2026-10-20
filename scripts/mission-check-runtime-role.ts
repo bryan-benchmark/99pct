@@ -68,7 +68,7 @@ async function main() {
          FROM pg_attribute a
         WHERE a.attrelid = 'public.utility_offers'::regclass AND a.attnum > 0 AND NOT a.attisdropped`,
     );
-    const offerUpdate = new Set(["kind", "note"]);
+    const offerUpdate = new Set(["kind", "note", "piece"]);
     if (offerColumns.rows.length < 2 || offerColumns.rows.some((column) => column.can_update !== offerUpdate.has(column.column_name))) {
       throw new Error("Mission runtime role may update only how a person can help.");
     }
