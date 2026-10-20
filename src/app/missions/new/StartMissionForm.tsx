@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
-export function StartMissionForm() {
+export function StartMissionForm({ defaults }: { defaults?: { name?: string; purpose?: string; beneficiaries?: string; startingPlace?: string } }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -42,10 +42,10 @@ export function StartMissionForm() {
   const field = "mt-1 block w-full border border-[var(--line)] bg-white p-2";
   return (
     <form onSubmit={submit} className="mt-8 space-y-4 font-[family-name:var(--font-sans)] text-sm">
-      <label className="block">Name<input name="name" required minLength={2} maxLength={80} className={field} /></label>
-      <label className="block">Purpose<input name="purpose" required minLength={8} maxLength={500} className={field} /></label>
-      <label className="block">For<input name="beneficiaries" required minLength={2} maxLength={160} className={field} /></label>
-      <label className="block">Starts in<input name="startingPlace" required minLength={2} maxLength={80} placeholder="A place, community, or Global" className={field} /></label>
+      <label className="block">Name<input name="name" required minLength={2} maxLength={80} defaultValue={defaults?.name} className={field} /></label>
+      <label className="block">Purpose<input name="purpose" required minLength={8} maxLength={500} defaultValue={defaults?.purpose} className={field} /></label>
+      <label className="block">For<input name="beneficiaries" required minLength={2} maxLength={160} defaultValue={defaults?.beneficiaries} className={field} /></label>
+      <label className="block">Starts in<input name="startingPlace" required minLength={2} maxLength={80} defaultValue={defaults?.startingPlace} placeholder="A place, community, or Global" className={field} /></label>
       <button type="submit" disabled={busy} className="border border-[var(--ink)] px-4 py-2 disabled:opacity-50">{busy ? "Starting…" : "Start Mission"}</button>
       {error ? <p role="alert" className="border border-red-700 p-3 text-red-700">{error}</p> : null}
     </form>

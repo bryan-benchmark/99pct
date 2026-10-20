@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { findWorkCopy, missionismHubCopy, productCopy, useCopy } from "@/content/99pct";
+import { findWorkCopy, helpCopy, missionismHubCopy, productCopy, useCopy } from "@/content/99pct";
+import { heroIncumbents, startUtilityPath, utilities, utilityBeneficiaries, utilityPurpose } from "@/content/utilities";
+import { missionLimits } from "@/missions/model";
 import { shortDefinition } from "@/content/voice";
 
 function source(path: string) {
@@ -16,11 +18,15 @@ test("the root application is 99pct, with Missionism as supporting protocol", ()
   const hub = source("src/app/missionism/page.tsx");
   const use = source("src/app/use/page.tsx");
   assert.equal(page.includes("<h1>Missionism</h1>"), false);
-  assert.equal(productCopy.headline, "Build what should exist.");
+  assert.equal(productCopy.headline, "The Taylor's version of Uber, Airbnb, DoorDash, and the rest.");
+  assert.equal(productCopy.eyebrow, "Built by the 99%, for the 99%.");
+  assert.match(page, /productCopy.join/);
   assert.match(page, /productCopy.use/);
   assert.match(page, /productCopy.build/);
   assert.match(page, /productCopy.start/);
   assert.match(page, /productCopy.explore/);
+  assert.equal(/equity|MCU|profits/i.test(page), false);
+  assert.equal(/equity|profits/i.test(`${productCopy.lede} ${productCopy.argument} ${productCopy.truth}`), false);
   assert.equal(productCopy.use.href, "/use");
   assert.equal(productCopy.build.href, "/work");
   assert.equal(productCopy.start.href, "/missions/new");
@@ -46,4 +52,26 @@ test("the root application is 99pct, with Missionism as supporting protocol", ()
   assert.equal(/rating|inventory|drivers|bookings/i.test(use), false);
   assert.equal(shortDefinition.startsWith("Missionism is a better way to organize work."), true);
   assert.equal(findWorkCopy.title, "Find Work");
+  const help = source("src/app/help/page.tsx");
+  assert.match(help, /helpCopy/);
+  assert.match(help, /not a job, a paycheck, or ownership/);
+  assert.equal(helpCopy.lede, "You do not need to know how open source works.");
+  assert.equal(utilities.length >= 50, true);
+  assert.equal(new Set(utilities.map((item) => item.name)).size, utilities.length);
+  for (const incumbent of heroIncumbents) {
+    assert.equal(utilities.some((item) => item.incumbent === incumbent), true, incumbent);
+  }
+  for (const utility of utilities) {
+    const purpose = utilityPurpose(utility);
+    assert.equal(purpose.length >= missionLimits.purpose.min && purpose.length <= missionLimits.purpose.max, true, utility.name);
+    assert.equal(utility.name.length >= missionLimits.name.min && utility.name.length <= missionLimits.name.max, true, utility.name);
+    const path = startUtilityPath(utility);
+    const draft = new URL(path, "https://99pct.example");
+    assert.equal(draft.pathname, "/missions/new", utility.name);
+    assert.equal(draft.searchParams.get("name"), utility.name, utility.name);
+    assert.equal(draft.searchParams.get("purpose"), purpose, utility.name);
+    assert.equal(draft.searchParams.get("beneficiaries"), utilityBeneficiaries, utility.name);
+  }
+  assert.equal(utilityBeneficiaries.length >= missionLimits.beneficiaries.min && utilityBeneficiaries.length <= missionLimits.beneficiaries.max, true);
+  assert.equal(/\$|equity|profits|rating|inventory|drivers|bookings/i.test(JSON.stringify(utilities)), false);
 });

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { GrowthBanner } from "@/components/GrowthBanner";
 import { findWorkCopy, productCopy } from "@/content/99pct";
 import { getMissionDb } from "@/missions/db/runtime";
 import { helpingCountLabel, interestCountLabel, publicWorkUrl } from "@/missions/model";
@@ -26,6 +27,7 @@ export default async function FindWorkPage() {
   }
   return (
     <article className="mx-auto w-full max-w-[40rem] px-5 py-12 md:py-16">
+      <GrowthBanner />
       <h1 className="text-[2rem] font-semibold leading-tight tracking-tight text-[var(--ink)]">{findWorkCopy.title}</h1>
       <p className="mt-5 text-lg leading-relaxed text-[var(--body)]">{findWorkCopy.lede}</p>
       <p className="mt-4 text-[var(--muted)]">{findWorkCopy.boundary}</p>
@@ -33,7 +35,8 @@ export default async function FindWorkPage() {
       {!unavailable && work.length === 0 ? (
         <div className="mt-10">
           <p className="text-[var(--muted)]">{findWorkCopy.empty}</p>
-          <p className="mt-4 font-[family-name:var(--font-sans)]">
+          <p className="mt-4 flex flex-wrap gap-x-4 gap-y-2 font-[family-name:var(--font-sans)]">
+            <Link href={productCopy.use.href} className="font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4">{productCopy.use.label}</Link>
             <Link href={productCopy.start.href} className="font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4">{productCopy.start.label}</Link>
           </p>
         </div>

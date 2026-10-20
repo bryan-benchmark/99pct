@@ -1,8 +1,8 @@
 import { configuredMissionDb } from "../src/missions/db/client";
 import { missionDatabaseUnavailable } from "../src/missions/db/config";
 
-const tables = ["mission_schema_migrations", "human_accounts", "missions", "mission_revisions", "mission_environment", "projects", "project_revisions", "work_items", "work_revisions", "work_interests", "work_invitations", "work_confirmations", "contributions", "contributor_refs", "contribution_recognitions", "contribution_bridge_outcomes", "contribution_anchors"] as const;
-const canInsert = new Set<string>(["human_accounts", "missions", "mission_revisions", "projects", "project_revisions", "work_items", "work_revisions", "work_interests", "work_invitations", "work_confirmations", "contributions", "contributor_refs", "contribution_recognitions"]);
+const tables = ["mission_schema_migrations", "human_accounts", "missions", "mission_revisions", "mission_environment", "projects", "project_revisions", "work_items", "work_revisions", "work_interests", "work_invitations", "work_confirmations", "contributions", "contributor_refs", "contribution_recognitions", "contribution_bridge_outcomes", "contribution_anchors", "utility_offers"] as const;
+const canInsert = new Set<string>(["human_accounts", "missions", "mission_revisions", "projects", "project_revisions", "work_items", "work_revisions", "work_interests", "work_invitations", "work_confirmations", "contributions", "contributor_refs", "contribution_recognitions", "utility_offers"]);
 const canUpdate = new Set<string>();
 
 type TablePrivilege = {
@@ -61,6 +61,16 @@ async function main() {
     );
     if (columns.rows.length < 2 || columns.rows.some((column) => column.can_update !== (column.column_name === "verified_email"))) {
       throw new Error("Mission runtime role may update only the verified email.");
+    }
+    const offerColumns = await db.query<{ column_name: string; can_update: boolean }>(
+      `SELECT a.attname AS column_name,
+              has_column_privilege(current_user, 'public.utility_offers', a.attname, 'UPDATE') AS can_update
+         FROM pg_attribute a
+        WHERE a.attrelid = 'public.utility_offers'::regclass AND a.attnum > 0 AND NOT a.attisdropped`,
+    );
+    const offerUpdate = new Set(["kind", "note"]);
+    if (offerColumns.rows.length < 2 || offerColumns.rows.some((column) => column.can_update !== offerUpdate.has(column.column_name))) {
+      throw new Error("Mission runtime role may update only how a person can help.");
     }
     process.stdout.write(`Mission runtime role ${account.role_name} has the expected limited privileges.\n`);
   } finally {
