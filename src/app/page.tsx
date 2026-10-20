@@ -6,11 +6,13 @@ import { heroIncumbents, startUtilityPath, utilityByName } from "@/content/utili
 import { missionDatabaseUnavailable } from "@/missions/db/config";
 import { getMissionDb } from "@/missions/db/runtime";
 import { lifeSentence, publicPulse } from "@/missions/growth";
+import { firstWeek } from "@/missions/starter";
 
 export const dynamic = "force-dynamic";
 
 const actionClass = "font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4";
 const rideshare = utilityByName("Rideshare 99");
+const firstWeekWork = rideshare ? firstWeek(rideshare).work : [];
 
 export default async function HomePage() {
   let life = "";
@@ -32,12 +34,20 @@ export default async function HomePage() {
       <p className="mt-4 text-[var(--body)]">{productCopy.argument}</p>
       <p className="mt-4 text-[var(--body)]">{productCopy.truth}</p>
       <section className="mt-10">
-        <h2 className="text-xl font-semibold text-[var(--ink)]">Start with Rideshare 99</h2>
-        <p className="mt-3 text-[var(--body)]">The first week is a description, a first city, and what a rider and a driver need. Starting it posts that work for other people. The software comes after.</p>
+        <h2 className="text-xl font-semibold text-[var(--ink)]">The first week of Rideshare 99</h2>
+        <p className="mt-3 text-[var(--body)]">Six pieces. None of them is the software. Say you can help with one, or start the utility and these become the work other people can do.</p>
         {life ? <p className="mt-3 text-[var(--ink)]">{life}</p> : null}
+        <ol className="mt-6 list-decimal space-y-4 pl-5">
+          {firstWeekWork.map((item) => (
+            <li key={item.title}>
+              <Link href="/use/rideshare-99#first-week" className="font-semibold text-[var(--ink)]">{item.title}</Link>
+              <p className="text-[var(--muted)]">{`Done when ${item.doneWhen.charAt(0).toLowerCase()}${item.doneWhen.slice(1)}`}</p>
+            </li>
+          ))}
+        </ol>
         {rideshare ? (
-          <p className="mt-4 flex flex-wrap gap-x-4 gap-y-2 font-[family-name:var(--font-sans)]">
-            <Link href="/use/rideshare-99" className={actionClass}>I can help</Link>
+          <p className="mt-6 flex flex-wrap gap-x-4 gap-y-2 font-[family-name:var(--font-sans)]">
+            <Link href="/use/rideshare-99#help" className={actionClass}>I can help</Link>
             <Link href={startUtilityPath(rideshare)} className={actionClass}>Start Rideshare 99</Link>
           </p>
         ) : null}

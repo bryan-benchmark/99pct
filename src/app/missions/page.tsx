@@ -22,6 +22,7 @@ export default async function MissionsPage() {
         A Mission is something people are trying to make real. Forming is a public starting state. Starting one does not create a company, a fundraiser, ownership, or a legal entity.
       </p>
       <p className="mt-6 flex flex-wrap gap-x-4 gap-y-2 font-[family-name:var(--font-sans)]">
+        <Link href="/use/rideshare-99" className="font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4">Start with Rideshare 99</Link>
         <Link href="/use" className="font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4">See the utilities</Link>
         <Link href="/missions/new" className="font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4">Start a Mission</Link>
       </p>
