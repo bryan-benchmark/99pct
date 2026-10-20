@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { readinessCanarySlug } from "./canary";
 import type { MissionDb } from "./db/client";
 import { missionSlugBase, type MissionDraft, type PublicMission } from "./model";
 
@@ -68,7 +69,7 @@ export async function createFormingMission(db: MissionDb, creator: { uid: string
 }
 
 export async function listPublicMissions(db: MissionDb): Promise<PublicMission[]> {
-  const result = await db.query<RevisionRow>(`${publicSelect} ORDER BY missions.created_at DESC, missions.slug ASC`);
+  const result = await db.query<RevisionRow>(`${publicSelect} WHERE missions.slug <> $1 ORDER BY missions.created_at DESC, missions.slug ASC`, [readinessCanarySlug]);
   return result.rows.map(published);
 }
 

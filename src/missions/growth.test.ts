@@ -5,15 +5,16 @@ import { NextRequest } from "next/server";
 import { createMissionRequest } from "../app/api/missions/route";
 import { createOfferRequest } from "../app/api/utilities/[slug]/offer/route";
 import { utilities, utilitySlug } from "@/content/utilities";
+import { readinessCanarySlug } from "./canary";
 import { embeddedMissionDb } from "./db/client";
 import { migrateMissions } from "./db/migrate";
 import { findStartedUtility, lifeSentence, listGrowthNotices, publicPulse } from "./growth";
 import { expressInterest, listCreatorInterests } from "./interest";
 import { confirmParticipation, inviteInterest } from "./participation";
 import { listCreatorOffers, listPublicOfferCounts, offerDraft } from "./offers";
-import { createProject, createWork } from "./projects";
+import { createProject, createWork, listOpenWork } from "./projects";
 import { firstWeek } from "./starter";
-import { createFormingMission } from "./store";
+import { createFormingMission, getPublicMission, listPublicMissions } from "./store";
 
 const creator = { uid: "human-1", email: "founder@example.test" };
 const helper = { uid: "human-2", email: "helper@example.test" };
@@ -55,6 +56,51 @@ test("the life sentence stays quiet until something is true", () => {
     lifeSentence({ missions: 1, openWork: 2, helpers: 3, featuredHelpers: 1 }),
     "1 person can help with Rideshare 99. 2 people can help with other utilities. 2 pieces of work are open. 1 utility has been started.",
   );
+});
+
+test("the readiness canary stays addressable and stays off the public lists", async () => {
+  const db = await database();
+  const canary = await createFormingMission(db, creator, {
+    name: "WO-0009 test Mission",
+    purpose: "Prove that a verified person can start a public forming Mission.",
+    beneficiaries: "The first live readiness check",
+    startingPlace: "Global",
+  });
+  assert.equal(canary.slug, readinessCanarySlug);
+  const project = await createProject(db, creator, canary.slug, {
+    title: "WO-0010 test Project",
+    outcome: "The public work page can show one task.",
+  });
+  await createWork(db, creator, canary.slug, project.slug, {
+    kind: "task",
+    title: "WO-0010 test task",
+    description: "Confirm the public Work page shows this description.",
+    doneWhen: "The signed-out page still shows this task.",
+  });
+  const real = await createFormingMission(db, creator, {
+    name: "River School",
+    purpose: "Teach children how the river works.",
+    beneficiaries: "Children in the valley",
+    startingPlace: "Global",
+  });
+  const realProject = await createProject(db, creator, real.slug, {
+    title: "River lab",
+    outcome: "Students can test the river water themselves.",
+  });
+  await createWork(db, creator, real.slug, realProject.slug, {
+    kind: "task",
+    title: "Collect sample bottles",
+    description: "Bring clean bottles so the class can take water samples.",
+    doneWhen: "Twenty labeled bottles are at the school.",
+  });
+  const missions = await listPublicMissions(db);
+  assert.deepEqual(missions.map((mission) => mission.slug), [real.slug]);
+  const work = await listOpenWork(db);
+  assert.deepEqual(work.map((item) => item.missionSlug), [real.slug]);
+  const pulse = await publicPulse(db);
+  assert.equal(pulse.openWork, 1);
+  assert.equal(pulse.missions, 0);
+  assert.equal((await getPublicMission(db, readinessCanarySlug))?.name, "WO-0009 test Mission");
 });
 
 test("starting a catalog utility posts its first week, and another mission does not", async () => {

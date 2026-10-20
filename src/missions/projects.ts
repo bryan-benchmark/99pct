@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { readinessCanarySlug } from "./canary";
 import type { MissionDb, MissionSql } from "./db/client";
 import {
   scopedSlugBase,
@@ -272,7 +273,7 @@ function publishedOpenWork(row: OpenWorkRow): PublicOpenWork {
 }
 
 export async function listOpenWork(db: MissionDb): Promise<PublicOpenWork[]> {
-  const result = await db.query<OpenWorkRow>(`${openWorkSelect} ORDER BY work_items.created_at DESC, work_items.slug ASC LIMIT 100`);
+  const result = await db.query<OpenWorkRow>(`${openWorkSelect} AND missions.slug <> $1 ORDER BY work_items.created_at DESC, work_items.slug ASC LIMIT 100`, [readinessCanarySlug]);
   return result.rows.map(publishedOpenWork);
 }
 
