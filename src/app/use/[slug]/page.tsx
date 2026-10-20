@@ -65,7 +65,7 @@ export default async function UtilityPage({ params }: { params: Promise<{ slug: 
         <Link href={startUtilityPath(utility)} className={actionClass}>{started ? "Start a separate one" : "Start this"}</Link>
         <Link href="/use" className={actionClass}>All utilities</Link>
       </p>
-      <section className="mt-12">
+      <section id="first-week" className="mt-12">
         <h2 className="text-xl font-semibold text-[var(--ink)]">The first week</h2>
         <ul className="mt-6 space-y-6">
           {kit.work.map((item) => (
@@ -77,7 +77,7 @@ export default async function UtilityPage({ params }: { params: Promise<{ slug: 
           ))}
         </ul>
       </section>
-      <section className="mt-12">
+      <section id="help" className="mt-12">
         <h2 className="text-xl font-semibold text-[var(--ink)]">I can help</h2>
         {signedIn ? <OfferForm slug={slug} own={own} /> : (
           <p className="mt-4 font-[family-name:var(--font-sans)]"><Link href={join} className={actionClass}>Join to raise your hand</Link></p>

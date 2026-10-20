@@ -35,7 +35,9 @@ export default async function FindWorkPage() {
       {!unavailable && work.length === 0 ? (
         <div className="mt-10">
           <p className="text-[var(--muted)]">{findWorkCopy.empty}</p>
+          <p className="mt-4 text-[var(--body)]">The first week of Rideshare 99 is already written down. You can raise your hand before anyone starts it.</p>
           <p className="mt-4 flex flex-wrap gap-x-4 gap-y-2 font-[family-name:var(--font-sans)]">
+            <Link href="/use/rideshare-99#first-week" className="font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4">See the first week</Link>
             <Link href={productCopy.use.href} className="font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4">{productCopy.use.label}</Link>
             <Link href={productCopy.start.href} className="font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4">{productCopy.start.label}</Link>
           </p>

@@ -5,7 +5,7 @@ const links = [
   { href: "/use", label: "Utilities" },
   { href: "/help", label: "Help" },
   { href: "/missions", label: "Missions" },
-  { href: "/sign-in?mode=create&next=/use", label: "Join" },
+  { href: "/sign-in?mode=create&next=/use/rideshare-99", label: "Join" },
 ];
 
 export function SiteNav() {

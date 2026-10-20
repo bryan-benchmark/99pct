@@ -13,7 +13,7 @@ export const productCopy = {
   lede: "99pct is a place to join an open-source community and help build an everyday utility. A ride. A delivery. A stay. A song. A shop. The ordinary services of a life.",
   argument: "The people who operate and build a utility are who it is for. Outside shareholders are not. Helping is free. This site does not pay anyone, sell shares, or grant ownership.",
   truth: "No utility is a live service yet. You do not need to know how open source works. Join, pick one, and help.",
-  join: { href: "/sign-in?mode=create&next=/use", label: "Join today" },
+  join: { href: "/sign-in?mode=create&next=/use/rideshare-99", label: "Join today" },
   use: { href: "/use", label: "See the utilities" },
   build: { href: "/work", label: "Help with work" },
   start: { href: "/missions/new", label: "Start a utility" },
