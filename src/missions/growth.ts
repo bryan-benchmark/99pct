@@ -1,4 +1,5 @@
 import { utilityByName, utilitySlug, utilities } from "@/content/utilities";
+import { readinessCanarySlug } from "./canary";
 import type { MissionDb } from "./db/client";
 import { publicWorkUrl } from "./model";
 import { createProject, createWork } from "./projects";
@@ -39,10 +40,13 @@ export async function publicPulse(db: MissionDb): Promise<Pulse> {
           JOIN (SELECT mission_id, MAX(revision) AS revision FROM mission_revisions GROUP BY mission_id) latest
             ON latest.mission_id = revisions.mission_id AND latest.revision = revisions.revision
          WHERE revisions.name = ANY($1::text[])) AS missions,
-       (SELECT count(*)::int FROM work_items WHERE status = 'open') AS open_work,
+       (SELECT count(*)::int FROM work_items
+          JOIN projects ON projects.id = work_items.project_id
+          JOIN missions ON missions.id = projects.mission_id
+         WHERE work_items.status = 'open' AND missions.slug <> $3) AS open_work,
        (SELECT count(*)::int FROM utility_offers) AS helpers,
        (SELECT count(*)::int FROM utility_offers WHERE utility_slug = $2) AS featured_helpers`,
-    [names, featuredSlug],
+    [names, featuredSlug, readinessCanarySlug],
   );
   const row = result.rows[0];
   return {
