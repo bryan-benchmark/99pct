@@ -2,9 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
-import { helpKinds, type HelpKind } from "@/content/utilities";
 
-export function OfferForm({ slug, own }: { slug: string; own: { kind: HelpKind; note: string } | null }) {
+export function OfferForm({ slug, pieces, own }: { slug: string; pieces: string[]; own: { piece: string; note: string } | null }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -23,7 +22,7 @@ export function OfferForm({ slug, own }: { slug: string; own: { kind: HelpKind; 
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           csrfToken,
-          kind: data.get("kind"),
+          piece: data.get("piece"),
           note: data.get("note") ?? "",
           shareEmail: data.get("shareEmail") === "yes",
         }),
@@ -42,12 +41,12 @@ export function OfferForm({ slug, own }: { slug: string; own: { kind: HelpKind; 
   return (
     <form onSubmit={submit} className="mt-8 space-y-4 font-[family-name:var(--font-sans)] text-sm">
       <fieldset>
-        <legend className="font-semibold text-[var(--ink)]">How you can help</legend>
+        <legend className="font-semibold text-[var(--ink)]">Which piece</legend>
         <div className="mt-3 space-y-2">
-          {helpKinds.map((kind) => (
-            <label key={kind.id} className="block">
-              <input type="radio" name="kind" value={kind.id} required defaultChecked={own?.kind === kind.id} className="mr-2" />
-              {kind.label}
+          {pieces.map((piece) => (
+            <label key={piece} className="block">
+              <input type="radio" name="piece" value={piece} required defaultChecked={own?.piece === piece} className="mr-2" />
+              {piece}
             </label>
           ))}
         </div>

@@ -6,6 +6,7 @@ import { heroIncumbents, startUtilityPath, utilityByName } from "@/content/utili
 import { missionDatabaseUnavailable } from "@/missions/db/config";
 import { getMissionDb } from "@/missions/db/runtime";
 import { lifeSentence, publicPulse } from "@/missions/growth";
+import { listPieceCounts } from "@/missions/offers";
 import { firstWeek } from "@/missions/starter";
 
 export const dynamic = "force-dynamic";
@@ -16,8 +17,11 @@ const firstWeekWork = rideshare ? firstWeek(rideshare).work : [];
 
 export default async function HomePage() {
   let life = "";
+  const pieceCounts = new Map<string, number>();
   try {
-    life = lifeSentence(await publicPulse(await getMissionDb()));
+    const db = await getMissionDb();
+    life = lifeSentence(await publicPulse(db));
+    for (const row of await listPieceCounts(db, "rideshare-99")) pieceCounts.set(row.piece, row.count);
   } catch (error) {
     if (!(error instanceof Error) || error.message !== missionDatabaseUnavailable) throw error;
   }
@@ -40,8 +44,9 @@ export default async function HomePage() {
         <ol className="mt-6 list-decimal space-y-4 pl-5">
           {firstWeekWork.map((item) => (
             <li key={item.title}>
-              <Link href="/use/rideshare-99#first-week" className="font-semibold text-[var(--ink)]">{item.title}</Link>
+              <Link href={`/use/rideshare-99?piece=${encodeURIComponent(item.title)}#help`} className="font-semibold text-[var(--ink)]">{item.title}</Link>
               <p className="text-[var(--muted)]">{`Done when ${item.doneWhen.charAt(0).toLowerCase()}${item.doneWhen.slice(1)}`}</p>
+              {(pieceCounts.get(item.title) ?? 0) > 0 ? <p className="text-[var(--ink)]">{pieceCounts.get(item.title) === 1 ? "1 person can do this." : `${pieceCounts.get(item.title)} people can do this.`}</p> : null}
             </li>
           ))}
         </ol>

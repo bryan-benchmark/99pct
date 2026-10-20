@@ -75,7 +75,7 @@ export default async function MissionPage({ params }: { params: Promise<{ slug: 
           <ul className="mt-4 space-y-4">
             {offers.map((offer) => (
               <li key={offer.id}>
-                <p className="text-[var(--ink)]">{helpKinds.find((kind) => kind.id === offer.kind)?.label}. {offer.email}</p>
+                <p className="text-[var(--ink)]">{offer.piece || helpKinds.find((kind) => kind.id === offer.kind)?.label}. {offer.email}</p>
                 {offer.note ? <p className="mt-1 text-[var(--body)]">{offer.note}</p> : null}
               </li>
             ))}
