@@ -28,8 +28,15 @@ test("the root application is 99pct, with Missionism as supporting protocol", ()
   assert.match(page, /productCopy.build/);
   assert.match(page, /productCopy.start/);
   assert.match(page, /productCopy.explore/);
-  assert.equal(/equity|MCU|profits/i.test(page), false);
-  assert.equal(/equity|profits/i.test(`${productCopy.lede} ${productCopy.argument} ${productCopy.truth}`), false);
+  assert.equal(/equity|MCU/i.test(page), false);
+  assert.equal(/equity/i.test(`${productCopy.lede} ${productCopy.argument} ${productCopy.truth}`), false);
+  assert.match(page, /productCopy\.split/);
+  assert.deepEqual(productCopy.split.rows.map((row) => `${row.share} ${row.who}`), [
+    "~99% The people doing the work, on site",
+    "~1% The people who keep the infrastructure running",
+    "0% Outside owners",
+  ]);
+  assert.match(productCopy.argument, /does not pay anyone/);
   assert.equal(productCopy.use.href, "/use");
   assert.equal(productCopy.build.href, "/work");
   assert.equal(productCopy.start.href, "/missions/new");

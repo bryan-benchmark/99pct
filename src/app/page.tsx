@@ -35,6 +35,17 @@ export default async function HomePage() {
       </h1>
       <p className="mt-4 text-lg text-[var(--ink)]">{productCopy.gloss}</p>
       <p className="mt-6 text-lg leading-relaxed text-[var(--body)] md:text-xl">{productCopy.lede}</p>
+      <table className="mt-8 w-full border-collapse text-[var(--ink)]">
+        <caption className="mb-1 text-left font-[family-name:var(--font-sans)] text-xs font-medium uppercase tracking-wide text-[var(--muted)]">{productCopy.split.caption}</caption>
+        <tbody>
+          {productCopy.split.rows.map((row) => (
+            <tr key={row.share} className="border-t border-[var(--line)]">
+              <th scope="row" className="w-[5.5rem] whitespace-nowrap py-3 pr-4 text-left align-baseline text-[1.75rem] font-semibold leading-none tracking-tight">{row.share}</th>
+              <td className="py-3 align-baseline">{row.who}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
       <p className="mt-4 text-[var(--body)]">{productCopy.argument}</p>
       <p className="mt-4 text-[var(--body)]">{productCopy.truth}</p>
       <section className="mt-10">

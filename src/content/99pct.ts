@@ -11,7 +11,15 @@ export const productCopy = {
   headline: "The Taylor's version of Uber, Airbnb, DoorDash, and the rest.",
   gloss: "A version made by the people who do the work.",
   lede: "99pct is a place to join an open-source community and help build an everyday utility. A ride. A delivery. A stay. A song. A shop. The ordinary services of a life.",
-  argument: "The people who operate and build a utility are who it is for. Outside shareholders are not. Helping is free. This site does not pay anyone, sell shares, or grant ownership.",
+  split: {
+    caption: "Where the profit goes",
+    rows: [
+      { share: "~99%", who: "The people doing the work, on site" },
+      { share: "~1%", who: "The people who keep the infrastructure running" },
+      { share: "0%", who: "Outside owners" },
+    ],
+  },
+  argument: "Helping is free. This site does not pay anyone, sell shares, or grant ownership.",
   truth: "No utility is a live service yet. You do not need to know how open source works. Join, pick one, and help.",
   join: { href: "/sign-in?mode=create&next=/use/rideshare-99", label: "Join today" },
   use: { href: "/use", label: "See the utilities" },
