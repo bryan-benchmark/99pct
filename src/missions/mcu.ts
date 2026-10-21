@@ -48,6 +48,30 @@ function published(row: {
   };
 }
 
+export type McuPerson = {
+  name: string;
+  slug: string;
+  pieces: PublicMcu[];
+};
+
+export async function listMcuBoard(db: MissionDb, limit = 40): Promise<McuPerson[]> {
+  const recent = await listRecentMcus(db, 200);
+  const order: string[] = [];
+  const bySlug = new Map<string, PublicMcu[]>();
+  for (const item of recent) {
+    const pieces = bySlug.get(item.slug);
+    if (pieces) pieces.push(item);
+    else {
+      bySlug.set(item.slug, [item]);
+      order.push(item.slug);
+    }
+  }
+  return order.slice(0, limit).map((slug) => {
+    const pieces = bySlug.get(slug) ?? [];
+    return { name: pieces[0]?.name ?? "", slug, pieces };
+  });
+}
+
 export async function listRecentMcus(db: MissionDb, limit = 8): Promise<PublicMcu[]> {
   const result = await db.query<Parameters<typeof published>[0]>(
     `${mcuSelect} ORDER BY contributions.submitted_at DESC, contributions.id DESC LIMIT $2`,
