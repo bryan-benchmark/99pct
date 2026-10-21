@@ -25,7 +25,7 @@ test("the root application is 99pct, with Missionism as supporting protocol", ()
   assert.equal(hero.includes("underline"), false);
   assert.match(hero, /whitespace-nowrap/);
   assert.match(hero, /heroMarks/);
-  for (const name of ["Netflix", "Spotify", "Amazon", "Apple", "NVIDIA", "Microsoft", "Visa", "Tesla"]) {
+  for (const name of ["Netflix", "Spotify", "Amazon", "Microsoft", "Visa", "Walmart"]) {
     assert.equal(typeof heroMarks[name], "string", name);
   }
   assert.equal(productCopy.eyebrow, "Built by the 99%, for the 99%.");
@@ -100,8 +100,11 @@ test("the root application is 99pct, with Missionism as supporting protocol", ()
   for (const incumbent of heroIncumbents) {
     assert.equal(utilities.some((item) => item.incumbent === incumbent), true, incumbent);
   }
-  for (const name of ["Amazon", "Walmart", "McDonald's", "Dollar Tree", "Kroger", "Starbucks", "Comcast", "Google", "Facebook", "CVS", "United", "Apple", "Wells Fargo", "Exxon", "Nike", "Disney", "Netflix", "Microsoft", "NVIDIA", "Shein", "Tesla", "UnitedHealth", "Visa", "Chase", "AT&T"]) {
+  for (const name of ["Amazon", "Walmart", "McDonald's", "Dollar Tree", "Kroger", "Starbucks", "Comcast", "Google", "Facebook", "CVS", "Netflix", "Microsoft", "Visa"]) {
     assert.equal((heroIncumbents as readonly string[]).includes(name), true, name);
+  }
+  for (const name of ["NVIDIA", "Shein", "Tesla", "Expedia", "United", "UnitedHealth", "Etsy", "Apple", "Upwork", "Wells Fargo", "Chase", "Yelp", "Exxon", "Nike", "Disney", "AT&T"]) {
+    assert.equal((heroIncumbents as readonly string[]).includes(name), false, name);
   }
   for (const utility of utilities) {
     const purpose = utilityPurpose(utility);
