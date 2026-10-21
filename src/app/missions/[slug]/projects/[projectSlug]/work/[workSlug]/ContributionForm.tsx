@@ -8,7 +8,8 @@ export function ContributionForm({ missionSlug, projectSlug, workSlug }: { missi
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [idempotencyKey] = useState(() => crypto.randomUUID());
+  const [posted, setPosted] = useState("");
+  const [idempotencyKey, setIdempotencyKey] = useState(() => crypto.randomUUID());
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -31,10 +32,14 @@ export function ContributionForm({ missionSlug, projectSlug, workSlug }: { missi
         }),
       });
       const body = await response.json() as { status?: string; error?: string };
-      if (!response.ok || body.status !== "recorded") throw new Error(body.error || "Could not record the Contribution.");
+      if (!response.ok || body.status !== "recorded") throw new Error(body.error || "Could not post that.");
+      const name = String(data.get("name") ?? "").trim();
+      event.currentTarget.reset();
+      setPosted(name);
+      setIdempotencyKey(crypto.randomUUID());
       router.refresh();
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Could not record the Contribution.");
+      setError(cause instanceof Error ? cause.message : "Could not post that.");
     } finally {
       setBusy(false);
     }
@@ -48,6 +53,7 @@ export function ContributionForm({ missionSlug, projectSlug, workSlug }: { missi
       <label className="block">{workCopy.contributionSummary}<textarea name="summary" required maxLength={500} className={field} /></label>
       <label className="block">{workCopy.contributionEvidence}<input name="evidence" maxLength={500} className={field} /></label>
       <button type="submit" disabled={busy} className="w-full border border-[var(--ink)] px-4 py-2 disabled:opacity-50 sm:w-auto">{busy ? "Posting…" : workCopy.recordContribution}</button>
+      {posted ? <p className="text-base text-[var(--ink)]">{posted} is on this piece.</p> : null}
       {error ? <p role="alert" className="border border-red-700 p-3 text-red-700">{error}</p> : null}
     </form>
   );

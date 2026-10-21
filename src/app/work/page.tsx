@@ -2,19 +2,12 @@ import Link from "next/link";
 import { GrowthBanner } from "@/components/GrowthBanner";
 import { findWorkCopy, productCopy } from "@/content/99pct";
 import { getMissionDb } from "@/missions/db/runtime";
-import { helpingCountLabel, interestCountLabel, publicWorkUrl } from "@/missions/model";
+import { publicWorkUrl } from "@/missions/model";
 import { listOpenWork, type PublicOpenWork } from "@/missions/projects";
+import { piecePagePath } from "@/missions/starter";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: findWorkCopy.title };
-
-function workKind(kind: PublicOpenWork["kind"]) {
-  return kind === "task" ? "Task" : "Role";
-}
-
-function postedAt(value: string) {
-  return new Date(value).toLocaleDateString("en-US", { dateStyle: "long", timeZone: "UTC" });
-}
 
 export default async function FindWorkPage() {
   let work: PublicOpenWork[] = [];
@@ -37,33 +30,27 @@ export default async function FindWorkPage() {
           <p className="text-[var(--muted)]">{findWorkCopy.empty}</p>
           <p className="mt-4 text-[var(--body)]">The first week of Rideshare 99 is already written down. You can raise your hand before anyone starts it.</p>
           <p className="mt-4 flex flex-wrap gap-x-4 gap-y-2 font-[family-name:var(--font-sans)]">
-            <Link href="/use/rideshare-99#first-week" className="font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4">See the first week</Link>
+            <Link href="/use/rideshare-99" className="font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4">Start with Rideshare 99</Link>
             <Link href={productCopy.use.href} className="font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4">{productCopy.use.label}</Link>
-            <Link href={productCopy.start.href} className="font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4">{productCopy.start.label}</Link>
           </p>
         </div>
       ) : null}
       <ul className="mt-10 space-y-8">
-        {work.map((item) => (
-          <li key={`${item.missionSlug}/${item.projectSlug}/${item.slug}`} className="border-t border-[var(--line)] pt-6">
-            <p className="font-[family-name:var(--font-sans)] text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
-              <Link href={`/missions/${item.missionSlug}`}>{item.missionName}</Link>
-              <span> · </span>
-              <Link href={`/missions/${item.missionSlug}/projects/${item.projectSlug}`}>{item.projectTitle}</Link>
-              <span> · {workKind(item.kind)}</span>
-            </p>
-            <h2 className="mt-2 text-xl font-semibold text-[var(--ink)]">
-              <Link href={publicWorkUrl(item.missionSlug, item.projectSlug, item.slug)}>{item.title}</Link>
-            </h2>
-            <p className="mt-3 text-[var(--body)]">{item.description}</p>
-            <p className="mt-3 text-[var(--body)]"><span className="font-semibold text-[var(--ink)]">Done when </span>{item.doneWhen}</p>
-            <p className="mt-2 text-sm text-[var(--muted)]">
-              {postedAt(item.createdAt)}
-              {item.interestCount > 0 ? ` · ${interestCountLabel(item.interestCount)}` : ""}
-              {item.helpingCount > 0 ? ` · ${helpingCountLabel(item.helpingCount)}` : ""}
-            </p>
-          </li>
-        ))}
+        {work.map((item) => {
+          const piece = piecePagePath(item.missionName, item.title);
+          return (
+            <li key={`${item.missionSlug}/${item.projectSlug}/${item.slug}`} className="border-t border-[var(--line)] pt-6">
+              <p className="font-[family-name:var(--font-sans)] text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
+                <Link href={`/missions/${item.missionSlug}`}>{item.missionName}</Link>
+              </p>
+              <h2 className="mt-2 text-xl font-semibold text-[var(--ink)]">
+                <Link href={piece || publicWorkUrl(item.missionSlug, item.projectSlug, item.slug)}>{item.title}</Link>
+              </h2>
+              <p className="mt-3 text-[var(--body)]">{item.description}</p>
+              <p className="mt-3 text-[var(--body)]"><span className="font-semibold text-[var(--ink)]">Done when </span>{item.doneWhen}</p>
+            </li>
+          );
+        })}
       </ul>
     </article>
   );

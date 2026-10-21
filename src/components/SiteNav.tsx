@@ -4,7 +4,7 @@ import { productCopy } from "@/content/99pct";
 const links = [
   { href: "/use", label: "Utilities" },
   { href: "/help", label: "Help" },
-  { href: "/missions", label: "Missions" },
+  { href: "/missions", label: "Started" },
   { href: "/mcus", label: "MCUs" },
   { href: "/sign-in?mode=create&next=/use/rideshare-99", label: "Join" },
 ];
