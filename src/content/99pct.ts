@@ -119,9 +119,9 @@ export const helpCopy = {
 
 export const findWorkCopy = {
   title: "Find Work",
-  lede: "Find something worth helping with.",
-  boundary: "Open Work is a request for help. It is not automatically a paid job, contract, MCU grant, or ownership grant.",
-  empty: "No open Work has been posted yet.",
+  lede: "Pieces people can do. Pick one.",
+  boundary: "Helping is free. This is not a job, a paycheck, or ownership.",
+  empty: "Nothing is open yet.",
 } as const;
 
 export const missionismHubCopy = {

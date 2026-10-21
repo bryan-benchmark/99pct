@@ -1,4 +1,4 @@
-import { startUtilityPath, utilitySlug, type HelpKind, type Utility } from "@/content/utilities";
+import { startUtilityPath, utilityByName, utilitySlug, type HelpKind, type Utility } from "@/content/utilities";
 import { projectLimits, workLimits, type ProjectDraft, type WorkDraft } from "./model";
 
 const featured = "Rideshare 99";
@@ -7,6 +7,12 @@ const social = "Social Media 99";
 function fit(value: string, label: string, max: number) {
   if (value.trim().length < 8 || value.trim().length > max) throw new Error(`${label} is ${value.trim().length} characters.`);
   return value;
+}
+
+export function piecePagePath(utilityName: string, title: string) {
+  const utility = utilityByName(utilityName);
+  if (!utility || !firstWeek(utility).work.some((item) => item.title === title)) return "";
+  return `/use/${utilitySlug(utility.name)}?piece=${encodeURIComponent(title)}#help`;
 }
 
 export function beginUtilityPath(utility: Utility) {
