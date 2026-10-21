@@ -8,10 +8,8 @@ export const productCopy = {
   mark: "99%",
   description: "Join an open-source community and help build everyday utilities for the 99%, by the 99%.",
   eyebrow: "Built by the 99%, for the 99%.",
-  headline: "The Taylor's version of Uber, Airbnb, DoorDash, and the rest.",
+  headline: "Let's Taylor's Version: Uber, Airbnb, DoorDash, and the rest.",
   quote: "Good artists copy. Great artists steal.",
-  gloss: "A version where the people who do the work keep all of the profits.",
-  stop: "Let's just stop giving our money to them.",
   rules: [
     "99% of profits stay in the communities they are earned in.",
     "99% of a ride stays with the person who drove.",
@@ -23,7 +21,11 @@ export const productCopy = {
     "1% keeps the shared infrastructure running.",
     "0% goes to outside owners.",
   ],
-  lede: "Come help build the version you would actually use. A ride. A delivery. A place to stay. A post. Pick one small piece and do it. Your name stays on it.",
+  lede: "You do not need to know how open source works. Join, pick something, and help. Your name stays on it.",
+  helpNow: {
+    title: "Help today",
+    action: { href: "/sign-in?mode=create&next=%2Fuse%2Frideshare-99%23help", label: "Join and help" },
+  },
   intro: {
     title: "Come in this way",
     steps: [
@@ -42,12 +44,23 @@ export const productCopy = {
     href: "/mcus",
     label: "See the names",
   },
+  faq: {
+    title: "FAQs",
+    items: [
+      { q: "What is this?", a: "A place to help build open utilities for everyday life. A ride. A delivery. A place to stay. A post." },
+      { q: "Do I need to write code?", a: "No. Pick one small piece and do it. Write a page, name a city, make a list, or sketch a screen." },
+      { q: "Is anything live yet?", a: "No. No utility is a live service yet." },
+      { q: "Do I get paid?", a: "Helping is free. This site does not pay anyone, sell shares, or grant ownership." },
+      { q: "What is an MCU?", a: "Your name on a piece of work. It is not money and it is not a share." },
+      { q: "Is this legal?", a: "Of course, this is how capitalism works." },
+    ],
+  },
   split: {
     caption: "Where the profit goes",
     rows: [
       { share: "~99%", who: "The people doing the work, on site" },
       { share: "~1%", who: "The people who keep the infrastructure running" },
-      { share: "0%", who: "Outside owners" },
+      { share: "0%", who: "Corporate Greed" },
     ],
   },
   argument: "Helping is free. This site does not pay anyone, sell shares, or grant ownership.",

@@ -1,14 +1,30 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { heroMarkColor, heroMarks } from "@/content/heroMarks";
+import { heroMarkBox, heroMarkColor, heroMarkSrc, heroMarks } from "@/content/heroMarks";
 
-const markClass = "mr-[0.28em] inline-block h-[1.15em] w-[1.15em] shrink-0 align-[-0.18em]";
+const markClass = "ml-[0.45em] inline-block h-[1.15em] w-auto max-w-[3.2em] shrink-0 align-[-0.18em] object-contain object-left";
+
+const markClassByName: Record<string, string> = {
+  Walmart: "ml-[0.45em] inline-block h-[1.15em] w-[4.3em] max-w-none shrink-0 align-[-0.18em]",
+  Visa: "ml-[0.45em] inline-block h-[1.15em] w-[3.35em] max-w-none shrink-0 align-[-0.18em]",
+  Mastercard: "ml-[0.45em] inline-block h-[1.15em] w-[1.72em] max-w-none shrink-0 align-[-0.18em] object-contain object-left",
+  Instagram: "ml-[0.45em] inline-block h-[1.15em] w-[1.15em] max-w-none shrink-0 align-[-0.18em] object-contain object-left",
+  X: "ml-[0.45em] inline-block h-[1.15em] w-[1.15em] max-w-none shrink-0 align-[-0.18em]",
+  NFL: "ml-[0.45em] inline-block h-[1.15em] w-[0.85em] max-w-none shrink-0 align-[-0.18em] object-contain object-left",
+};
 
 function Mark({ name }: { name: string }) {
+  const className = markClassByName[name] ?? markClass;
+  const src = heroMarkSrc[name];
+  if (src) {
+    // Tiny static SVGs in /public/hero, sized to the headline.
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={src} alt="" className={className} />;
+  }
   if (name === "Microsoft") {
     return (
-      <svg viewBox="0 0 24 24" className={markClass} aria-hidden="true">
+      <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
         <path fill="#F25022" d="M0 0v11.408h11.408V0z" />
         <path fill="#7FBA00" d="M12.594 0v11.408H24V0z" />
         <path fill="#00A4EF" d="M0 12.594V24h11.408V12.594z" />
@@ -20,13 +36,13 @@ function Mark({ name }: { name: string }) {
   const fill = heroMarkColor[name];
   if (!d || !fill) return null;
   return (
-    <svg viewBox="0 0 24 24" className={markClass} aria-hidden="true">
+    <svg viewBox={heroMarkBox[name] ?? "0 0 24 24"} className={className} aria-hidden="true" preserveAspectRatio="xMinYMid meet">
       <path fill={fill} d={d} />
     </svg>
   );
 }
 
-export function RotatingVersion({ names }: { names: readonly string[] }) {
+export function useRotatingName(names: readonly string[]) {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -45,10 +61,17 @@ export function RotatingVersion({ names }: { names: readonly string[] }) {
     };
   }, [names]);
 
-  const name = names[index] ?? names[0];
+  return names[index] ?? names[0];
+}
+
+export function VersionLine({ name }: { name: string }) {
   return (
     <span aria-hidden="true">
-      The Taylor&apos;s version <span className="whitespace-nowrap">of <Mark name={name} />{name}.</span>
+      Let&apos;s Taylor&apos;s <span className="whitespace-nowrap">Version:<Mark name={name} /></span>
     </span>
   );
+}
+
+export function RotatingVersion({ names }: { names: readonly string[] }) {
+  return <VersionLine name={useRotatingName(names)} />;
 }

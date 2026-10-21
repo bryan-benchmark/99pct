@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import test from "node:test";
 import { findWorkCopy, helpCopy, missionismHubCopy, productCopy, useCopy } from "@/content/99pct";
-import { heroMarkColor, heroMarks } from "@/content/heroMarks";
+import { heroMarkColor, heroMarkSrc, heroMarks } from "@/content/heroMarks";
 import { heroIncumbents, startUtilityPath, utilities, utilityBeneficiaries, utilityPurpose } from "@/content/utilities";
 import { missionLimits } from "@/missions/model";
 import { beginUtilityPath, firstWeek, piecePagePath } from "@/missions/starter";
@@ -20,7 +20,7 @@ test("the root application is 99pct, with Missionism as supporting protocol", ()
   const hub = source("src/app/missionism/page.tsx");
   const use = source("src/app/use/page.tsx");
   assert.equal(page.includes("<h1>Missionism</h1>"), false);
-  assert.equal(productCopy.headline, "The Taylor's version of Uber, Airbnb, DoorDash, and the rest.");
+  assert.equal(productCopy.headline, "Let's Taylor's Version: Uber, Airbnb, DoorDash, and the rest.");
   const hero = source("src/components/RotatingVersion.tsx");
   assert.equal(hero.includes("underline"), false);
   assert.equal(hero.includes("fill-current"), false);
@@ -28,10 +28,20 @@ test("the root application is 99pct, with Missionism as supporting protocol", ()
   assert.match(hero, /\{name\}/);
   assert.match(hero, /heroMarks/);
   assert.match(hero, /h-\[1\.15em\]/);
+  assert.match(hero, /max-w-\[3\.2em\]/);
+  assert.match(hero, /w-\[4\.3em\]/);
+  assert.match(hero, /w-\[3\.35em\]/);
+  assert.match(hero, /w-\[1\.72em\]/);
+  assert.match(hero, /w-auto/);
+  assert.match(hero, /heroMarkSrc/);
   assert.equal(heroMarkColor.Netflix, "#E50914");
   assert.equal(heroMarkColor.Spotify, "#1DB954");
-  for (const name of ["Netflix", "Spotify", "Amazon", "Microsoft", "Visa", "Walmart"]) {
-    assert.equal(typeof heroMarks[name], "string", name);
+  for (const name of heroIncumbents) {
+    assert.ok(Boolean(heroMarks[name] || heroMarkSrc[name]), name);
+  }
+  for (const name of ["Dollar Tree", "Kroger", "Comcast", "CVS", "Mastercard", "Instagram", "NFL"] as const) {
+    assert.match(heroMarkSrc[name], /\/hero\//, name);
+    assert.equal(existsSync(new URL(`../../public${heroMarkSrc[name]}`, import.meta.url)), true, name);
   }
   assert.equal(productCopy.eyebrow, "Built by the 99%, for the 99%.");
   assert.equal(productCopy.quote, "Good artists copy. Great artists steal.");
@@ -39,29 +49,48 @@ test("the root application is 99pct, with Missionism as supporting protocol", ()
   assert.match(page, /text-\[#767676\]/);
   assert.equal(page.includes("Picasso"), false);
   assert.equal(JSON.stringify(productCopy).includes("Picasso"), false);
-  assert.equal(productCopy.gloss, "A version where the people who do the work keep all of the profits.");
-  assert.equal(productCopy.stop, "Let's just stop giving our money to them.");
+  assert.equal("gloss" in productCopy, false);
+  assert.equal("stop" in productCopy, false);
+  assert.equal(page.includes("productCopy.gloss"), false);
+  assert.equal(page.includes("productCopy.stop"), false);
   assert.equal(page.includes("productCopy.rules"), false);
   assert.equal(page.includes("Done when"), false);
-  assert.match(page, /productCopy.join/);
+  assert.match(page, /productCopy\.helpNow/);
   assert.match(page, /productCopy.use/);
   assert.match(page, /productCopy.build/);
-  assert.match(page, /productCopy.start/);
   assert.match(page, /productCopy.explore/);
+  assert.equal(page.includes("Start with one piece"), false);
   assert.equal(/equity/i.test(page), false);
   assert.match(page, /productCopy\.mcu/);
-  assert.match(page, /id="pieces"/);
-  assert.ok(page.indexOf("productCopy.split") < page.indexOf("Start with one piece"));
-  assert.ok(page.indexOf("Start with one piece") < page.indexOf("productCopy.mcu"));
+  assert.match(page, /id="help"/);
+  assert.ok(page.indexOf("productCopy.split") < page.indexOf("productCopy.helpNow"));
+  assert.ok(page.indexOf("productCopy.helpNow") < page.indexOf("productCopy.mcu"));
+  assert.equal(productCopy.helpNow.title, "Help today");
+  assert.equal(productCopy.helpNow.action.label, "Join and help");
+  assert.match(productCopy.helpNow.action.href, /rideshare-99/);
+  assert.match(productCopy.lede, /Join, pick something, and help/);
+  assert.ok(page.indexOf("productCopy.mcu") < page.indexOf("productCopy.faq"));
+  assert.match(page, /id="faq"/);
+  assert.equal(productCopy.faq.title, "FAQs");
+  assert.equal(productCopy.faq.items.at(-1)?.q, "Is this legal?");
+  assert.equal(productCopy.faq.items.at(-1)?.a, "Of course, this is how capitalism works.");
+  assert.equal(/equity/i.test(JSON.stringify(productCopy.faq)), false);
   assert.equal(productCopy.intro.steps.length, 6);
   assert.match(productCopy.mcu.meaning, /not money and it is not a share/);
   assert.equal(/equity|\$/i.test(productCopy.mcu.meaning), false);
   assert.equal(/equity/i.test(`${productCopy.lede} ${productCopy.argument} ${productCopy.truth}`), false);
   assert.match(page, /productCopy\.split/);
+  assert.match(page, /HeroCompare/);
+  const compare = source("src/components/HeroCompare.tsx");
+  assert.match(compare, /splitFare/);
+  assert.match(compare, /Rounded estimates/);
+  assert.match(compare, /The people doing the job/);
+  assert.match(compare, /This site does not pay it/);
+  assert.match(compare, /tabular-nums/);
   assert.deepEqual(productCopy.split.rows.map((row) => `${row.share} ${row.who}`), [
     "~99% The people doing the work, on site",
     "~1% The people who keep the infrastructure running",
-    "0% Outside owners",
+    "0% Corporate Greed",
   ]);
   assert.match(productCopy.argument, /does not pay anyone/);
   assert.equal(productCopy.use.href, "/use");
@@ -103,10 +132,10 @@ test("the root application is 99pct, with Missionism as supporting protocol", ()
   for (const incumbent of heroIncumbents) {
     assert.equal(utilities.some((item) => item.incumbent === incumbent), true, incumbent);
   }
-  for (const name of ["Amazon", "Walmart", "McDonald's", "Dollar Tree", "Kroger", "Starbucks", "Comcast", "Google", "Facebook", "CVS", "Netflix", "Microsoft", "Visa"]) {
+  for (const name of ["Amazon", "Walmart", "McDonald's", "Dollar Tree", "Kroger", "Starbucks", "Comcast", "Facebook", "Instagram", "X", "NFL", "CVS", "Netflix", "Microsoft", "Visa", "Mastercard"]) {
     assert.equal((heroIncumbents as readonly string[]).includes(name), true, name);
   }
-  for (const name of ["NVIDIA", "Shein", "Tesla", "Expedia", "United", "UnitedHealth", "Etsy", "Apple", "Upwork", "Wells Fargo", "Chase", "Yelp", "Exxon", "Nike", "Disney", "AT&T"]) {
+  for (const name of ["Google", "NVIDIA", "Shein", "Tesla", "Expedia", "United", "UnitedHealth", "Etsy", "Apple", "Upwork", "Wells Fargo", "Chase", "Yelp", "Exxon", "Nike", "Disney", "AT&T"]) {
     assert.equal((heroIncumbents as readonly string[]).includes(name), false, name);
   }
   for (const utility of utilities) {
