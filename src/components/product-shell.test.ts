@@ -32,6 +32,8 @@ test("the root application is 99pct, with Missionism as supporting protocol", ()
     "99% of a night stays with the person who hosted.",
     "99% of a delivery stays with the person who carried it.",
     "99% of a post stays with the person who made it.",
+    "No more things made to break.",
+    "Built to last, for the 99%.",
     "1% keeps the shared infrastructure running.",
     "0% goes to outside owners.",
   ]);
