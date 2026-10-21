@@ -42,24 +42,39 @@ export function OfferForm({ slug, pieces, selected, own }: { slug: string; piece
   const chosen = pieces.includes(selected) ? selected : "";
   return (
     <form onSubmit={submit} className="mt-8 space-y-4 font-[family-name:var(--font-sans)] text-sm">
-      {chosen ? <input type="hidden" name="piece" value={chosen} /> : (
-        <fieldset>
-          <legend className="font-semibold text-[var(--ink)]">Which piece</legend>
-          <div className="mt-3 space-y-2">
-            {pieces.map((piece) => (
-              <label key={piece} className="block">
-                <input type="radio" name="piece" value={piece} required defaultChecked={own?.piece === piece} className="mr-2" />
-                {piece}
-              </label>
-            ))}
-          </div>
-        </fieldset>
+      {chosen ? (
+        <>
+          <input type="hidden" name="piece" value={chosen} />
+          <input type="hidden" name="shareEmail" value="yes" />
+          <p className="text-base text-[var(--ink)]">{chosen === "Look after the list"
+            ? "This starts the utility. You will see the email of people who asked to help, and they can see yours. It is not a job, a paycheck, or ownership."
+            : "This shares your email with the person who looks after this, so they can invite you. It is not a job, a paycheck, or ownership."}</p>
+          <button type="submit" disabled={busy} className="w-full border border-[var(--ink)] px-4 py-2 disabled:opacity-50 sm:w-auto">{busy ? "Saving…" : chosen === "Look after the list" ? "Start it" : "I can do this"}</button>
+          <details>
+            <summary className="min-h-11 cursor-pointer py-2">Add a note</summary>
+            <label className="mt-2 block">Anything people should know?<textarea name="note" maxLength={240} defaultValue={own?.note ?? ""} className={field} /></label>
+          </details>
+        </>
+      ) : (
+        <>
+          <fieldset>
+            <legend className="font-semibold text-[var(--ink)]">Which piece</legend>
+            <div className="mt-3 space-y-2">
+              {pieces.map((piece) => (
+                <label key={piece} className="block">
+                  <input type="radio" name="piece" value={piece} required defaultChecked={own?.piece === piece} className="mr-2" />
+                  {piece}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+          <label className="block">Anything people should know?<textarea name="note" maxLength={240} defaultValue={own?.note ?? ""} className={field} /></label>
+          {pieces.includes("Look after the list") ? <p>Choosing Look after the list starts this utility. You will see the email of people who asked to help.</p> : null}
+          <label className="block"><input name="shareEmail" type="checkbox" value="yes" required className="mr-2" />Share my email with the person who looks after this. That is how they invite me.</label>
+          <p>This is not a job, a paycheck, or ownership.</p>
+          <button type="submit" disabled={busy} className="w-full border border-[var(--ink)] px-4 py-2 disabled:opacity-50 sm:w-auto">{busy ? "Saving…" : "I can do this"}</button>
+        </>
       )}
-      <label className="block">Anything people should know?<textarea name="note" maxLength={240} defaultValue={own?.note ?? ""} className={field} /></label>
-      {chosen === "Look after the list" || (!chosen && pieces.includes("Look after the list")) ? <p>Choosing Look after the list starts this utility. You will see the email of people who asked to help.</p> : null}
-      <label className="block"><input name="shareEmail" type="checkbox" value="yes" required className="mr-2" />Share my email with the person who looks after this. That is how they invite me.</label>
-      <p>This is not a job, a paycheck, or ownership.</p>
-      <button type="submit" disabled={busy} className="w-full border border-[var(--ink)] px-4 py-2 disabled:opacity-50 sm:w-auto">{busy ? "Saving…" : own && own.piece === chosen ? "Update how you can help" : "I can do this"}</button>
       {error ? <p role="alert" className="border border-red-700 p-3 text-red-700">{error}</p> : null}
     </form>
   );

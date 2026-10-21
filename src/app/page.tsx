@@ -2,13 +2,13 @@ import Link from "next/link";
 import { GrowthBanner } from "@/components/GrowthBanner";
 import { RotatingVersion } from "@/components/RotatingVersion";
 import { productCopy } from "@/content/99pct";
-import { heroIncumbents, startUtilityPath, utilityByName } from "@/content/utilities";
+import { heroIncumbents, utilityByName } from "@/content/utilities";
 import { missionDatabaseUnavailable } from "@/missions/db/config";
 import { getMissionDb } from "@/missions/db/runtime";
 import { lifeSentence, publicPulse } from "@/missions/growth";
 import { listRecentMcus, type PublicMcu } from "@/missions/mcu";
 import { listPieceCounts } from "@/missions/offers";
-import { firstWeek } from "@/missions/starter";
+import { beginUtilityPath, firstWeek } from "@/missions/starter";
 
 export const dynamic = "force-dynamic";
 
@@ -85,8 +85,7 @@ export default async function HomePage() {
         </ol>
         {rideshare ? (
           <p className="phone-actions mt-6 flex flex-wrap gap-x-4 gap-y-2 font-[family-name:var(--font-sans)]">
-            <Link href="/use/rideshare-99#help" className={actionClass}>I can help</Link>
-            <Link href={startUtilityPath(rideshare)} className={actionClass}>Start Rideshare 99</Link>
+            <Link href={beginUtilityPath(rideshare)} className={actionClass}>Start Rideshare 99</Link>
           </p>
         ) : null}
       </section>

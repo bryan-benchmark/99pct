@@ -13,7 +13,7 @@ import { findStartedUtility } from "@/missions/growth";
 import { publicMissionUrl, publicWorkUrl } from "@/missions/model";
 import { listPieceCounts, listPublicOfferCounts, ownOffer } from "@/missions/offers";
 import { listPublicProjects, listPublicWork } from "@/missions/projects";
-import { firstWeek } from "@/missions/starter";
+import { beginUtilityPath, firstWeek } from "@/missions/starter";
 
 export const dynamic = "force-dynamic";
 
@@ -136,7 +136,7 @@ export default async function UtilityPage({ params, searchParams }: { params: Pr
       {chosen ? null : (
         <p className="phone-actions mt-8 flex flex-wrap gap-x-4 gap-y-2 font-[family-name:var(--font-sans)]">
           {started ? <Link href={publicMissionUrl(started.slug)} className={actionClass}>Go to the utility</Link> : null}
-          <Link href={startUtilityPath(utility)} className={actionClass}>{started ? "Start a separate one" : "Start this"}</Link>
+          <Link href={started ? startUtilityPath(utility) : beginUtilityPath(utility)} className={actionClass}>{started ? "Start a separate one" : "Start this"}</Link>
           <Link href="/use" className={actionClass}>All utilities</Link>
         </p>
       )}

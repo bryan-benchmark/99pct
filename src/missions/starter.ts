@@ -1,4 +1,4 @@
-import type { HelpKind, Utility } from "@/content/utilities";
+import { startUtilityPath, utilitySlug, type HelpKind, type Utility } from "@/content/utilities";
 import { projectLimits, workLimits, type ProjectDraft, type WorkDraft } from "./model";
 
 const featured = "Rideshare 99";
@@ -7,6 +7,13 @@ const social = "Social Media 99";
 function fit(value: string, label: string, max: number) {
   if (value.trim().length < 8 || value.trim().length > max) throw new Error(`${label} is ${value.trim().length} characters.`);
   return value;
+}
+
+export function beginUtilityPath(utility: Utility) {
+  if (firstWeek(utility).work.some((item) => item.title === "Look after the list")) {
+    return `/use/${utilitySlug(utility.name)}?piece=${encodeURIComponent("Look after the list")}#help`;
+  }
+  return startUtilityPath(utility);
 }
 
 export function helpForPiece(title: string): HelpKind {

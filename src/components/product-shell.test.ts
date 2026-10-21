@@ -5,7 +5,7 @@ import { findWorkCopy, helpCopy, missionismHubCopy, productCopy, useCopy } from 
 import { heroMarks } from "@/content/heroMarks";
 import { heroIncumbents, startUtilityPath, utilities, utilityBeneficiaries, utilityPurpose } from "@/content/utilities";
 import { missionLimits } from "@/missions/model";
-import { firstWeek } from "@/missions/starter";
+import { beginUtilityPath, firstWeek } from "@/missions/starter";
 import { shortDefinition } from "@/content/voice";
 
 function source(path: string) {
@@ -126,6 +126,11 @@ test("the root application is 99pct, with Missionism as supporting protocol", ()
     assert.equal(draft.searchParams.get("purpose"), purpose, utility.name);
     assert.equal(draft.searchParams.get("beneficiaries"), utilityBeneficiaries, utility.name);
   }
+  const rideshare = utilities.find((item) => item.name === "Rideshare 99");
+  const delivery = utilities.find((item) => item.name === "Delivery 99");
+  assert.match(beginUtilityPath(rideshare!), /piece=Look%20after%20the%20list/);
+  assert.match(beginUtilityPath(delivery!), /^\/missions\/new/);
+  assert.match(page, /beginUtilityPath\(rideshare\)/);
   assert.equal(utilityBeneficiaries.length >= missionLimits.beneficiaries.min && utilityBeneficiaries.length <= missionLimits.beneficiaries.max, true);
   assert.equal(/\$|equity|profits|rating|inventory|drivers|bookings/i.test(JSON.stringify(utilities)), false);
 });
