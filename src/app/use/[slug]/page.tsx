@@ -2,6 +2,7 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { OfferForm } from "@/components/OfferForm";
+import { RideFare } from "@/components/RideFare";
 import { GrowthBanner } from "@/components/GrowthBanner";
 import { productCopy } from "@/content/99pct";
 import { ConfirmHelpForm } from "@/app/missions/[slug]/projects/[projectSlug]/work/[workSlug]/ConfirmHelpForm";
@@ -115,6 +116,7 @@ export default async function UtilityPage({ params, searchParams }: { params: Pr
           </p>
           <h1 className="mt-3 text-[2rem] font-semibold leading-tight tracking-tight text-[var(--ink)]">{chosen.title}</h1>
           <p className="mt-6 text-lg leading-relaxed text-[var(--body)]">{chosen.description}</p>
+          {utility.name === "Rideshare 99" && chosen.title === "Sketch the first screen" ? <RideFare /> : null}
           <p className="mt-4 text-[var(--ink)]">{nextLine}</p>
           {onThisPiece ? (
             <div className="mt-6">
@@ -145,6 +147,7 @@ export default async function UtilityPage({ params, searchParams }: { params: Pr
           <p className="font-[family-name:var(--font-sans)] text-xs font-medium uppercase tracking-wide text-[var(--muted)]">{utility.genre}</p>
           <h1 className="mt-3 text-[2rem] font-semibold leading-tight tracking-tight text-[var(--ink)]">{utility.name}</h1>
           <p className="mt-6 text-lg leading-relaxed text-[var(--body)]">{`The open version of ${utility.incumbent}. ${utility.line}`}</p>
+          {utility.name === "Rideshare 99" ? <RideFare /> : null}
           <p className="mt-4 text-[var(--ink)]">{started
             ? "This is not a live service. Raising your hand invites you to the piece you chose. You confirm it."
             : steward
