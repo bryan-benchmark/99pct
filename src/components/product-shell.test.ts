@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { findWorkCopy, helpCopy, missionismHubCopy, productCopy, useCopy } from "@/content/99pct";
+import { heroMarks } from "@/content/heroMarks";
 import { heroIncumbents, startUtilityPath, utilities, utilityBeneficiaries, utilityPurpose } from "@/content/utilities";
 import { missionLimits } from "@/missions/model";
 import { firstWeek } from "@/missions/starter";
@@ -23,6 +24,10 @@ test("the root application is 99pct, with Missionism as supporting protocol", ()
   const hero = source("src/components/RotatingVersion.tsx");
   assert.equal(hero.includes("underline"), false);
   assert.match(hero, /whitespace-nowrap/);
+  assert.match(hero, /heroMarks/);
+  for (const name of ["Netflix", "Spotify", "Amazon", "Apple", "NVIDIA", "Microsoft", "Visa", "Tesla"]) {
+    assert.equal(typeof heroMarks[name], "string", name);
+  }
   assert.equal(productCopy.eyebrow, "Built by the 99%, for the 99%.");
   assert.equal(productCopy.artist, "Good artists copy. Great artists steal.");
   assert.equal(productCopy.artistBy, "Picasso");
@@ -95,7 +100,7 @@ test("the root application is 99pct, with Missionism as supporting protocol", ()
   for (const incumbent of heroIncumbents) {
     assert.equal(utilities.some((item) => item.incumbent === incumbent), true, incumbent);
   }
-  for (const name of ["Amazon", "Walmart", "McDonald's", "Dollar Tree", "Kroger", "Starbucks", "Comcast", "Google", "Facebook", "CVS", "United", "Apple", "Wells Fargo", "Exxon", "Nike", "Disney"]) {
+  for (const name of ["Amazon", "Walmart", "McDonald's", "Dollar Tree", "Kroger", "Starbucks", "Comcast", "Google", "Facebook", "CVS", "United", "Apple", "Wells Fargo", "Exxon", "Nike", "Disney", "Netflix", "Microsoft", "NVIDIA", "Shein", "Tesla", "UnitedHealth", "Visa", "Chase", "AT&T"]) {
     assert.equal((heroIncumbents as readonly string[]).includes(name), true, name);
   }
   for (const utility of utilities) {
