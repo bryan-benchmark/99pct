@@ -9,7 +9,8 @@ export const productCopy = {
   description: "Join an open-source community and help build everyday utilities for the 99%, by the 99%.",
   eyebrow: "Built by the 99%, for the 99%.",
   headline: "The Taylor's version of Uber, Airbnb, DoorDash, and the rest.",
-  gloss: "A version made by the people who do the work.",
+  gloss: "A version where the people who do the work keep all of the profits.",
+  stop: "Let's just stop giving our money to them.",
   lede: "99pct is a place to join an open-source community and help build an everyday utility. A ride. A delivery. A stay. A song. A shop. The ordinary services of a life.",
   split: {
     caption: "Where the profit goes",

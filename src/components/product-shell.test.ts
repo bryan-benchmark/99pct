@@ -23,6 +23,8 @@ test("the root application is 99pct, with Missionism as supporting protocol", ()
   assert.equal(hero.includes("underline"), false);
   assert.match(hero, /whitespace-nowrap/);
   assert.equal(productCopy.eyebrow, "Built by the 99%, for the 99%.");
+  assert.equal(productCopy.gloss, "A version where the people who do the work keep all of the profits.");
+  assert.equal(productCopy.stop, "Let's just stop giving our money to them.");
   assert.match(page, /productCopy.join/);
   assert.match(page, /productCopy.use/);
   assert.match(page, /productCopy.build/);
