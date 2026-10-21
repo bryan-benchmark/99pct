@@ -11,7 +11,7 @@ import { firstWeek } from "@/missions/starter";
 
 export const dynamic = "force-dynamic";
 
-const actionClass = "font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4";
+const actionClass = "inline-flex min-h-11 items-center font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4";
 const rideshare = utilityByName("Rideshare 99");
 const firstWeekWork = rideshare ? firstWeek(rideshare).work : [];
 
@@ -26,7 +26,7 @@ export default async function HomePage() {
     if (!(error instanceof Error) || error.message !== missionDatabaseUnavailable) throw error;
   }
   return (
-    <article className="mx-auto max-w-[40rem] px-5 py-12 md:py-16">
+    <article className="mx-auto max-w-[40rem] px-5 py-8 md:py-16">
       <GrowthBanner />
       <p className="font-[family-name:var(--font-sans)] text-xs font-medium uppercase tracking-wide text-[var(--muted)]">{productCopy.eyebrow}</p>
       <h1 className="mt-3 min-h-[2.6em] text-[clamp(1.65rem,4.6vw,2.75rem)] font-semibold leading-tight tracking-tight text-[var(--ink)]">
@@ -44,14 +44,14 @@ export default async function HomePage() {
         <ol className="mt-6 list-decimal space-y-4 pl-5">
           {firstWeekWork.map((item) => (
             <li key={item.title}>
-              <Link href={`/use/rideshare-99?piece=${encodeURIComponent(item.title)}#help`} className="font-semibold text-[var(--ink)]">{item.title}</Link>
+              <Link href={`/use/rideshare-99?piece=${encodeURIComponent(item.title)}#help`} className="inline-flex min-h-11 items-center font-semibold text-[var(--ink)]">{item.title}</Link>
               <p className="text-[var(--muted)]">{`Done when ${item.doneWhen.charAt(0).toLowerCase()}${item.doneWhen.slice(1)}`}</p>
               {(pieceCounts.get(item.title) ?? 0) > 0 ? <p className="text-[var(--ink)]">{pieceCounts.get(item.title) === 1 ? "1 person can do this." : `${pieceCounts.get(item.title)} people can do this.`}</p> : null}
             </li>
           ))}
         </ol>
         {rideshare ? (
-          <p className="mt-6 flex flex-wrap gap-x-4 gap-y-2 font-[family-name:var(--font-sans)]">
+          <p className="phone-actions mt-6 flex flex-wrap gap-x-4 gap-y-2 font-[family-name:var(--font-sans)]">
             <Link href="/use/rideshare-99#help" className={actionClass}>I can help</Link>
             <Link href={startUtilityPath(rideshare)} className={actionClass}>Start Rideshare 99</Link>
           </p>

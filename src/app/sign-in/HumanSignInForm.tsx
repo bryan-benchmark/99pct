@@ -64,13 +64,13 @@ export function HumanSignInForm({ nextPath, initialMode = "sign-in" }: { nextPat
   return (
     <div className="space-y-5 font-[family-name:var(--font-sans)] text-sm">
       <div className="flex gap-3">
-        <button type="button" aria-pressed={mode === "sign-in"} onClick={() => setMode("sign-in")} className="border border-[var(--ink)] px-3 py-2">Sign in</button>
-        <button type="button" aria-pressed={mode === "create"} onClick={() => setMode("create")} className="border border-[var(--ink)] px-3 py-2">Create account</button>
+        <button type="button" aria-pressed={mode === "sign-in"} onClick={() => setMode("sign-in")} className="flex-1 border border-[var(--ink)] px-3 py-2">Sign in</button>
+        <button type="button" aria-pressed={mode === "create"} onClick={() => setMode("create")} className="flex-1 border border-[var(--ink)] px-3 py-2">Create account</button>
       </div>
       <form onSubmit={submit} className="space-y-4">
         <label className="block">Email<input type="email" name="email" required autoComplete="email" className={field} /></label>
         <label className="block">Password<input type="password" name="password" required minLength={6} autoComplete={mode === "create" ? "new-password" : "current-password"} className={field} /></label>
-        <button type="submit" disabled={busy} className="border border-[var(--ink)] px-4 py-2 disabled:opacity-50">{busy ? "Working…" : mode === "create" ? "Create account" : "Sign in"}</button>
+        <button type="submit" disabled={busy} className="w-full border border-[var(--ink)] px-4 py-2 disabled:opacity-50 sm:w-auto">{busy ? "Working…" : mode === "create" ? "Create account" : "Sign in"}</button>
       </form>
       {message ? <p role="status">{message}</p> : null}
       {error ? <p role="alert" className="border border-red-700 p-3 text-red-700">{error}</p> : null}
