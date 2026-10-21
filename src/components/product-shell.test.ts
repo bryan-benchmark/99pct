@@ -92,6 +92,9 @@ test("the root application is 99pct, with Missionism as supporting protocol", ()
   for (const incumbent of heroIncumbents) {
     assert.equal(utilities.some((item) => item.incumbent === incumbent), true, incumbent);
   }
+  for (const name of ["Amazon", "Walmart", "McDonald's", "Dollar Tree", "Kroger", "Starbucks", "Comcast", "Google", "Facebook", "CVS", "United", "Apple", "Wells Fargo", "Exxon", "Nike", "Disney"]) {
+    assert.equal((heroIncumbents as readonly string[]).includes(name), true, name);
+  }
   for (const utility of utilities) {
     const purpose = utilityPurpose(utility);
     assert.equal(purpose.length >= missionLimits.purpose.min && purpose.length <= missionLimits.purpose.max, true, utility.name);
