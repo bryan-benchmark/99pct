@@ -55,6 +55,8 @@ test("the root application is 99pct, with Missionism as supporting protocol", ()
   assert.equal(/equity/i.test(page), false);
   assert.match(page, /productCopy\.intro/);
   assert.match(page, /productCopy\.mcu/);
+  assert.match(page, /href="#pieces"/);
+  assert.match(page, /id="pieces"/);
   assert.ok(page.indexOf("productCopy.intro") < page.indexOf("Start with one piece"));
   assert.ok(page.indexOf("Start with one piece") < page.indexOf("productCopy.mcu"));
   assert.equal(productCopy.intro.steps.length, 6);
