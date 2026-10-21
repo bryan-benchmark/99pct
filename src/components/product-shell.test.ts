@@ -34,8 +34,11 @@ test("the root application is 99pct, with Missionism as supporting protocol", ()
     assert.equal(typeof heroMarks[name], "string", name);
   }
   assert.equal(productCopy.eyebrow, "Built by the 99%, for the 99%.");
-  assert.equal(productCopy.artist, "Good artists copy. Great artists steal.");
-  assert.equal(productCopy.artistBy, "Picasso");
+  assert.equal(productCopy.quote, "Good artists copy. Great artists steal.");
+  assert.match(page, /productCopy\.quote/);
+  assert.match(page, /text-\[#767676\]/);
+  assert.equal(page.includes("Picasso"), false);
+  assert.equal(JSON.stringify(productCopy).includes("Picasso"), false);
   assert.equal(productCopy.gloss, "A version where the people who do the work keep all of the profits.");
   assert.equal(productCopy.stop, "Let's just stop giving our money to them.");
   assert.equal(page.includes("productCopy.rules"), false);

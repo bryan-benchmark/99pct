@@ -36,6 +36,7 @@ export default async function HomePage() {
         <span className="sr-only">{productCopy.headline}</span>
         <RotatingVersion names={heroIncumbents} />
       </h1>
+      <p className="mt-3 font-[family-name:var(--font-sans)] text-sm text-[#767676]">{productCopy.quote}</p>
       <p className="mt-6 text-lg text-[var(--ink)]">{productCopy.gloss}</p>
       <p className="mt-3 text-lg text-[var(--ink)]">{productCopy.stop}</p>
       <table className="mt-8 w-full border-collapse text-[var(--ink)]">
