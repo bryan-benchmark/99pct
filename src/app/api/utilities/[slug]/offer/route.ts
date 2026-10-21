@@ -3,8 +3,10 @@ import { verifyHumanSession, type HumanIdentity } from "@/human/auth/server";
 import { humanCsrfAccepted, humanCsrfCookieName, humanSessionCookieName } from "@/human/auth/session";
 import type { MissionDb } from "@/missions/db/client";
 import { getMissionDb } from "@/missions/db/runtime";
+import { InterestRequestError } from "@/missions/interest";
 import { openUtilityFromList, seatOfferOnStartedUtility } from "@/missions/growth";
 import { OfferRequestError, offerDraft, saveOffer } from "@/missions/offers";
+import { confirmParticipation } from "@/missions/participation";
 import { readWorkspaceJsonObject } from "@/workspace/http-body";
 
 export const runtime = "nodejs";
@@ -38,6 +40,14 @@ export async function createOfferRequest(request: NextRequest, slug: string, dep
   const db = await deps.openDb();
   const offer = await saveOffer(db, identity, draft);
   const next = await openUtilityFromList(db, identity, draft) ?? await seatOfferOnStartedUtility(db, identity, draft);
+  const seated = next ? /^\/missions\/([^/]+)\/projects\/([^/]+)\/work\/([^/]+)$/.exec(next) : null;
+  if (seated) {
+    try {
+      await confirmParticipation(db, identity, seated[1], seated[2], seated[3]);
+    } catch (error) {
+      if (!(error instanceof InterestRequestError) || error.status !== 409) throw error;
+    }
+  }
   const response = NextResponse.json(next ? { status: offer.status, next } : offer, { status: 201 });
   response.headers.set("Cache-Control", "no-store");
   return response;

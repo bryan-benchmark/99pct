@@ -34,7 +34,7 @@ export function ConfirmHelpForm({ missionSlug, projectSlug, workSlug }: { missio
   return (
     <div className="mt-3 space-y-3 font-[family-name:var(--font-sans)] text-sm">
       <p>{workCopy.confirmBoundary}</p>
-      <button type="button" onClick={confirm} disabled={busy} className="border border-[var(--ink)] px-4 py-2 disabled:opacity-50">{busy ? "Sending…" : workCopy.illHelp}</button>
+      <button type="button" onClick={confirm} disabled={busy} className="w-full border border-[var(--ink)] px-4 py-2 disabled:opacity-50 sm:w-auto">{busy ? "Sending…" : workCopy.illHelp}</button>
       {error ? <p role="alert" className="border border-red-700 p-3 text-red-700">{error}</p> : null}
     </div>
   );
