@@ -27,12 +27,12 @@ export function firstWeek(utility: Utility): { project: ProjectDraft; work: Work
   };
   const work: WorkDraft[] = utility.name === featured
     ? [
-        { kind: "task", title: "Write the one-page description", description: "Write what Rideshare 99 is, in plain language, for a rider and for a driver. Say what changes when the people who drive and build it keep the value.", doneWhen: "A one-page description is posted on this Mission." },
-        { kind: "task", title: "Name the first city", description: "Pick one city to start. Say why people there would try an open ride service before a second city exists.", doneWhen: "The Mission names the first city and why." },
-        { kind: "task", title: "List what a driver needs", description: "List what a person who drives needs on day one: safety, how they are paid, and how a ride reaches them. This is a list, not the software.", doneWhen: "The list is posted where other people can read it." },
-        { kind: "task", title: "List what a rider needs", description: "List what a rider needs in order to trust a ride: who is driving, what it costs, and how to get help.", doneWhen: "The list is posted where other people can read it." },
-        { kind: "task", title: "Sketch the first screen", description: "Draw or describe the first screen a rider would see. Paper or a simple picture is enough.", doneWhen: "The sketch is posted or described on this Mission." },
-        { kind: "role", title: "Look after the list", description: "Keep this list current. Invite people who offered to help. Say what is needed next.", doneWhen: "The next needs are posted, or someone else has been invited." },
+        { kind: "task", title: "Write the one-page description", description: "One page a rider and a driver can both read. What the ride is, and that the money stays with the people in the car, in that city.", doneWhen: "A rider and a driver can both read the page, and it says the money stays in that city." },
+        { kind: "task", title: "Name the first city", description: "Name one city. Say why a person there would take a ride, or give one, before a second city exists.", doneWhen: "One city is named, and why people there would try it first." },
+        { kind: "task", title: "List what a driver needs", description: "Three things a driver has on day one: who the rider is, what they are paid, and how to get help.", doneWhen: "A driver can read who the rider is, what they are paid, and how to get help." },
+        { kind: "task", title: "List what a rider needs", description: "Three things a rider knows before they get in: who is driving, what it costs, and how to get help.", doneWhen: "A rider can read who is driving, what it costs, and how to get help." },
+        { kind: "task", title: "Sketch the first screen", description: "Where you are, where you are going, what it costs, and who keeps the money. A sketch on paper is enough.", doneWhen: "A sketch shows where you are, where you are going, the cost, and who keeps the money." },
+        { kind: "role", title: "Look after the list", description: "When someone says they can help, invite them. Keep the list honest. Say what is needed next.", doneWhen: "The next piece is named, or someone who offered to help has been invited." },
       ]
     : utility.name === social
     ? [

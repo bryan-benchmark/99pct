@@ -35,6 +35,11 @@ export default async function HomePage() {
       </h1>
       <p className="mt-4 text-lg text-[var(--ink)]">{productCopy.gloss}</p>
       <p className="mt-3 text-lg text-[var(--ink)]">{productCopy.stop}</p>
+      <ul className="mt-8 border-t border-[var(--line)]">
+        {productCopy.rules.map((rule) => (
+          <li key={rule} className="border-b border-[var(--line)] py-3 text-lg font-semibold leading-snug text-[var(--ink)]">{rule}</li>
+        ))}
+      </ul>
       <p className="mt-6 text-lg leading-relaxed text-[var(--body)] md:text-xl">{productCopy.lede}</p>
       <table className="mt-8 w-full border-collapse text-[var(--ink)]">
         <caption className="mb-1 text-left font-[family-name:var(--font-sans)] text-xs font-medium uppercase tracking-wide text-[var(--muted)]">{productCopy.split.caption}</caption>
@@ -50,14 +55,14 @@ export default async function HomePage() {
       <p className="mt-4 text-[var(--body)]">{productCopy.argument}</p>
       <p className="mt-4 text-[var(--body)]">{productCopy.truth}</p>
       <section className="mt-10">
-        <h2 className="text-xl font-semibold text-[var(--ink)]">The first week of Rideshare 99</h2>
-        <p className="mt-3 text-[var(--body)]">Six pieces. None of them is the software. Say you can help with one, or start the utility and these become the work other people can do.</p>
+        <h2 className="text-xl font-semibold text-[var(--ink)]">Start with one piece</h2>
+        <p className="mt-3 text-[var(--body)]">Rideshare 99 starts here. Pick one. You do not need to write code.</p>
         {life ? <p className="mt-3 text-[var(--ink)]">{life}</p> : null}
-        <ol className="mt-6 list-decimal space-y-4 pl-5">
+        <ol className="mt-6 list-decimal space-y-5 pl-5">
           {firstWeekWork.map((item) => (
             <li key={item.title}>
               <Link href={`/use/rideshare-99?piece=${encodeURIComponent(item.title)}#help`} className="inline-flex min-h-11 items-center font-semibold text-[var(--ink)]">{item.title}</Link>
-              <p className="text-[var(--muted)]">{`Done when ${item.doneWhen.charAt(0).toLowerCase()}${item.doneWhen.slice(1)}`}</p>
+              <p className="text-[var(--body)]">{item.description}</p>
               {(pieceCounts.get(item.title) ?? 0) > 0 ? <p className="text-[var(--ink)]">{pieceCounts.get(item.title) === 1 ? "1 person can do this." : `${pieceCounts.get(item.title)} people can do this.`}</p> : null}
             </li>
           ))}

@@ -78,7 +78,6 @@ export default async function UtilityPage({ params, searchParams }: { params: Pr
             <li key={item.title}>
               <h3 className="text-lg font-semibold text-[var(--ink)]">{item.title}</h3>
               <p className="mt-1 text-[var(--body)]">{item.description}</p>
-              <p className="mt-1 text-[var(--muted)]">{`Done when ${item.doneWhen.charAt(0).toLowerCase()}${item.doneWhen.slice(1)}`}</p>
               {(pieceCounts.get(item.title) ?? 0) > 0 ? <p className="mt-1 text-[var(--body)]">{pieceCounts.get(item.title) === 1 ? "1 person can do this." : `${pieceCounts.get(item.title)} people can do this.`}</p> : null}
               <p className="phone-actions mt-2 font-[family-name:var(--font-sans)]"><Link href={`/use/${slug}?piece=${encodeURIComponent(item.title)}#help`} className={actionClass}>I can do this</Link></p>
             </li>
