@@ -215,3 +215,50 @@ test("an open invitation and a person waiting to be invited are the notices", as
   await confirmParticipation(db, helper, mission.slug, project.slug, work.slug);
   assert.equal((await listGrowthNotices(db, helper.uid)).length, 0);
 });
+
+const rideshareDraft = {
+  name: "Rideshare 99",
+  purpose: "Build Rideshare 99 in the open. A ride across town.",
+  beneficiaries: "People who use it and people who operate it",
+  startingPlace: "Atlanta",
+};
+
+test("starting a utility invites the people already on a piece, and not the person who started it", async () => {
+  const db = await database();
+  const piece = { piece: "Write the one-page description", note: "I can write the page", shareEmail: true };
+  await createOfferRequest(request("/api/utilities/rideshare-99/offer", piece), "rideshare-99", { verifySession: async () => helper, openDb: async () => db });
+  await createOfferRequest(request("/api/utilities/rideshare-99/offer", piece), "rideshare-99", { verifySession: async () => creator, openDb: async () => db });
+  const started = await createMissionRequest(request("/api/missions", rideshareDraft), { verifySession: async () => creator, openDb: async () => db });
+  assert.equal(started.status, 201);
+  const invited = await db.query<{ invited_by_uid: string; human_uid: string }>(
+    `SELECT work_invitations.invited_by_uid, work_interests.human_uid
+     FROM work_invitations JOIN work_interests ON work_interests.id = work_invitations.interest_id`,
+  );
+  assert.equal(invited.rows.length, 1);
+  assert.equal(invited.rows[0].invited_by_uid, creator.uid);
+  assert.equal(invited.rows[0].human_uid, helper.uid);
+  const notices = await listGrowthNotices(db, helper.uid);
+  assert.equal(notices.length, 1);
+  assert.match(notices[0].text, /You're invited to help on Write the one-page description/);
+  assert.equal((await listGrowthNotices(db, creator.uid)).length, 0);
+});
+
+test("raising a hand after a utility has started invites that person to the piece", async () => {
+  const db = await database();
+  const started = await createMissionRequest(request("/api/missions", rideshareDraft), { verifySession: async () => creator, openDb: async () => db });
+  assert.equal(started.status, 201);
+  const deps = { verifySession: async () => helper, openDb: async () => db };
+  const created = await createOfferRequest(request("/api/utilities/rideshare-99/offer", { piece: "Name the first city", note: "Atlanta", shareEmail: true }), "rideshare-99", deps);
+  assert.equal(created.status, 201);
+  const body = await created.json() as { status: string; next?: string };
+  assert.equal(body.status, "offered");
+  assert.match(body.next ?? "", /^\/missions\/rideshare-99\/projects\/[^/]+\/work\/[^/]+$/);
+  assert.equal(JSON.stringify(body).includes(helper.email), false);
+  assert.match((await listGrowthNotices(db, helper.uid))[0].text, /You're invited to help on Name the first city/);
+  assert.equal((await listGrowthNotices(db, creator.uid)).length, 0);
+  const again = await createOfferRequest(request("/api/utilities/rideshare-99/offer", { piece: "Name the first city", note: "Atlanta", shareEmail: true }), "rideshare-99", deps);
+  const againBody = await again.json() as { next?: string };
+  assert.equal(againBody.next, body.next);
+  const invitations = await db.query<{ n: number }>("SELECT count(*)::int AS n FROM work_invitations");
+  assert.equal(Number(invitations.rows[0].n), 1);
+});

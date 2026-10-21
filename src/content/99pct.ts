@@ -68,13 +68,13 @@ export const helpCopy = {
     },
     {
       title: "Start a utility",
-      body: "Pick one from the list, or name one that is missing. You say what it is, who it is for, and where it starts. Then you post the work it needs and invite people who offer to help. That is how a person looks after a utility: they keep the list of what is needed, and they say yes to the people who will do it.",
+      body: "Pick one from the list, or name one that is missing. You say what it is, who it is for, and where it starts. Starting it posts the first week. People who already chose a piece are invited. You keep the list of what is needed next.",
       href: "/use",
       label: "See the utilities",
     },
     {
       title: "Do a piece of work",
-      body: "Open work is a public request. It might be writing, design, answering people, testing, organizing one place, or code. You say you can help. The person who posted it can invite you. You confirm. Then you do it. There is no separate ticket system. The work list is the list.",
+      body: "Open work is a public request. It might be writing, design, answering people, testing, organizing one place, or code. You say you can help. On a utility's first week, that invites you to the piece you chose. On other work, the person who posted it invites you. You confirm. Then you do it. There is no separate ticket system. The work list is the list.",
       href: "/work",
       label: "See open work",
     },
