@@ -15,7 +15,7 @@ import { firstWeek } from "@/missions/starter";
 
 export const dynamic = "force-dynamic";
 
-const actionClass = "font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4";
+const actionClass = "inline-flex min-h-11 items-center font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4";
 
 function kindLabel(kind: string) {
   return helpKinds.find((item) => item.id === kind)?.label ?? kind;
@@ -66,7 +66,7 @@ export default async function UtilityPage({ params, searchParams }: { params: Pr
       <p className="mt-4 text-[var(--ink)]">This is not a live service. Raising your hand puts you on the list. Starting it posts the first week of work.</p>
       {helpers > 0 ? <p className="mt-4 text-[var(--body)]">{helpers === 1 ? "1 person can help." : `${helpers} people can help.`}</p> : null}
       {own ? <p className="mt-4 text-[var(--body)]">You are on the list for {own.piece || kindLabel(own.kind)}.</p> : null}
-      <p className="mt-8 flex flex-wrap gap-x-4 gap-y-2 font-[family-name:var(--font-sans)]">
+      <p className="phone-actions mt-8 flex flex-wrap gap-x-4 gap-y-2 font-[family-name:var(--font-sans)]">
         {started ? <Link href={publicMissionUrl(started.slug)} className={actionClass}>Go to the utility</Link> : null}
         <Link href={startUtilityPath(utility)} className={actionClass}>{started ? "Start a separate one" : "Start this"}</Link>
         <Link href="/use" className={actionClass}>All utilities</Link>
@@ -80,7 +80,7 @@ export default async function UtilityPage({ params, searchParams }: { params: Pr
               <p className="mt-1 text-[var(--body)]">{item.description}</p>
               <p className="mt-1 text-[var(--muted)]">{`Done when ${item.doneWhen.charAt(0).toLowerCase()}${item.doneWhen.slice(1)}`}</p>
               {(pieceCounts.get(item.title) ?? 0) > 0 ? <p className="mt-1 text-[var(--body)]">{pieceCounts.get(item.title) === 1 ? "1 person can do this." : `${pieceCounts.get(item.title)} people can do this.`}</p> : null}
-              <p className="mt-2 font-[family-name:var(--font-sans)]"><Link href={`/use/${slug}?piece=${encodeURIComponent(item.title)}#help`} className={actionClass}>I can do this</Link></p>
+              <p className="phone-actions mt-2 font-[family-name:var(--font-sans)]"><Link href={`/use/${slug}?piece=${encodeURIComponent(item.title)}#help`} className={actionClass}>I can do this</Link></p>
             </li>
           ))}
         </ul>
@@ -88,7 +88,7 @@ export default async function UtilityPage({ params, searchParams }: { params: Pr
       <section id="help" className="mt-12">
         <h2 className="text-xl font-semibold text-[var(--ink)]">I can help</h2>
         {signedIn ? <OfferForm slug={slug} pieces={kit.work.map((item) => item.title)} own={selectedPiece ? { piece: selectedPiece, note: own?.note ?? "" } : null} /> : (
-          <p className="mt-4 font-[family-name:var(--font-sans)]"><Link href={join} className={actionClass}>Join to raise your hand</Link></p>
+          <p className="phone-actions mt-4 font-[family-name:var(--font-sans)]"><Link href={join} className={actionClass}>Join to raise your hand</Link></p>
         )}
       </section>
     </article>

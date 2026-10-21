@@ -54,7 +54,7 @@ export function OfferForm({ slug, pieces, own }: { slug: string; pieces: string[
       <label className="block">Anything the person who starts this should know?<textarea name="note" maxLength={240} defaultValue={own?.note ?? ""} className={field} /></label>
       <label className="block"><input name="shareEmail" type="checkbox" value="yes" required className="mr-2" />Share my verified email with the person who starts this utility.</label>
       <p>Raising your hand is not a job, a paycheck, or ownership.</p>
-      <button type="submit" disabled={busy} className="border border-[var(--ink)] px-4 py-2 disabled:opacity-50">{busy ? "Saving…" : own ? "Update how you can help" : "I can help"}</button>
+      <button type="submit" disabled={busy} className="w-full border border-[var(--ink)] px-4 py-2 disabled:opacity-50 sm:w-auto">{busy ? "Saving…" : own ? "Update how you can help" : "I can help"}</button>
       {error ? <p role="alert" className="border border-red-700 p-3 text-red-700">{error}</p> : null}
     </form>
   );

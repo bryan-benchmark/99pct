@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { startUtilityPath, utilities, utilitySlug, type Utility } from "@/content/utilities";
 
-const actionClass = "font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4";
+const actionClass = "inline-flex min-h-11 items-center font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4";
 
 function genresOf(items: readonly Utility[]) {
   return [...new Set(items.map((item) => item.genre))];
