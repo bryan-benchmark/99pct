@@ -9,8 +9,7 @@ export const productCopy = {
   description: "Join an open-source community and help build everyday utilities for the 99%, by the 99%.",
   eyebrow: "Built by the 99%, for the 99%.",
   headline: "The Taylor's version of Uber, Airbnb, DoorDash, and the rest.",
-  artist: "Good artists copy. Great artists steal.",
-  artistBy: "Picasso",
+  quote: "Good artists copy. Great artists steal.",
   gloss: "A version where the people who do the work keep all of the profits.",
   stop: "Let's just stop giving our money to them.",
   rules: [
