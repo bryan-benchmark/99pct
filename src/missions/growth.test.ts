@@ -213,7 +213,8 @@ test("an open invitation and a person waiting to be invited are the notices", as
   const invited = await listGrowthNotices(db, helper.uid);
   assert.match(invited[0].text, /You're invited to help on Collect sample bottles/);
   await confirmParticipation(db, helper, mission.slug, project.slug, work.slug);
-  assert.equal((await listGrowthNotices(db, helper.uid)).length, 0);
+  const posted = await listGrowthNotices(db, helper.uid);
+  assert.match(posted[0]?.text ?? "", /Post what you did on Collect sample bottles/);
 });
 
 const rideshareDraft = {
@@ -228,6 +229,9 @@ test("starting a utility invites the people already on a piece, and not the pers
   const piece = { piece: "Write the one-page description", note: "I can write the page", shareEmail: true };
   await createOfferRequest(request("/api/utilities/rideshare-99/offer", piece), "rideshare-99", { verifySession: async () => helper, openDb: async () => db });
   await createOfferRequest(request("/api/utilities/rideshare-99/offer", piece), "rideshare-99", { verifySession: async () => creator, openDb: async () => db });
+  const waiting = await listGrowthNotices(db, helper.uid);
+  assert.match(waiting[0]?.text ?? "", /You're on Write the one-page description/);
+  assert.match(waiting[0]?.href ?? "", /piece=Write%20the%20one-page%20description/);
   const started = await createMissionRequest(request("/api/missions", rideshareDraft), { verifySession: async () => creator, openDb: async () => db });
   assert.equal(started.status, 201);
   const invited = await db.query<{ invited_by_uid: string; human_uid: string }>(
@@ -254,7 +258,9 @@ test("raising a hand after a utility has started invites that person to the piec
   assert.equal(body.status, "offered");
   assert.match(body.next ?? "", /^\/missions\/rideshare-99\/projects\/[^/]+\/work\/[^/]+$/);
   assert.equal(JSON.stringify(body).includes(helper.email), false);
-  assert.equal((await listGrowthNotices(db, helper.uid)).length, 0);
+  const notices = await listGrowthNotices(db, helper.uid);
+  assert.match(notices[0]?.text ?? "", /Post what you did on Name the first city/);
+  assert.equal(notices[0]?.href, body.next);
   const confirmed = await db.query<{ n: number }>("SELECT count(*)::int AS n FROM work_confirmations");
   assert.equal(Number(confirmed.rows[0].n), 1);
   assert.equal((await listGrowthNotices(db, creator.uid)).length, 0);

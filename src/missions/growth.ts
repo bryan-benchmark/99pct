@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { utilityBeneficiaries, utilityByName, utilityPurpose, utilitySlug, utilities } from "@/content/utilities";
+import { utilityBeneficiaries, utilityByName, utilityBySlug, utilityPurpose, utilitySlug, utilities } from "@/content/utilities";
 import { readinessCanarySlug } from "./canary";
 import type { MissionDb, MissionSql } from "./db/client";
 import { publicMissionUrl, publicWorkUrl } from "./model";
@@ -218,8 +218,44 @@ export async function listGrowthNotices(db: MissionDb, uid: string): Promise<Gro
      LIMIT 5`,
     [uid],
   );
+  const posted = await db.query<{ mission_slug: string; project_slug: string; work_slug: string; title: string }>(
+    `SELECT missions.slug AS mission_slug, projects.slug AS project_slug, work_items.slug AS work_slug, revisions.title
+     FROM work_confirmations
+     JOIN work_invitations ON work_invitations.id = work_confirmations.invitation_id
+     JOIN work_interests ON work_interests.id = work_invitations.interest_id
+     JOIN work_items ON work_items.id = work_interests.work_id
+     JOIN projects ON projects.id = work_items.project_id
+     JOIN missions ON missions.id = projects.mission_id
+     JOIN work_revisions revisions ON revisions.work_id = work_items.id
+     JOIN (SELECT work_id, MAX(revision) AS revision FROM work_revisions GROUP BY work_id) latest
+       ON latest.work_id = revisions.work_id AND latest.revision = revisions.revision
+     WHERE work_interests.human_uid = $1 AND missions.slug <> $2
+       AND NOT EXISTS (
+         SELECT 1 FROM contributions
+         WHERE contributions.work_id = work_items.id AND contributions.participant_uid = work_interests.human_uid
+       )
+     ORDER BY work_confirmations.created_at ASC
+     LIMIT 5`,
+    [uid, readinessCanarySlug],
+  );
+  const offers = await db.query<{ utility_slug: string; piece: string }>(
+    "SELECT utility_slug, piece FROM utility_offers WHERE human_uid = $1 AND piece <> '' ORDER BY created_at ASC LIMIT 5",
+    [uid],
+  );
+  const waitingOn: GrowthNotice[] = [];
+  for (const offer of offers.rows) {
+    const utility = utilityBySlug(offer.utility_slug);
+    if (!utility || await findStartedUtility(db, utility.name)) continue;
+    const starts = firstWeek(utility).work.some((item) => item.title === "Look after the list") && offer.piece !== "Look after the list";
+    waitingOn.push({
+      href: `/use/${offer.utility_slug}?piece=${encodeURIComponent(offer.piece)}#help`,
+      text: starts ? `You're on ${offer.piece}. It starts when someone takes Look after the list.` : `You're on ${offer.piece}.`,
+    });
+  }
   return [
-    ...invited.rows.map((row) => ({ href: publicWorkUrl(row.mission_slug, row.project_slug, row.work_slug), text: `You're invited to help on ${row.title}.` })),
-    ...waiting.rows.map((row) => ({ href: publicWorkUrl(row.mission_slug, row.project_slug, row.work_slug), text: `Someone wants to help on ${row.title}.` })),
+    ...posted.rows.map((row) => ({ href: publicWorkUrl(row.mission_slug, row.project_slug, row.work_slug), text: `Post what you did on ${row.title}.` })),
+    ...invited.rows.filter((row) => row.mission_slug !== readinessCanarySlug).map((row) => ({ href: publicWorkUrl(row.mission_slug, row.project_slug, row.work_slug), text: `You're invited to help on ${row.title}.` })),
+    ...waitingOn,
+    ...waiting.rows.filter((row) => row.mission_slug !== readinessCanarySlug).map((row) => ({ href: publicWorkUrl(row.mission_slug, row.project_slug, row.work_slug), text: `Someone wants to help on ${row.title}.` })),
   ].slice(0, 5);
 }
