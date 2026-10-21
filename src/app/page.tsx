@@ -34,6 +34,7 @@ export default async function HomePage() {
         <RotatingVersion names={heroIncumbents} />
       </h1>
       <p className="mt-4 text-lg text-[var(--ink)]">{productCopy.gloss}</p>
+      <p className="mt-3 text-lg text-[var(--ink)]">{productCopy.stop}</p>
       <p className="mt-6 text-lg leading-relaxed text-[var(--body)] md:text-xl">{productCopy.lede}</p>
       <table className="mt-8 w-full border-collapse text-[var(--ink)]">
         <caption className="mb-1 text-left font-[family-name:var(--font-sans)] text-xs font-medium uppercase tracking-wide text-[var(--muted)]">{productCopy.split.caption}</caption>
