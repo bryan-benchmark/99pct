@@ -3,6 +3,7 @@ import { AgentHandoff } from "@/components/AgentHandoff";
 import { GrowthBanner } from "@/components/GrowthBanner";
 import { HeroCompare } from "@/components/HeroCompare";
 import { agentNote, anyBrickPrompt, brickPrompt, brickRepo } from "@/content/agentBrick";
+import { loadGithubWall } from "@/content/githubWall";
 import { productCopy } from "@/content/99pct";
 import { heroIncumbents, utilityByName } from "@/content/utilities";
 import { missionDatabaseUnavailable } from "@/missions/db/config";
@@ -23,6 +24,7 @@ export default async function HomePage() {
   let life = "";
   let mcus: PublicMcu[] = [];
   const pieceCounts = new Map<string, number>();
+  const wall = await loadGithubWall();
   try {
     const db = await getMissionDb();
     life = lifeSentence(await publicPulse(db));
@@ -45,19 +47,42 @@ export default async function HomePage() {
         {life ? <p className="mt-3 text-[var(--ink)]">{life}</p> : null}
         <p className="mt-6 text-[var(--body)]">{agentNote}</p>
         <p className="mt-3 font-[family-name:var(--font-sans)]"><a href={brickRepo} className={actionClass}>The public wall</a></p>
+        <p className="mt-3 text-[var(--body)]">A change merges only if the fare test passes.</p>
         <AgentHandoff prompt={anyBrickPrompt()} label="Copy for your agent" />
         <p className="phone-actions mt-6">
           <Link href={productCopy.helpNow.action.href} className={primaryClass}>{productCopy.helpNow.action.label}</Link>
         </p>
-        <ul className="mt-8 space-y-0">
-          {firstWeekWork.map((item) => (
-            <li key={item.title} className="border-t border-[var(--line)] py-3">
-              <Link href={`/use/rideshare-99?piece=${encodeURIComponent(item.title)}#help`} className="inline-flex min-h-11 items-center font-semibold text-[var(--ink)]">{item.title}</Link>
-              {(pieceCounts.get(item.title) ?? 0) > 0 ? <p className="text-[var(--body)]">{pieceCounts.get(item.title) === 1 ? "1 person can do this." : `${pieceCounts.get(item.title)} people can do this.`}</p> : null}
-              <AgentHandoff prompt={brickPrompt(item)} label="Copy this brick" quiet />
-            </li>
-          ))}
-        </ul>
+        {wall.live ? (
+          <ul className="mt-8 space-y-0">
+            {wall.bricks.map((brick) => (
+              <li key={brick.number} className="border-t border-[var(--line)] py-3">
+                <a href={brick.url} className="inline-flex min-h-11 items-center font-semibold text-[var(--ink)]">{brick.title}</a>
+                <AgentHandoff prompt={brick.prompt} label="Copy this brick" quiet />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <ul className="mt-8 space-y-0">
+            {firstWeekWork.map((item) => (
+              <li key={item.title} className="border-t border-[var(--line)] py-3">
+                <Link href={`/use/rideshare-99?piece=${encodeURIComponent(item.title)}#help`} className="inline-flex min-h-11 items-center font-semibold text-[var(--ink)]">{item.title}</Link>
+                {(pieceCounts.get(item.title) ?? 0) > 0 ? <p className="text-[var(--body)]">{pieceCounts.get(item.title) === 1 ? "1 person can do this." : `${pieceCounts.get(item.title)} people can do this.`}</p> : null}
+                <AgentHandoff prompt={brickPrompt(item)} label="Copy this brick" quiet />
+              </li>
+            ))}
+          </ul>
+        )}
+        <h3 className="mt-10 text-lg font-semibold text-[var(--ink)]">Changes waiting</h3>
+        {wall.changes.length === 0 ? <p className="mt-3 text-[var(--ink)]">No changes waiting. Yours can be the first.</p> : (
+          <ul className="mt-4 space-y-3">
+            {wall.changes.map((change) => (
+              <li key={change.number}>
+                <a href={change.url} className="font-semibold text-[var(--ink)]">{change.title}</a>
+                <span className="text-[var(--body)]">{` · ${change.author}`}</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
       <section className="mt-10">
         <h2 className="text-xl font-semibold text-[var(--ink)]">{productCopy.mcu.title}</h2>
