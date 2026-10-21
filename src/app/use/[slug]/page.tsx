@@ -2,7 +2,9 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { OfferForm } from "@/components/OfferForm";
+import { AgentHandoff } from "@/components/AgentHandoff";
 import { RideFare } from "@/components/RideFare";
+import { brickPrompt } from "@/content/agentBrick";
 import { GrowthBanner } from "@/components/GrowthBanner";
 import { productCopy } from "@/content/99pct";
 import { ConfirmHelpForm } from "@/app/missions/[slug]/projects/[projectSlug]/work/[workSlug]/ConfirmHelpForm";
@@ -116,6 +118,7 @@ export default async function UtilityPage({ params, searchParams }: { params: Pr
           </p>
           <h1 className="mt-3 text-[2rem] font-semibold leading-tight tracking-tight text-[var(--ink)]">{chosen.title}</h1>
           <p className="mt-6 text-lg leading-relaxed text-[var(--body)]">{chosen.description}</p>
+          {utility.name === "Rideshare 99" ? <AgentHandoff prompt={brickPrompt(chosen)} label="Copy this brick" /> : null}
           {utility.name === "Rideshare 99" && chosen.title === "Sketch the first screen" ? <RideFare /> : null}
           <p className="mt-4 text-[var(--ink)]">{nextLine}</p>
           {onThisPiece ? (
@@ -173,6 +176,7 @@ export default async function UtilityPage({ params, searchParams }: { params: Pr
               <p className="mt-1 text-[var(--body)]">{item.description}</p>
               {(pieceCounts.get(item.title) ?? 0) > 0 ? <p className="mt-1 text-[var(--body)]">{pieceCounts.get(item.title) === 1 ? "1 person can do this." : `${pieceCounts.get(item.title)} people can do this.`}</p> : null}
               <p className="phone-actions mt-2 font-[family-name:var(--font-sans)]"><Link href={`/use/${slug}?piece=${encodeURIComponent(item.title)}#help`} className={actionClass}>I can do this</Link></p>
+              {utility.name === "Rideshare 99" ? <AgentHandoff prompt={brickPrompt(item)} label="Copy this brick" quiet /> : null}
             </li>
           ))}
         </ul>
