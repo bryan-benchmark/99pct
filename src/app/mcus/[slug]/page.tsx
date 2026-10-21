@@ -23,7 +23,8 @@ export default async function McuPersonPage({ params }: { params: Promise<{ slug
     <article className="mx-auto max-w-[40rem] px-5 py-12 md:py-16">
       <p className="font-[family-name:var(--font-sans)] text-xs font-medium uppercase tracking-wide text-[var(--muted)]">MCU</p>
       <h1 className="mt-2 text-[2rem] font-semibold leading-tight tracking-tight text-[var(--ink)]">{name}</h1>
-      <p className="mt-6 text-[var(--body)]">{productCopy.mcu.meaning}</p>
+      <p className="mt-6 text-[var(--ink)]">{pieces.length === 1 ? "1 piece with this name on it." : `${pieces.length} pieces with this name on them.`}</p>
+      <p className="mt-4 text-[var(--body)]">{productCopy.mcu.meaning}</p>
       <ul className="mt-8 space-y-6">
         {pieces.map((item) => (
           <li key={item.id}>
@@ -33,6 +34,9 @@ export default async function McuPersonPage({ params }: { params: Promise<{ slug
           </li>
         ))}
       </ul>
+      <p className="mt-8 font-[family-name:var(--font-sans)]">
+        <Link href="/mcus" className="inline-flex min-h-11 items-center font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4">See the names</Link>
+      </p>
     </article>
   );
 }
