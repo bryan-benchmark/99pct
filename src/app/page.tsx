@@ -29,7 +29,7 @@ export default async function HomePage() {
     <article className="mx-auto max-w-[40rem] px-5 py-12 md:py-16">
       <GrowthBanner />
       <p className="font-[family-name:var(--font-sans)] text-xs font-medium uppercase tracking-wide text-[var(--muted)]">{productCopy.eyebrow}</p>
-      <h1 className="mt-3 text-[2rem] font-semibold leading-tight tracking-tight text-[var(--ink)] md:text-[2.75rem]">
+      <h1 className="mt-3 min-h-[2.6em] text-[clamp(1.65rem,4.6vw,2.75rem)] font-semibold leading-tight tracking-tight text-[var(--ink)]">
         <span className="sr-only">{productCopy.headline}</span>
         <RotatingVersion names={heroIncumbents} />
       </h1>
