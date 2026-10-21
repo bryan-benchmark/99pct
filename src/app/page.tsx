@@ -36,21 +36,8 @@ export default async function HomePage() {
         <span className="sr-only">{productCopy.headline}</span>
         <RotatingVersion names={heroIncumbents} />
       </h1>
-      <figure className="mt-6">
-        <blockquote className="text-lg italic leading-snug text-[var(--ink)]">
-          <p>{productCopy.artist}</p>
-        </blockquote>
-        <figcaption className="mt-1 font-[family-name:var(--font-sans)] text-sm text-[var(--muted)]">{productCopy.artistBy}</figcaption>
-      </figure>
-      <p className="mt-4 text-lg text-[var(--ink)]">{productCopy.gloss}</p>
+      <p className="mt-6 text-lg text-[var(--ink)]">{productCopy.gloss}</p>
       <p className="mt-3 text-lg text-[var(--ink)]">{productCopy.stop}</p>
-      <p className="mt-6 font-[family-name:var(--font-sans)]"><Link href="#pieces" className={actionClass}>Pick a piece</Link></p>
-      <ul className="mt-8 border-t border-[var(--line)]">
-        {productCopy.rules.map((rule) => (
-          <li key={rule} className="border-b border-[var(--line)] py-3 text-lg font-semibold leading-snug text-[var(--ink)]">{rule}</li>
-        ))}
-      </ul>
-      <p className="mt-6 text-lg leading-relaxed text-[var(--body)] md:text-xl">{productCopy.lede}</p>
       <table className="mt-8 w-full border-collapse text-[var(--ink)]">
         <caption className="mb-1 text-left font-[family-name:var(--font-sans)] text-xs font-medium uppercase tracking-wide text-[var(--muted)]">{productCopy.split.caption}</caption>
         <tbody>
@@ -62,17 +49,10 @@ export default async function HomePage() {
           ))}
         </tbody>
       </table>
-      <p className="mt-4 text-[var(--body)]">{productCopy.argument}</p>
-      <p className="mt-4 text-[var(--body)]">{productCopy.truth}</p>
-      <section className="mt-10">
-        <h2 className="text-xl font-semibold text-[var(--ink)]">{productCopy.intro.title}</h2>
-        <ol className="mt-4 list-decimal space-y-2 pl-5 text-lg text-[var(--ink)]">
-          {productCopy.intro.steps.map((step) => <li key={step}>{step}</li>)}
-        </ol>
-      </section>
+      <p className="mt-4 text-[var(--body)]">{productCopy.argument} No utility is a live service yet.</p>
       <section id="pieces" className="mt-10 scroll-mt-6">
         <h2 className="text-xl font-semibold text-[var(--ink)]">Start with one piece</h2>
-        <p className="mt-3 text-[var(--body)]">Rideshare 99 starts here. Pick one. You do not need to write code. The person who takes Look after the list starts it, and people already waiting are invited.</p>
+        <p className="mt-3 text-lg leading-relaxed text-[var(--body)]">{productCopy.lede}</p>
         {life ? <p className="mt-3 text-[var(--ink)]">{life}</p> : null}
         <ol className="mt-6 list-decimal space-y-5 pl-5">
           {firstWeekWork.map((item) => (

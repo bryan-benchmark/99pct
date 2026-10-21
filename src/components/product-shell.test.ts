@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { findWorkCopy, helpCopy, missionismHubCopy, productCopy, useCopy } from "@/content/99pct";
-import { heroMarks } from "@/content/heroMarks";
+import { heroMarkColor, heroMarks } from "@/content/heroMarks";
 import { heroIncumbents, startUtilityPath, utilities, utilityBeneficiaries, utilityPurpose } from "@/content/utilities";
 import { missionLimits } from "@/missions/model";
 import { beginUtilityPath, firstWeek, piecePagePath } from "@/missions/starter";
@@ -23,29 +23,22 @@ test("the root application is 99pct, with Missionism as supporting protocol", ()
   assert.equal(productCopy.headline, "The Taylor's version of Uber, Airbnb, DoorDash, and the rest.");
   const hero = source("src/components/RotatingVersion.tsx");
   assert.equal(hero.includes("underline"), false);
+  assert.equal(hero.includes("fill-current"), false);
   assert.match(hero, /whitespace-nowrap/);
+  assert.match(hero, /\{name\}/);
   assert.match(hero, /heroMarks/);
+  assert.match(hero, /h-\[1\.15em\]/);
+  assert.equal(heroMarkColor.Netflix, "#E50914");
+  assert.equal(heroMarkColor.Spotify, "#1DB954");
   for (const name of ["Netflix", "Spotify", "Amazon", "Microsoft", "Visa", "Walmart"]) {
     assert.equal(typeof heroMarks[name], "string", name);
   }
   assert.equal(productCopy.eyebrow, "Built by the 99%, for the 99%.");
   assert.equal(productCopy.artist, "Good artists copy. Great artists steal.");
   assert.equal(productCopy.artistBy, "Picasso");
-  assert.match(page, /productCopy\.artist/);
   assert.equal(productCopy.gloss, "A version where the people who do the work keep all of the profits.");
   assert.equal(productCopy.stop, "Let's just stop giving our money to them.");
-  assert.deepEqual([...productCopy.rules], [
-    "99% of profits stay in the communities they are earned in.",
-    "99% of a ride stays with the person who drove.",
-    "99% of a night stays with the person who hosted.",
-    "99% of a delivery stays with the person who carried it.",
-    "99% of a post stays with the person who made it.",
-    "No more things made to break.",
-    "Built to last, for the 99%.",
-    "1% keeps the shared infrastructure running.",
-    "0% goes to outside owners.",
-  ]);
-  assert.match(page, /productCopy\.rules/);
+  assert.equal(page.includes("productCopy.rules"), false);
   assert.equal(page.includes("Done when"), false);
   assert.match(page, /productCopy.join/);
   assert.match(page, /productCopy.use/);
@@ -53,11 +46,9 @@ test("the root application is 99pct, with Missionism as supporting protocol", ()
   assert.match(page, /productCopy.start/);
   assert.match(page, /productCopy.explore/);
   assert.equal(/equity/i.test(page), false);
-  assert.match(page, /productCopy\.intro/);
   assert.match(page, /productCopy\.mcu/);
-  assert.match(page, /href="#pieces"/);
   assert.match(page, /id="pieces"/);
-  assert.ok(page.indexOf("productCopy.intro") < page.indexOf("Start with one piece"));
+  assert.ok(page.indexOf("productCopy.split") < page.indexOf("Start with one piece"));
   assert.ok(page.indexOf("Start with one piece") < page.indexOf("productCopy.mcu"));
   assert.equal(productCopy.intro.steps.length, 6);
   assert.match(productCopy.mcu.meaning, /not money and it is not a share/);
