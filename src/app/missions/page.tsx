@@ -4,7 +4,9 @@ import { listPublicMissions } from "@/missions/store";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "Missions" };
+export const metadata = { title: "What has been started" };
+
+const actionClass = "inline-flex min-h-11 items-center font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4";
 
 export default async function MissionsPage() {
   let missions: Awaited<ReturnType<typeof listPublicMissions>> = [];
@@ -17,26 +19,21 @@ export default async function MissionsPage() {
   }
   return (
     <article className="mx-auto w-full max-w-[40rem] px-5 py-12 md:py-16">
-      <h1 className="text-[2rem] font-semibold leading-tight tracking-tight text-[var(--ink)]">Missions</h1>
-      <p className="mt-5 text-lg leading-relaxed text-[var(--body)]">
-        A Mission is something people are trying to make real. Forming is a public starting state. Starting one does not create a company, a fundraiser, ownership, or a legal entity.
-      </p>
+      <h1 className="text-[2rem] font-semibold leading-tight tracking-tight text-[var(--ink)]">What has been started</h1>
+      <p className="mt-5 text-lg leading-relaxed text-[var(--body)]">These are utilities people have started. Open one and pick a piece.</p>
       <p className="mt-6 flex flex-wrap gap-x-4 gap-y-2 font-[family-name:var(--font-sans)]">
-        <Link href="/use/rideshare-99" className="font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4">Start with Rideshare 99</Link>
-        <Link href="/use" className="font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4">See the utilities</Link>
-        <Link href="/missions/new" className="font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4">Start a Mission</Link>
+        <Link href="/use/rideshare-99" className={actionClass}>Start with Rideshare 99</Link>
+        <Link href="/use" className={actionClass}>See the utilities</Link>
       </p>
-      {unavailable ? <p className="mt-10 text-[var(--muted)]">Missions are not available in this environment yet.</p> : null}
-      {!unavailable && missions.length === 0 ? <p className="mt-10 text-[var(--muted)]">No missions have been started yet.</p> : null}
+      {unavailable ? <p className="mt-10 text-[var(--muted)]">This list is not available in this environment yet.</p> : null}
+      {!unavailable && missions.length === 0 ? <p className="mt-10 text-[var(--muted)]">Nothing has been started yet.</p> : null}
       <ul className="mt-10 space-y-8">
         {missions.map((mission) => (
           <li key={mission.slug} className="border-t border-[var(--line)] pt-6">
-            <p className="font-[family-name:var(--font-sans)] text-xs font-medium uppercase tracking-wide text-[var(--muted)]">Forming</p>
-            <h2 className="mt-2 text-xl font-semibold text-[var(--ink)]">
-              <Link href={`/missions/${mission.slug}`}>{mission.name}</Link>
+            <h2 className="text-xl font-semibold text-[var(--ink)]">
+              <Link href={`/missions/${mission.slug}`} className="inline-flex min-h-11 items-center">{mission.name}</Link>
             </h2>
             <p className="mt-3 text-[var(--body)]">{mission.purpose}</p>
-            <p className="mt-2 text-sm text-[var(--muted)]">For {mission.beneficiaries}. Starts in {mission.startingPlace}.</p>
           </li>
         ))}
       </ul>

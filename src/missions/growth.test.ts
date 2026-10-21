@@ -244,6 +244,7 @@ test("starting a utility invites the people already on a piece, and not the pers
   const notices = await listGrowthNotices(db, helper.uid);
   assert.equal(notices.length, 1);
   assert.match(notices[0].text, /You're invited to help on Write the one-page description/);
+  assert.equal(notices[0].href, "/use/rideshare-99?piece=Write%20the%20one-page%20description#help");
   assert.equal((await listGrowthNotices(db, creator.uid)).length, 0);
 });
 

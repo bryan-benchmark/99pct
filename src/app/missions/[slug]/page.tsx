@@ -6,29 +6,23 @@ import { helpKinds, utilityByName, utilitySlug } from "@/content/utilities";
 import { verifyHumanSession } from "@/human/auth/server";
 import { humanSessionCookieName } from "@/human/auth/session";
 import { getMissionDb } from "@/missions/db/runtime";
-import { missionEmptyStates, publicProjectUrl, publicWorkUrl, type PublicWork } from "@/missions/model";
+import { missionEmptyStates, publicWorkUrl, type PublicWork } from "@/missions/model";
 import { listCreatorOffers, type CreatorOffer } from "@/missions/offers";
 import { getPublicMission } from "@/missions/store";
 import { listPublicProjects, listPublicWork, viewerMayCreate } from "@/missions/projects";
 
 export const dynamic = "force-dynamic";
 
+const actionClass = "inline-flex min-h-11 items-center font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4";
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  return { title: slug };
-}
-
-function Rail({ title, body }: { title: string; body: string }) {
-  return (
-    <section className="border-t border-[var(--line)] pt-5">
-      <h2 className="text-lg font-semibold text-[var(--ink)]">{title}</h2>
-      <p className="mt-2 text-[var(--muted)]">{body}</p>
-    </section>
-  );
-}
-
-function openWorkCount(count: number) {
-  return count === 1 ? "1 open work item" : `${count} open work items`;
+  try {
+    const mission = await getPublicMission(await getMissionDb(), slug);
+    return { title: mission?.name ?? slug };
+  } catch {
+    return { title: slug };
+  }
 }
 
 export default async function MissionPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -37,6 +31,7 @@ export default async function MissionPage({ params }: { params: Promise<{ slug: 
   let projects: Awaited<ReturnType<typeof listPublicProjects>> = [];
   const workByProject = new Map<string, PublicWork[]>();
   let canCreate = false;
+  let viewerEmail = "";
   let offers: CreatorOffer[] = [];
   try {
     const db = await getMissionDb();
@@ -46,9 +41,12 @@ export default async function MissionPage({ params }: { params: Promise<{ slug: 
       for (const project of projects) workByProject.set(project.slug, (await listPublicWork(db, slug, project.slug)).slice().reverse());
       try {
         const identity = await verifyHumanSession((await cookies()).get(humanSessionCookieName)?.value);
-        canCreate = await viewerMayCreate(db, slug, identity?.uid);
-        const utility = utilityByName(mission.name);
-        if (canCreate && utility) offers = await listCreatorOffers(db, utilitySlug(utility.name));
+        if (identity) {
+          viewerEmail = identity.email;
+          canCreate = await viewerMayCreate(db, slug, identity.uid);
+          const utility = utilityByName(mission.name);
+          if (canCreate && utility) offers = await listCreatorOffers(db, utilitySlug(utility.name));
+        }
       } catch (error) {
         if (!(error instanceof Error) || error.message !== "Human authentication is not configured.") throw error;
       }
@@ -58,24 +56,61 @@ export default async function MissionPage({ params }: { params: Promise<{ slug: 
     throw error;
   }
   if (!mission) notFound();
-  const created = new Date(mission.createdAt).toLocaleDateString("en-US", { dateStyle: "long", timeZone: "UTC" });
+  const utility = utilityByName(mission.name);
+  const others = offers.filter((offer) => offer.email !== viewerEmail);
+  const titles = new Set([...workByProject.values()].flat().map((item) => item.title));
+  const loose = others.filter((offer) => !titles.has(offer.piece));
+  const lookingAfter = others.length > 0
+    ? "You are looking after this list. People who were waiting are invited to the piece they chose. They post what they did there."
+    : "You are looking after this list. No one is waiting yet. The pieces below are open.";
+  function pieceHref(title: string, workHref: string) {
+    if (!canCreate && utility) return `/use/${utilitySlug(utility.name)}?piece=${encodeURIComponent(title)}#help`;
+    return workHref;
+  }
   return (
     <article className="mx-auto w-full max-w-[40rem] px-5 py-12 md:py-16">
       <GrowthBanner />
-      <p className="font-[family-name:var(--font-sans)] text-xs font-medium uppercase tracking-wide text-[var(--muted)]">Forming</p>
+      <p className="font-[family-name:var(--font-sans)] text-xs font-medium uppercase tracking-wide text-[var(--muted)]">{utility?.genre ?? "Started"}</p>
       <h1 className="mt-2 text-[2rem] font-semibold leading-tight tracking-tight text-[var(--ink)]">{mission.name}</h1>
       <p className="mt-6 text-lg leading-relaxed text-[var(--body)]">{mission.purpose}</p>
-      <dl className="mt-8 space-y-3 text-[var(--body)]">
-        <div><dt className="font-semibold text-[var(--ink)]">Who this is for</dt><dd>{mission.beneficiaries}</dd></div>
-        <div><dt className="font-semibold text-[var(--ink)]">Where it starts</dt><dd>{mission.startingPlace}</dd></div>
-        <div><dt className="font-semibold text-[var(--ink)]">Started</dt><dd>{created}</dd></div>
-      </dl>
-      {canCreate && offers.length > 0 ? (
+      <p className="mt-4 text-[var(--ink)]">{canCreate ? lookingAfter : "Pick one piece. You do not need to write code."}</p>
+      <section className="mt-10">
+        <h2 className="text-lg font-semibold text-[var(--ink)]">The pieces</h2>
+        {projects.length === 0 ? <p className="mt-2 text-[var(--muted)]">{missionEmptyStates.projects}</p> : (
+          projects.map((project) => (
+            <div key={project.slug} className="mt-4">
+              <p className="text-[var(--body)]">{project.outcome}</p>
+              <ul className="mt-6 space-y-6">
+                {(workByProject.get(project.slug) ?? []).map((item) => {
+                  const people = others.filter((offer) => offer.piece === item.title);
+                  return (
+                    <li key={item.slug}>
+                      <Link href={pieceHref(item.title, publicWorkUrl(mission.slug, project.slug, item.slug))} className={actionClass}>{item.title}</Link>
+                      <p className="mt-1 text-[var(--body)]">{item.description}</p>
+                      {people.length > 0 ? (
+                        <ul className="mt-2 space-y-2">
+                          {people.map((offer) => (
+                            <li key={offer.id}>
+                              <p className="text-[var(--ink)]">{offer.email}</p>
+                              {offer.note ? <p className="text-[var(--body)]">{offer.note}</p> : null}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : null}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))
+        )}
+        {canCreate && projects.length === 0 ? <p className="mt-4"><Link href={`/missions/${mission.slug}/projects/new`} className="font-semibold text-[var(--ink)]">Create a Project</Link></p> : null}
+      </section>
+      {loose.length > 0 ? (
         <section className="mt-10 border-t border-[var(--line)] pt-5">
-          <h2 className="text-lg font-semibold text-[var(--ink)]">People who can help</h2>
-          <p className="mt-2 text-[var(--body)]">They chose a piece and were invited. They confirm, then they post what they did. Their email is here because they agreed to share it.</p>
+          <h2 className="text-lg font-semibold text-[var(--ink)]">Also on the list</h2>
           <ul className="mt-4 space-y-4">
-            {offers.map((offer) => (
+            {loose.map((offer) => (
               <li key={offer.id}>
                 <p className="text-[var(--ink)]">{offer.piece || helpKinds.find((kind) => kind.id === offer.kind)?.label}. {offer.email}</p>
                 {offer.note ? <p className="mt-1 text-[var(--body)]">{offer.note}</p> : null}
@@ -84,31 +119,10 @@ export default async function MissionPage({ params }: { params: Promise<{ slug: 
           </ul>
         </section>
       ) : null}
-      <div className="mt-10 space-y-5">
-        <section className="border-t border-[var(--line)] pt-5">
-          <h2 className="text-lg font-semibold text-[var(--ink)]">Projects & work</h2>
-          {projects.length === 0 ? <p className="mt-2 text-[var(--muted)]">{missionEmptyStates.projects}</p> : (
-            <ul className="mt-4 space-y-4">
-              {projects.map((project) => (
-                <li key={project.slug}>
-                  <Link href={publicProjectUrl(mission.slug, project.slug)} className="font-semibold text-[var(--ink)]">{project.title}</Link>
-                  <p className="mt-1 text-[var(--body)]">{project.outcome}</p>
-                  <ul className="mt-3 space-y-1">
-                    {(workByProject.get(project.slug) ?? []).map((item) => (
-                      <li key={item.slug}><Link href={publicWorkUrl(mission.slug, project.slug, item.slug)} className="inline-flex min-h-11 items-center text-[var(--ink)]">{item.title}</Link></li>
-                    ))}
-                  </ul>
-                  <p className="mt-1 text-[var(--muted)]">{openWorkCount(project.openWorkCount)}</p>
-                </li>
-              ))}
-            </ul>
-          )}
-          {canCreate ? <p className="mt-4"><Link href={`/missions/${mission.slug}/projects/new`} className="font-semibold text-[var(--ink)]">Create a Project</Link></p> : null}
-        </section>
-        <Rail title="Contribution" body={missionEmptyStates.contribution} />
-        <Rail title="Ownership" body={missionEmptyStates.ownership} />
-        <Rail title="Governance" body={missionEmptyStates.governance} />
-      </div>
+      <p className="mt-10 font-[family-name:var(--font-sans)] text-sm">
+        {utility ? <><Link href={`/use/${utilitySlug(utility.name)}`} className="text-[var(--muted)]">{utility.name}</Link>{" · "}</> : null}
+        <Link href="/use" className="text-[var(--muted)]">All utilities</Link>
+      </p>
     </article>
   );
 }
