@@ -112,6 +112,15 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
       {work.interestCount > 0 ? <p className="mt-3 text-[var(--muted)]">{interestCountLabel(work.interestCount)}</p> : null}
       {work.helpingCount > 0 ? <p className="mt-1 text-[var(--muted)]">{helpingCountLabel(work.helpingCount)}</p> : null}
       <p className="mt-6 text-lg leading-relaxed text-[var(--body)]">{work.description}</p>
+      {ownInterest?.state === "helping" ? (
+        <section className="mt-8">
+          <h2 className="text-lg font-semibold text-[var(--ink)]">{workCopy.youreHelping}</h2>
+          <p className="mt-2 text-[var(--body)]">{workCopy.futureContributions}</p>
+          <ContributionForm missionSlug={slug} projectSlug={projectSlug} workSlug={workSlug} />
+          <ContributionList contributions={contributions} creatorView={false} missionSlug={slug} projectSlug={projectSlug} workSlug={workSlug} />
+          {ownInterest.note ? <p className="mt-3 text-[var(--body)]">{ownInterest.note}</p> : null}
+        </section>
+      ) : null}
       <dl className="mt-8 space-y-3 text-[var(--body)]">
         <div><dt className="font-semibold text-[var(--ink)]">Done when</dt><dd>{work.doneWhen}</dd></div>
         <div><dt className="font-semibold text-[var(--ink)]">Posted</dt><dd>{created}</dd></div>
@@ -130,7 +139,7 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
           </ul>
         )}
       </section>
-      <section className="mt-10 border-t border-[var(--line)] pt-5">
+      {ownInterest?.state === "helping" ? null : <section className="mt-10 border-t border-[var(--line)] pt-5">
         {creatorView ? (
           <>
             <h2 className="text-lg font-semibold text-[var(--ink)]">{workCopy.interestedPeople}</h2>
@@ -150,14 +159,6 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
               </ul>
             )}
             <ContributionList contributions={contributions} creatorView missionSlug={slug} projectSlug={projectSlug} workSlug={workSlug} />
-          </>
-        ) : ownInterest?.state === "helping" ? (
-          <>
-            <h2 className="text-lg font-semibold text-[var(--ink)]">{workCopy.youreHelping}</h2>
-            <p className="mt-2 text-[var(--body)]">{workCopy.futureContributions}</p>
-            <ContributionForm missionSlug={slug} projectSlug={projectSlug} workSlug={workSlug} />
-            <ContributionList contributions={contributions} creatorView={false} missionSlug={slug} projectSlug={projectSlug} workSlug={workSlug} />
-            {ownInterest.note ? <p className="mt-3 text-[var(--body)]">{ownInterest.note}</p> : null}
           </>
         ) : ownInterest?.state === "invited" ? (
           <>
@@ -179,7 +180,7 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
         ) : (
           <p><Link href={`/sign-in?next=${encodeURIComponent(returnPath)}`} className="font-semibold text-[var(--ink)]">{workCopy.wantToHelp}</Link></p>
         )}
-      </section>
+      </section>}
       <p className="mt-8 text-[var(--muted)]">{workCopy.readBoundary}</p>
     </article>
   );
