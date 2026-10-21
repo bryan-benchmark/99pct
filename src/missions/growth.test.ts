@@ -262,3 +262,30 @@ test("raising a hand after a utility has started invites that person to the piec
   const invitations = await db.query<{ n: number }>("SELECT count(*)::int AS n FROM work_invitations");
   assert.equal(Number(invitations.rows[0].n), 1);
 });
+
+test("taking Look after the list starts the utility and invites people already waiting", async () => {
+  const db = await database();
+  const later = { uid: "human-3", email: "later@example.test" };
+  await createOfferRequest(request("/api/utilities/rideshare-99/offer", { piece: "Write the one-page description", note: "I can write the page", shareEmail: true }), "rideshare-99", { verifySession: async () => helper, openDb: async () => db });
+  const opened = await createOfferRequest(request("/api/utilities/rideshare-99/offer", { piece: "Look after the list", note: "I can keep the list", shareEmail: true }), "rideshare-99", { verifySession: async () => creator, openDb: async () => db });
+  assert.equal(opened.status, 201);
+  const body = await opened.json() as { status: string; next?: string };
+  assert.equal(body.status, "offered");
+  assert.equal(body.next, "/missions/rideshare-99");
+  assert.equal(JSON.stringify(body).includes(creator.email), false);
+  const place = await db.query<{ starting_place: string }>("SELECT starting_place FROM mission_revisions");
+  assert.equal(place.rows[0]?.starting_place, "Not named yet");
+  const invited = await db.query<{ invited_by_uid: string; human_uid: string }>(
+    `SELECT work_invitations.invited_by_uid, work_interests.human_uid
+     FROM work_invitations JOIN work_interests ON work_interests.id = work_invitations.interest_id`,
+  );
+  assert.equal(invited.rows.length, 1);
+  assert.equal(invited.rows[0].invited_by_uid, creator.uid);
+  assert.equal(invited.rows[0].human_uid, helper.uid);
+  assert.equal((await listGrowthNotices(db, creator.uid)).length, 0);
+  const second = await createOfferRequest(request("/api/utilities/rideshare-99/offer", { piece: "Look after the list", note: "I can help keep it", shareEmail: true }), "rideshare-99", { verifySession: async () => later, openDb: async () => db });
+  const secondBody = await second.json() as { next?: string };
+  assert.match(secondBody.next ?? "", /^\/missions\/rideshare-99\/projects\/[^/]+\/work\/[^/]+$/);
+  const missions = await db.query<{ n: number }>("SELECT count(*)::int AS n FROM missions");
+  assert.equal(Number(missions.rows[0].n), 1);
+});

@@ -62,7 +62,7 @@ export default async function HomePage() {
       <p className="mt-4 text-[var(--body)]">{productCopy.truth}</p>
       <section className="mt-10">
         <h2 className="text-xl font-semibold text-[var(--ink)]">Start with one piece</h2>
-        <p className="mt-3 text-[var(--body)]">Rideshare 99 starts here. Pick one. You do not need to write code.</p>
+        <p className="mt-3 text-[var(--body)]">Rideshare 99 starts here. Pick one. You do not need to write code. The person who takes Look after the list starts it, and people already waiting are invited.</p>
         {life ? <p className="mt-3 text-[var(--ink)]">{life}</p> : null}
         <ol className="mt-6 list-decimal space-y-5 pl-5">
           {firstWeekWork.map((item) => (

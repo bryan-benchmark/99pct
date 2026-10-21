@@ -1,10 +1,11 @@
 import { randomUUID } from "node:crypto";
-import { utilityByName, utilitySlug, utilities } from "@/content/utilities";
+import { utilityBeneficiaries, utilityByName, utilityPurpose, utilitySlug, utilities } from "@/content/utilities";
 import { readinessCanarySlug } from "./canary";
 import type { MissionDb, MissionSql } from "./db/client";
-import { publicWorkUrl } from "./model";
+import { publicMissionUrl, publicWorkUrl } from "./model";
 import { createProject, createWork } from "./projects";
 import { firstWeek } from "./starter";
+import { createFormingMission } from "./store";
 
 export type Pulse = { missions: number; openWork: number; helpers: number; featuredHelpers: number };
 
@@ -112,6 +113,24 @@ export async function seatWaitingOffers(db: MissionDb, creator: { uid: string; e
   for (const offer of offers.rows) {
     await seatOffer(db, creator.uid, missionSlug, { uid: offer.human_uid, email: offer.email, piece: offer.piece, note: offer.note });
   }
+}
+
+const stewardPiece = "Look after the list";
+
+export async function openUtilityFromList(db: MissionDb, human: { uid: string; email: string }, draft: { slug: string; piece: string }): Promise<string | null> {
+  if (draft.piece !== stewardPiece) return null;
+  const utility = utilities.find((item) => utilitySlug(item.name) === draft.slug);
+  if (!utility || await findStartedUtility(db, utility.name)) return null;
+  const mission = await createFormingMission(db, human, {
+    name: utility.name,
+    purpose: utilityPurpose(utility),
+    beneficiaries: utilityBeneficiaries,
+    startingPlace: "Not named yet",
+  });
+  await seedFirstWeek(db, human, mission.slug, utility.name);
+  const first = await findStartedUtility(db, utility.name);
+  if (first?.slug === mission.slug) await seatWaitingOffers(db, human, mission.slug, utility.name);
+  return publicMissionUrl(first?.slug === mission.slug ? mission.slug : (first?.slug ?? mission.slug));
 }
 
 export async function seatOfferOnStartedUtility(db: MissionDb, human: { uid: string; email: string }, draft: { slug: string; piece: string; note: string }): Promise<string | null> {

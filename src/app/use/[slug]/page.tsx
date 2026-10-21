@@ -54,6 +54,7 @@ export default async function UtilityPage({ params, searchParams }: { params: Pr
   } catch (error) {
     if (!(error instanceof Error) || error.message !== missionDatabaseUnavailable) throw error;
   }
+  const steward = kit.work.some((item) => item.title === "Look after the list");
   const helpPath = requested ? `/use/${slug}?piece=${encodeURIComponent(requested)}#help` : `/use/${slug}#help`;
   const join = `/sign-in?mode=create&next=${encodeURIComponent(helpPath)}`;
   const selectedPiece = requested || own?.piece || "";
@@ -65,7 +66,9 @@ export default async function UtilityPage({ params, searchParams }: { params: Pr
       <p className="mt-6 text-lg leading-relaxed text-[var(--body)]">{`The open version of ${utility.incumbent}. ${utility.line}`}</p>
       <p className="mt-4 text-[var(--ink)]">{started
         ? "This is not a live service. Raising your hand invites you to the piece you chose. You confirm it."
-        : "This is not a live service. Raising your hand puts you on the list. When someone starts this, you are invited to the piece you chose. You confirm it."}</p>
+        : steward
+          ? "This is not a live service. Raising your hand puts you on the list. The person who takes Look after the list starts it, and you are invited to the piece you chose. You confirm it."
+          : "This is not a live service. Raising your hand puts you on the list. When someone starts this, you are invited to the piece you chose. You confirm it."}</p>
       {helpers > 0 ? <p className="mt-4 text-[var(--body)]">{helpers === 1 ? "1 person can help." : `${helpers} people can help.`}</p> : null}
       {own ? <p className="mt-4 text-[var(--body)]">You are on the list for {own.piece || kindLabel(own.kind)}.</p> : null}
       <p className="phone-actions mt-8 flex flex-wrap gap-x-4 gap-y-2 font-[family-name:var(--font-sans)]">
