@@ -32,7 +32,7 @@ export function firstWeek(utility: Utility): { project: ProjectDraft; work: Work
         { kind: "task", title: "List what a driver needs", description: "Three things a driver has on day one: who the rider is, what they are paid, and how to get help.", doneWhen: "A driver can read who the rider is, what they are paid, and how to get help." },
         { kind: "task", title: "List what a rider needs", description: "Three things a rider knows before they get in: who is driving, what it costs, and how to get help.", doneWhen: "A rider can read who is driving, what it costs, and how to get help." },
         { kind: "task", title: "Sketch the first screen", description: "Where you are, where you are going, what it costs, and who keeps the money. A sketch on paper is enough.", doneWhen: "A sketch shows where you are, where you are going, the cost, and who keeps the money." },
-        { kind: "role", title: "Look after the list", description: "When someone says they can help, invite them. Keep the list honest. Say what is needed next.", doneWhen: "The next piece is named, or someone who offered to help has been invited." },
+        { kind: "role", title: "Look after the list", description: "People who raised a hand are invited to their piece. Keep the list honest. Say what is needed next.", doneWhen: "The next piece is named, or someone who offered to help has been invited." },
       ]
     : utility.name === social
     ? [
@@ -40,7 +40,7 @@ export function firstWeek(utility: Utility): { project: ProjectDraft; work: Work
         { kind: "task", title: "Name the formats", description: "Name the formats a post can become. Start with a photo, a short video, a long video, and a note. Say how a person can tell which is which.", doneWhen: "The formats are posted where other people can read them." },
         { kind: "task", title: "Name the first community", description: "Pick the first people this is for. A city, a scene, or a kind of maker. Say why they would post here before anyone else does.", doneWhen: "The Mission names the first community and why." },
         { kind: "task", title: "Sketch the upload", description: "Draw or describe the upload. It should feel like posting somewhere they already use: a picture, a video, or words. Sorting happens after they post.", doneWhen: "The sketch is posted or described on this Mission." },
-        { kind: "role", title: "Look after the list", description: "Keep this list current. Invite people who offered to help. Say what is needed next.", doneWhen: "The next needs are posted, or someone else has been invited." },
+        { kind: "role", title: "Look after the list", description: "People who raised a hand are invited to their piece. Keep this list current. Say what is needed next.", doneWhen: "The next needs are posted, or someone else has been invited." },
       ]
     : [
         { kind: "task", title: `Write what ${utility.name} is`, description: `Write what ${utility.name} is, in plain language. ${utility.line} Say who it is for.`, doneWhen: "A short description is posted on this Mission." },

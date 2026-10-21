@@ -3,6 +3,7 @@ import { verifyHumanSession, type HumanIdentity } from "@/human/auth/server";
 import { humanCsrfAccepted, humanCsrfCookieName, humanSessionCookieName } from "@/human/auth/session";
 import type { MissionDb } from "@/missions/db/client";
 import { getMissionDb } from "@/missions/db/runtime";
+import { seatOfferOnStartedUtility } from "@/missions/growth";
 import { OfferRequestError, offerDraft, saveOffer } from "@/missions/offers";
 import { readWorkspaceJsonObject } from "@/workspace/http-body";
 
@@ -34,8 +35,10 @@ export async function createOfferRequest(request: NextRequest, slug: string, dep
     if (error instanceof OfferRequestError) return rejected(error.status, error.message);
     throw error;
   }
-  const offer = await saveOffer(await deps.openDb(), identity, draft);
-  const response = NextResponse.json(offer, { status: 201 });
+  const db = await deps.openDb();
+  const offer = await saveOffer(db, identity, draft);
+  const next = await seatOfferOnStartedUtility(db, identity, draft);
+  const response = NextResponse.json(next ? { status: offer.status, next } : offer, { status: 201 });
   response.headers.set("Cache-Control", "no-store");
   return response;
 }

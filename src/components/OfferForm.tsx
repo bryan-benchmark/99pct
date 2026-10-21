@@ -27,9 +27,10 @@ export function OfferForm({ slug, pieces, own }: { slug: string; pieces: string[
           shareEmail: data.get("shareEmail") === "yes",
         }),
       });
-      const body = await response.json() as { status?: string; error?: string };
+      const body = await response.json() as { status?: string; error?: string; next?: string };
       if (!response.ok || body.status !== "offered") throw new Error(body.error || "Could not save that.");
-      router.refresh();
+      if (body.next?.startsWith("/") && !body.next.startsWith("//")) router.push(body.next);
+      else router.refresh();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Could not save that.");
     } finally {
