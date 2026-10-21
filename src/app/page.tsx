@@ -33,6 +33,12 @@ export default async function HomePage() {
         <span className="sr-only">{productCopy.headline}</span>
         <RotatingVersion names={heroIncumbents} />
       </h1>
+      <figure className="mt-6">
+        <blockquote className="text-lg italic leading-snug text-[var(--ink)]">
+          <p>{productCopy.artist}</p>
+        </blockquote>
+        <figcaption className="mt-1 font-[family-name:var(--font-sans)] text-sm text-[var(--muted)]">{productCopy.artistBy}</figcaption>
+      </figure>
       <p className="mt-4 text-lg text-[var(--ink)]">{productCopy.gloss}</p>
       <p className="mt-3 text-lg text-[var(--ink)]">{productCopy.stop}</p>
       <ul className="mt-8 border-t border-[var(--line)]">
