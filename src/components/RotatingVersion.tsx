@@ -1,14 +1,27 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { heroMarks } from "@/content/heroMarks";
+import { heroMarkColor, heroMarks } from "@/content/heroMarks";
+
+const markClass = "mr-[0.28em] inline-block h-[1.15em] w-[1.15em] shrink-0 align-[-0.18em]";
 
 function Mark({ name }: { name: string }) {
+  if (name === "Microsoft") {
+    return (
+      <svg viewBox="0 0 24 24" className={markClass} aria-hidden="true">
+        <path fill="#F25022" d="M0 0v11.408h11.408V0z" />
+        <path fill="#7FBA00" d="M12.594 0v11.408H24V0z" />
+        <path fill="#00A4EF" d="M0 12.594V24h11.408V12.594z" />
+        <path fill="#FFB900" d="M12.594 12.594V24H24V12.594z" />
+      </svg>
+    );
+  }
   const d = heroMarks[name];
-  if (!d) return null;
+  const fill = heroMarkColor[name];
+  if (!d || !fill) return null;
   return (
-    <svg viewBox="0 0 24 24" className="mx-[0.18em] inline-block h-[0.82em] w-[0.82em] translate-y-[-0.06em] fill-current" aria-hidden="true">
-      <path d={d} />
+    <svg viewBox="0 0 24 24" className={markClass} aria-hidden="true">
+      <path fill={fill} d={d} />
     </svg>
   );
 }
