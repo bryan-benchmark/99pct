@@ -105,11 +105,11 @@ export default async function UtilityPage({ params, searchParams }: { params: Pr
             <div className="mt-6">
               <p className="text-lg text-[var(--ink)]">You are on this piece.</p>
               {pieceHref ? (
-                <p className="phone-actions mt-4"><Link href={pieceHref} className={primaryClass}>Go to your piece</Link></p>
+                <p className="phone-actions mt-4"><Link href={pieceHref} className={primaryClass}>Post what you did</Link></p>
               ) : (
-                <p className="mt-3 text-[var(--body)]">{steward
-                  ? "When someone takes Look after the list, you are invited. You confirm, then you post what you did."
-                  : "When someone starts this, you are invited. You confirm, then you post what you did."}</p>
+                <p className="mt-3 text-[var(--body)]">{steward && chosen.title !== "Look after the list" ? (
+                  <>When someone takes <Link href={`/use/${slug}?piece=${encodeURIComponent("Look after the list")}#help`} className="font-semibold text-[var(--ink)]">Look after the list</Link>, you are invited. You confirm, then you post what you did. Or take that piece and start it.</>
+                ) : "When someone starts this, you are invited. You confirm, then you post what you did."}</p>
               )}
             </div>
           ) : signedIn ? (
@@ -133,11 +133,13 @@ export default async function UtilityPage({ params, searchParams }: { params: Pr
           {own ? <p className="mt-4 text-[var(--body)]">You are on the list for {own.piece || kindLabel(own.kind)}.</p> : null}
         </>
       )}
-      <p className="phone-actions mt-8 flex flex-wrap gap-x-4 gap-y-2 font-[family-name:var(--font-sans)]">
-        {started ? <Link href={publicMissionUrl(started.slug)} className={actionClass}>Go to the utility</Link> : null}
-        <Link href={startUtilityPath(utility)} className={actionClass}>{started ? "Start a separate one" : "Start this"}</Link>
-        <Link href="/use" className={actionClass}>All utilities</Link>
-      </p>
+      {chosen ? null : (
+        <p className="phone-actions mt-8 flex flex-wrap gap-x-4 gap-y-2 font-[family-name:var(--font-sans)]">
+          {started ? <Link href={publicMissionUrl(started.slug)} className={actionClass}>Go to the utility</Link> : null}
+          <Link href={startUtilityPath(utility)} className={actionClass}>{started ? "Start a separate one" : "Start this"}</Link>
+          <Link href="/use" className={actionClass}>All utilities</Link>
+        </p>
+      )}
       <section id="first-week" className="mt-12">
         <h2 className="text-xl font-semibold text-[var(--ink)]">{chosen ? "Other pieces" : "The first week"}</h2>
         <ul className="mt-6 space-y-6">
@@ -151,6 +153,12 @@ export default async function UtilityPage({ params, searchParams }: { params: Pr
           ))}
         </ul>
       </section>
+      {chosen ? (
+        <p className="mt-8 font-[family-name:var(--font-sans)] text-sm">
+          {started ? <><Link href={publicMissionUrl(started.slug)} className={actionClass}>Go to the utility</Link>{" · "}</> : null}
+          <Link href="/use" className="text-[var(--muted)]">All utilities</Link>
+        </p>
+      ) : null}
       {chosen ? null : (
         <section id="help" className="mt-12">
           <h2 className="text-xl font-semibold text-[var(--ink)]">I can help</h2>
