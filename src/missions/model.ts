@@ -109,7 +109,7 @@ export const workCopy = {
   awaitingAnchor: "Recognition is recorded. The MCU grant is not released until the economic checkpoint is anchored.",
   anchoredGrant: "Anchored MCU grant",
   confirmBoundary: "This records that you and the Mission creator intend to work together on this item. It does not create employment, contractor status, a legal contract, compensation, MCUs, or ownership.",
-  readBoundary: "Open work is a request for help, not a binding job or contract. No compensation, MCUs, or ownership have been promised by this posting.",
+  readBoundary: "Open work is a request for help, not a binding job or contract. Your name on a posted piece is an MCU. It is not money and it is not a share.",
 } as const;
 
 export type ParticipationState = "interested" | "invited" | "helping";

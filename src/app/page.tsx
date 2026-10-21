@@ -70,22 +70,6 @@ export default async function HomePage() {
         </ol>
       </section>
       <section className="mt-10">
-        <h2 className="text-xl font-semibold text-[var(--ink)]">{productCopy.mcu.title}</h2>
-        <p className="mt-3 text-[var(--body)]">{productCopy.mcu.meaning}</p>
-        {mcus.length === 0 ? <p className="mt-3 text-[var(--ink)]">{productCopy.mcu.empty}</p> : (
-          <ul className="mt-4 space-y-4">
-            {mcus.map((item) => (
-              <li key={item.id}>
-                <Link href={`/mcus/${item.slug}`} className="font-semibold text-[var(--ink)]">{item.name}</Link>
-                <span className="text-[var(--body)]">{` · ${item.piece}`}</span>
-                <p className="text-[var(--body)]">{item.summary}</p>
-              </li>
-            ))}
-          </ul>
-        )}
-        <p className="mt-4 font-[family-name:var(--font-sans)]"><Link href={productCopy.mcu.href} className={actionClass}>{productCopy.mcu.label}</Link></p>
-      </section>
-      <section className="mt-10">
         <h2 className="text-xl font-semibold text-[var(--ink)]">Start with one piece</h2>
         <p className="mt-3 text-[var(--body)]">Rideshare 99 starts here. Pick one. You do not need to write code. The person who takes Look after the list starts it, and people already waiting are invited.</p>
         {life ? <p className="mt-3 text-[var(--ink)]">{life}</p> : null}
@@ -104,6 +88,22 @@ export default async function HomePage() {
             <Link href={startUtilityPath(rideshare)} className={actionClass}>Start Rideshare 99</Link>
           </p>
         ) : null}
+      </section>
+      <section className="mt-10">
+        <h2 className="text-xl font-semibold text-[var(--ink)]">{productCopy.mcu.title}</h2>
+        <p className="mt-3 text-[var(--body)]">{productCopy.mcu.meaning}</p>
+        {mcus.length === 0 ? <p className="mt-3 text-[var(--ink)]">{productCopy.mcu.empty}</p> : (
+          <ul className="mt-4 space-y-4">
+            {mcus.map((item) => (
+              <li key={item.id}>
+                <Link href={`/mcus/${item.slug}`} className="font-semibold text-[var(--ink)]">{item.name}</Link>
+                <span className="text-[var(--body)]">{` · ${item.piece}`}</span>
+                <p className="text-[var(--body)]">{item.summary}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+        <p className="mt-4 font-[family-name:var(--font-sans)]"><Link href={productCopy.mcu.href} className={actionClass}>{productCopy.mcu.label}</Link></p>
       </section>
       <p className="mt-8 flex flex-wrap gap-x-4 gap-y-2 font-[family-name:var(--font-sans)]">
         <Link href={productCopy.join.href} className={actionClass}>{productCopy.join.label}</Link>

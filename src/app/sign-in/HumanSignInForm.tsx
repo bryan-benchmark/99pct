@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { humanClientAuth } from "@/human/auth/client";
 
-export function HumanSignInForm({ nextPath, initialMode = "sign-in" }: { nextPath: string; initialMode?: "sign-in" | "create" }) {
+export function HumanSignInForm({ nextPath, piece = "", initialMode = "sign-in" }: { nextPath: string; piece?: string; initialMode?: "sign-in" | "create" }) {
   const router = useRouter();
   const [mode, setMode] = useState<"sign-in" | "create">(initialMode);
   const [busy, setBusy] = useState(false);
@@ -29,7 +29,7 @@ export function HumanSignInForm({ nextPath, initialMode = "sign-in" }: { nextPat
         await sendEmailVerification(result.user);
         await signOut(auth);
         form.reset();
-        setMessage("Account created. Check your email to verify your address, then sign in.");
+        setMessage(piece ? `Account created. Check your email, then sign in. You come back to ${piece}.` : "Account created. Check your email to verify your address, then sign in.");
         setMode("sign-in");
         return;
       }

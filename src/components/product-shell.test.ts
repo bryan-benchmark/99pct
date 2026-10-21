@@ -55,6 +55,8 @@ test("the root application is 99pct, with Missionism as supporting protocol", ()
   assert.equal(/equity/i.test(page), false);
   assert.match(page, /productCopy\.intro/);
   assert.match(page, /productCopy\.mcu/);
+  assert.ok(page.indexOf("productCopy.intro") < page.indexOf("Start with one piece"));
+  assert.ok(page.indexOf("Start with one piece") < page.indexOf("productCopy.mcu"));
   assert.equal(productCopy.intro.steps.length, 6);
   assert.match(productCopy.mcu.meaning, /not money and it is not a share/);
   assert.equal(/equity|\$/i.test(productCopy.mcu.meaning), false);
