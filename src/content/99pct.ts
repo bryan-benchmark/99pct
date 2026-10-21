@@ -11,6 +11,15 @@ export const productCopy = {
   headline: "The Taylor's version of Uber, Airbnb, DoorDash, and the rest.",
   gloss: "A version where the people who do the work keep all of the profits.",
   stop: "Let's just stop giving our money to them.",
+  rules: [
+    "99% of profits stay in the communities they are earned in.",
+    "99% of a ride stays with the person who drove.",
+    "99% of a night stays with the person who hosted.",
+    "99% of a delivery stays with the person who carried it.",
+    "99% of a post stays with the person who made it.",
+    "1% keeps the shared infrastructure running.",
+    "0% goes to outside owners.",
+  ],
   lede: "99pct is a place to join an open-source community and help build an everyday utility. A ride. A delivery. A stay. A song. A post. A shop. The ordinary services of a life.",
   split: {
     caption: "Where the profit goes",

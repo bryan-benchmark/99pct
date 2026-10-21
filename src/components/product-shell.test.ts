@@ -26,6 +26,17 @@ test("the root application is 99pct, with Missionism as supporting protocol", ()
   assert.equal(productCopy.eyebrow, "Built by the 99%, for the 99%.");
   assert.equal(productCopy.gloss, "A version where the people who do the work keep all of the profits.");
   assert.equal(productCopy.stop, "Let's just stop giving our money to them.");
+  assert.deepEqual([...productCopy.rules], [
+    "99% of profits stay in the communities they are earned in.",
+    "99% of a ride stays with the person who drove.",
+    "99% of a night stays with the person who hosted.",
+    "99% of a delivery stays with the person who carried it.",
+    "99% of a post stays with the person who made it.",
+    "1% keeps the shared infrastructure running.",
+    "0% goes to outside owners.",
+  ]);
+  assert.match(page, /productCopy\.rules/);
+  assert.equal(page.includes("Done when"), false);
   assert.match(page, /productCopy.join/);
   assert.match(page, /productCopy.use/);
   assert.match(page, /productCopy.build/);
