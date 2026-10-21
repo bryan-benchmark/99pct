@@ -44,6 +44,7 @@ export default async function HomePage() {
       </figure>
       <p className="mt-4 text-lg text-[var(--ink)]">{productCopy.gloss}</p>
       <p className="mt-3 text-lg text-[var(--ink)]">{productCopy.stop}</p>
+      <p className="mt-6 font-[family-name:var(--font-sans)]"><Link href="#pieces" className={actionClass}>Pick a piece</Link></p>
       <ul className="mt-8 border-t border-[var(--line)]">
         {productCopy.rules.map((rule) => (
           <li key={rule} className="border-b border-[var(--line)] py-3 text-lg font-semibold leading-snug text-[var(--ink)]">{rule}</li>
@@ -69,7 +70,7 @@ export default async function HomePage() {
           {productCopy.intro.steps.map((step) => <li key={step}>{step}</li>)}
         </ol>
       </section>
-      <section className="mt-10">
+      <section id="pieces" className="mt-10 scroll-mt-6">
         <h2 className="text-xl font-semibold text-[var(--ink)]">Start with one piece</h2>
         <p className="mt-3 text-[var(--body)]">Rideshare 99 starts here. Pick one. You do not need to write code. The person who takes Look after the list starts it, and people already waiting are invited.</p>
         {life ? <p className="mt-3 text-[var(--ink)]">{life}</p> : null}

@@ -1,13 +1,30 @@
 "use client";
 
-import { createUserWithEmailAndPassword, getIdToken, inMemoryPersistence, sendEmailVerification, setPersistence, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { createUserWithEmailAndPassword, getIdToken, inMemoryPersistence, sendEmailVerification, setPersistence, signInWithEmailAndPassword, signOut, type User } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { humanClientAuth } from "@/human/auth/client";
 
+function continueUrlRejected(error: unknown) {
+  const code = typeof error === "object" && error && "code" in error ? String(error.code) : "";
+  return code === "auth/unauthorized-continue-uri" || code === "auth/invalid-continue-uri";
+}
+
+async function sendVerification(user: User, nextPath: string) {
+  const next = encodeURIComponent(nextPath || "/");
+  const url = `${window.location.origin}/sign-in?verified=1&next=${next}`;
+  try {
+    await sendEmailVerification(user, { url, handleCodeInApp: false });
+  } catch (error) {
+    if (!continueUrlRejected(error)) throw error;
+    await sendEmailVerification(user);
+  }
+}
+
 export function HumanSignInForm({ nextPath, piece = "", initialMode = "sign-in" }: { nextPath: string; piece?: string; initialMode?: "sign-in" | "create" }) {
   const router = useRouter();
   const [mode, setMode] = useState<"sign-in" | "create">(initialMode);
+  const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -16,7 +33,7 @@ export function HumanSignInForm({ nextPath, piece = "", initialMode = "sign-in" 
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
-    const email = String(data.get("email") || "").trim();
+    const address = String(data.get("email") || "").trim();
     const password = String(data.get("password") || "");
     setBusy(true);
     setError("");
@@ -25,17 +42,19 @@ export function HumanSignInForm({ nextPath, piece = "", initialMode = "sign-in" 
       const auth = humanClientAuth();
       await setPersistence(auth, inMemoryPersistence);
       if (mode === "create") {
-        const result = await createUserWithEmailAndPassword(auth, email, password);
-        await sendEmailVerification(result.user);
+        const result = await createUserWithEmailAndPassword(auth, address, password);
+        await sendVerification(result.user, nextPath);
         await signOut(auth);
-        form.reset();
-        setMessage(piece ? `Account created. Check your email, then sign in. You come back to ${piece}.` : "Account created. Check your email to verify your address, then sign in.");
+        const passwordInput = form.elements.namedItem("password");
+        if (passwordInput instanceof HTMLInputElement) passwordInput.value = "";
+        setEmail(address);
+        setMessage(piece ? `Account created. Open the email and confirm it. Then sign in here. You come back to ${piece}.` : "Account created. Open the email and confirm it, then sign in here.");
         setMode("sign-in");
         return;
       }
-      const result = await signInWithEmailAndPassword(auth, email, password);
+      const result = await signInWithEmailAndPassword(auth, address, password);
       if (!result.user.emailVerified) {
-        await sendEmailVerification(result.user);
+        await sendVerification(result.user, nextPath);
         await signOut(auth);
         setMessage("Verify your email before signing in. We sent another verification link.");
         return;
@@ -68,7 +87,7 @@ export function HumanSignInForm({ nextPath, piece = "", initialMode = "sign-in" 
         <button type="button" aria-pressed={mode === "create"} onClick={() => setMode("create")} className="flex-1 border border-[var(--ink)] px-3 py-2">Create account</button>
       </div>
       <form onSubmit={submit} className="space-y-4">
-        <label className="block">Email<input type="email" name="email" required autoComplete="email" className={field} /></label>
+        <label className="block">Email<input type="email" name="email" required autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} className={field} /></label>
         <label className="block">Password<input type="password" name="password" required minLength={6} autoComplete={mode === "create" ? "new-password" : "current-password"} className={field} /></label>
         <button type="submit" disabled={busy} className="w-full border border-[var(--ink)] px-4 py-2 disabled:opacity-50 sm:w-auto">{busy ? "Working…" : mode === "create" ? "Create account" : "Sign in"}</button>
       </form>
