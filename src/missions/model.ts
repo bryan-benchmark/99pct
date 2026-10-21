@@ -97,11 +97,12 @@ export const workCopy = {
   invitedToHelp: "You’re invited to help",
   illHelp: "I’ll help on this Work",
   youreHelping: "Post what you did",
-  futureContributions: "Write the piece here. The person looking after this can read it.",
+  futureContributions: "Write the piece here. Your name stays on it.",
   recordContribution: "Post it",
+  contributionName: "Your name",
   contributionSummary: "What did you do?",
   contributionEvidence: "A link, if you have one",
-  contributionBoundary: "Posting this does not pay you, sell shares, or grant ownership. Recognition of a contribution is a separate step.",
+  contributionBoundary: "Your name on this piece is an MCU. It is not money and it is not a share.",
   recognizeContribution: "Recognize Contribution",
   recognitionBoundary: "Recognition makes this Contribution eligible for the Mission's active MCU rule. The rule—not this button—determines the MCU amount.",
   mcuMeaning: "MCUs record recognized Mission contribution. They are not legal shares or cash.",
@@ -120,6 +121,14 @@ export function confirmDraft(input: Record<string, unknown>): { confirm: true } 
 
 const contributionKey = /^[A-Za-z0-9._:-]{1,200}$/;
 
+export function mcuName(value: unknown) {
+  if (typeof value !== "string") throw new MissionInputError("Your name is required.");
+  const name = value.trim().replace(/\s+/g, " ");
+  if (name.length < 2 || name.length > 40) throw new MissionInputError("Your name must be 2 to 40 characters.");
+  if (/@|https?:|\/\//i.test(name)) throw new MissionInputError("Use your name, not an email or a link.");
+  return name;
+}
+
 export function contributionDraft(input: Record<string, unknown>) {
   if ("amount" in input || "ruleId" in input || "ruleVersion" in input || "uid" in input || "humanUid" in input) {
     throw new MissionInputError("A Contribution cannot choose an MCU amount or identity.");
@@ -136,6 +145,7 @@ export function contributionDraft(input: Record<string, unknown>) {
     summary: input.summary.trim(),
     evidence: typeof input.evidence === "string" ? input.evidence.trim() : "",
     idempotencyKey: input.idempotencyKey,
+    name: mcuName(input.name),
   };
 }
 

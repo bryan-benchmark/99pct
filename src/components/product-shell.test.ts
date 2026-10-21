@@ -52,7 +52,12 @@ test("the root application is 99pct, with Missionism as supporting protocol", ()
   assert.match(page, /productCopy.build/);
   assert.match(page, /productCopy.start/);
   assert.match(page, /productCopy.explore/);
-  assert.equal(/equity|MCU/i.test(page), false);
+  assert.equal(/equity/i.test(page), false);
+  assert.match(page, /productCopy\.intro/);
+  assert.match(page, /productCopy\.mcu/);
+  assert.equal(productCopy.intro.steps.length, 6);
+  assert.match(productCopy.mcu.meaning, /not money and it is not a share/);
+  assert.equal(/equity|\$/i.test(productCopy.mcu.meaning), false);
   assert.equal(/equity/i.test(`${productCopy.lede} ${productCopy.argument} ${productCopy.truth}`), false);
   assert.match(page, /productCopy\.split/);
   assert.deepEqual(productCopy.split.rows.map((row) => `${row.share} ${row.who}`), [

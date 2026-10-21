@@ -45,6 +45,7 @@ async function recognizedContribution() {
     summary: "Brought twenty bottles.",
     evidence: "Bottles are in the lab.",
     idempotencyKey: "bottles-anchor",
+    name: "Maya Chen",
   });
   await recognizeContributionRecord(missions, creator, mission.slug, project.slug, work.slug, recorded.id);
   await missions.query(

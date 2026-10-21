@@ -6,6 +6,8 @@ import { humanSessionCookieName } from "@/human/auth/session";
 import { getMissionDb } from "@/missions/db/runtime";
 import { getOwnInterest, listCreatorInterests, type CreatorInterest, type OwnInterest } from "@/missions/interest";
 import { listWorkContributions, type ContributionView } from "@/missions/contributions";
+import { productCopy } from "@/content/99pct";
+import { listWorkMcus, type PublicMcu } from "@/missions/mcu";
 import { helpingCountLabel, interestCountLabel, publicMissionUrl, publicProjectUrl, workCopy, type ParticipationState } from "@/missions/model";
 import { getPublicMission } from "@/missions/store";
 import { getPublicProject, getPublicWork, viewerMayCreate } from "@/missions/projects";
@@ -70,10 +72,12 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
   let ownInterest: OwnInterest | null = null;
   let signedIn = false;
   let contributions: ContributionView[] = [];
+  let mcus: PublicMcu[] = [];
   try {
     const db = await getMissionDb();
     work = await getPublicWork(db, slug, projectSlug, workSlug);
     if (work) {
+      mcus = await listWorkMcus(db, slug, projectSlug, workSlug);
       missionName = (await getPublicMission(db, slug))?.name ?? slug;
       projectTitle = (await getPublicProject(db, slug, projectSlug))?.title ?? projectSlug;
       try {
@@ -112,6 +116,20 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
         <div><dt className="font-semibold text-[var(--ink)]">Done when</dt><dd>{work.doneWhen}</dd></div>
         <div><dt className="font-semibold text-[var(--ink)]">Posted</dt><dd>{created}</dd></div>
       </dl>
+      <section className="mt-10 border-t border-[var(--line)] pt-5">
+        <h2 className="text-lg font-semibold text-[var(--ink)]">{productCopy.mcu.title}</h2>
+        <p className="mt-2 text-[var(--body)]">{productCopy.mcu.meaning}</p>
+        {mcus.length === 0 ? <p className="mt-2 text-[var(--muted)]">{productCopy.mcu.empty}</p> : (
+          <ul className="mt-4 space-y-3">
+            {mcus.map((item) => (
+              <li key={item.id}>
+                <Link href={`/mcus/${item.slug}`} className="font-semibold text-[var(--ink)]">{item.name}</Link>
+                <p className="mt-1 text-[var(--body)]">{item.summary}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
       <section className="mt-10 border-t border-[var(--line)] pt-5">
         {creatorView ? (
           <>

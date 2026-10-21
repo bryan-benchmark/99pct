@@ -10,7 +10,8 @@ import { contributionContentHash, recognizeContributionRecord, submitContributio
 import { embeddedMissionDb } from "./db/client";
 import { migrateMissions } from "./db/migrate";
 import { expressInterest, listCreatorInterests } from "./interest";
-import { MissionInputError, contributionDraft, recognitionDraft } from "./model";
+import { listRecentMcus } from "./mcu";
+import { MissionInputError, contributionDraft, mcuName, recognitionDraft } from "./model";
 import { confirmParticipation, inviteInterest } from "./participation";
 import { createProject, createWork } from "./projects";
 import { createFormingMission } from "./store";
@@ -54,12 +55,16 @@ test("a Contribution cannot choose an MCU amount", () => {
 
 test("only a confirmed helper can record a Contribution, and recognition is creator-only", async () => {
   const { db, mission, project, work, missionId } = await ready();
-  const draft = { summary: "Brought twenty bottles.", evidence: "Bottles are in the lab.", idempotencyKey: "bottles-1" };
+  const draft = { summary: "Brought twenty bottles.", evidence: "Bottles are in the lab.", idempotencyKey: "bottles-1", name: "Maya Chen" };
   await assert.rejects(() => submitContribution(db, stranger, mission.slug, project.slug, work.slug, draft), /confirmed helper/);
   await assert.rejects(() => submitContribution(db, creator, mission.slug, project.slug, work.slug, draft), /creator/);
   const recorded = await submitContribution(db, helper, mission.slug, project.slug, work.slug, draft);
   const replay = await submitContribution(db, helper, mission.slug, project.slug, work.slug, draft);
   assert.equal(replay.id, recorded.id);
+  const published = await listRecentMcus(db);
+  assert.equal(published[0]?.name, "Maya Chen");
+  assert.equal(JSON.stringify(published).includes(helper.email), false);
+  assert.throws(() => mcuName("maya@example.test"), MissionInputError);
   await assert.rejects(() => submitContribution(db, helper, mission.slug, project.slug, work.slug, { ...draft, summary: "Different" }), /already used/);
   await assert.rejects(() => submitContribution(db, helper, mission.slug, project.slug, work.slug, { ...draft, evidence: "A different bottle count." }), /already used/);
   await assert.rejects(() => recognizeContributionRecord(db, helper, mission.slug, project.slug, work.slug, recorded.id), /creator/);
@@ -133,7 +138,7 @@ test("the Contribution route rejects a client amount and a signed-out session", 
   const recorded = await createContributionRequest(new NextRequest(request.url, {
     method: "POST",
     headers: request.headers,
-    body: JSON.stringify({ csrfToken: token, summary: "Brought bottles.", evidence: "", idempotencyKey: "two" }),
+    body: JSON.stringify({ csrfToken: token, name: "Maya Chen", summary: "Brought bottles.", evidence: "", idempotencyKey: "two" }),
   }), mission.slug, project.slug, work.slug, {
     verifySession: async () => helper,
     openDb: async () => db,
@@ -150,7 +155,7 @@ test("a creator cannot recognize a Contribution on another Mission, and the brid
   const otherCreator = { uid: "human-9", email: "other@example.test" };
   const other = await createFormingMission(db, otherCreator, { ...missionDraft, name: "Hill School" });
   const recorded = await submitContribution(db, helper, mission.slug, project.slug, work.slug, {
-    summary: "Brought twenty bottles.", evidence: "", idempotencyKey: "bottles-2",
+    summary: "Brought twenty bottles.", evidence: "", idempotencyKey: "bottles-2", name: "Maya Chen",
   });
   const token = "c".repeat(64);
   const response = await createRecognitionRequest(new NextRequest("http://localhost:3000/recognize", {
@@ -181,7 +186,7 @@ test("a creator cannot recognize a Contribution on another Mission, and the brid
 test("two bridge attempts record one outcome", async () => {
   const { db, mission, project, work, missionId } = await ready();
   const recorded = await submitContribution(db, helper, mission.slug, project.slug, work.slug, {
-    summary: "Brought twenty bottles.", evidence: "", idempotencyKey: "bottles-3",
+    summary: "Brought twenty bottles.", evidence: "", idempotencyKey: "bottles-3", name: "Maya Chen",
   });
   await recognizeContributionRecord(db, creator, mission.slug, project.slug, work.slug, recorded.id);
   const intentId = randomUUID();

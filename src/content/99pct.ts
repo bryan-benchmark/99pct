@@ -24,7 +24,25 @@ export const productCopy = {
     "1% keeps the shared infrastructure running.",
     "0% goes to outside owners.",
   ],
-  lede: "99pct is a place to join an open-source community and help build an everyday utility. A ride. A delivery. A stay. A song. A post. A shop. The ordinary services of a life.",
+  lede: "Come help build the version you would actually use. A ride. A delivery. A place to stay. A post. Pick one small piece and do it. Your name stays on it.",
+  intro: {
+    title: "Come in this way",
+    steps: [
+      "Join with an email.",
+      "Pick one piece. You do not need to write code.",
+      "Do that piece, and post what you did.",
+      "Your name stays on it. That credit is an MCU.",
+      "An MCU is not money and it is not a share.",
+      "The next piece is open for the next person.",
+    ],
+  },
+  mcu: {
+    title: "MCUs",
+    meaning: "An MCU is your name on a piece of work. It is not money and it is not a share.",
+    empty: "No names yet. Yours can be the first.",
+    href: "/mcus",
+    label: "See the names",
+  },
   split: {
     caption: "Where the profit goes",
     rows: [
@@ -62,27 +80,39 @@ export const helpCopy = {
   steps: [
     {
       title: "Join",
-      body: "An email and a password. Verify the email. That is the whole account. You can browse without one.",
-      href: "/sign-in?mode=create&next=/help",
+      body: "An email and a password. Verify the email. That is the whole account. You can look around without one.",
+      href: "/sign-in?mode=create&next=/use/rideshare-99",
       label: "Join",
     },
     {
-      title: "Start a utility",
-      body: "Pick one from the list, or name one that is missing. On a utility with Look after the list, taking that piece starts it. People who already chose a piece are invited. You keep the list of what is needed next. You can also start one yourself and name where it begins.",
-      href: "/use",
-      label: "See the utilities",
+      title: "Pick one piece",
+      body: "Start with Rideshare 99. Write the page, name the city, make a list, or sketch the screen. You do not need to write code.",
+      href: "/use/rideshare-99",
+      label: "See the pieces",
     },
     {
-      title: "Do a piece of work",
-      body: "Open work is a public request. It might be writing, design, answering people, testing, organizing one place, or code. You say you can help. On a utility's first week, that invites you to the piece you chose. On other work, the person who posted it invites you. You confirm. Then you do it. There is no separate ticket system. The work list is the list.",
+      title: "Do it",
+      body: "Do the piece you picked, then post what you did. If you write code, you can send a change instead. Either one counts.",
+      href: "/use/rideshare-99#help",
+      label: "I can help",
+    },
+    {
+      title: "Your name stays",
+      body: "The name you post is public. It stays on that piece, and on a page that is yours.",
+      href: "/mcus",
+      label: "See the names",
+    },
+    {
+      title: "That credit is an MCU",
+      body: "An MCU is your name on a piece of work. It is not money and it is not a share. This site does not pay anyone, sell shares, or grant ownership.",
+      href: "/mcus",
+      label: "What an MCU is",
+    },
+    {
+      title: "The next piece opens",
+      body: "When a piece is posted, the next one is there for the next person. That is how a utility grows.",
       href: "/work",
       label: "See open work",
-    },
-    {
-      title: "Change the software",
-      body: "The source is public. If you write code, you can send a change. If you do not, you can still say what should exist by starting a utility or by doing a piece of work.",
-      href: "https://github.com/bryan-benchmark/99pct",
-      label: "Source (AGPL-3.0)",
     },
   ],
 } as const;

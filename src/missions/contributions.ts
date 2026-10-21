@@ -3,6 +3,7 @@ import { canonicalize, sha256 } from "@/economic/canonical";
 import { firstRecognitionRule } from "@/economic/first-rule";
 import type { MissionDb, MissionSql } from "./db/client";
 import { InterestRequestError } from "./interest";
+import { scopedSlugBase } from "./model";
 
 type WorkTarget = { id: string; status: string; creator_uid: string; mission_id: string };
 
@@ -39,6 +40,32 @@ async function confirmedHelper(tx: MissionSql, workId: string, uid: string) {
     [workId, uid],
   );
   return result.rows.length > 0;
+}
+
+async function creditName(tx: MissionSql, uid: string, requested: string) {
+  const current = await tx.query<{ public_name: string; public_slug: string }>(
+    "SELECT public_name, public_slug FROM human_accounts WHERE firebase_uid = $1",
+    [uid],
+  );
+  const row = current.rows[0];
+  if (row?.public_slug && row.public_name) return { name: row.public_name, slug: row.public_slug };
+  const base = scopedSlugBase(requested, "mcu");
+  let slug = base;
+  for (let n = 2; n < 20; n += 1) {
+    const taken = await tx.query<{ firebase_uid: string }>("SELECT firebase_uid FROM human_accounts WHERE public_slug = $1", [slug]);
+    if (!taken.rows[0]) break;
+    const suffix = `-${n}`;
+    slug = `${base.slice(0, 60 - suffix.length)}${suffix}`;
+  }
+  await tx.query(
+    "UPDATE human_accounts SET public_name = $2, public_slug = $3 WHERE firebase_uid = $1 AND public_slug = ''",
+    [uid, requested, slug],
+  );
+  const saved = await tx.query<{ public_name: string; public_slug: string }>(
+    "SELECT public_name, public_slug FROM human_accounts WHERE firebase_uid = $1",
+    [uid],
+  );
+  return { name: saved.rows[0]?.public_name || requested, slug: saved.rows[0]?.public_slug || slug };
 }
 
 async function contributorRef(tx: MissionSql, uid: string) {
@@ -95,7 +122,7 @@ export async function submitContribution(
   missionSlug: string,
   projectSlug: string,
   workSlug: string,
-  draft: { summary: string; evidence: string; idempotencyKey: string },
+  draft: { summary: string; evidence: string; idempotencyKey: string; name: string },
 ) {
   return db.transaction(async (tx) => {
     await rememberHuman(tx, human);
@@ -112,12 +139,13 @@ export async function submitContribution(
       return { id: existing.rows[0].id, status: "recorded" as const };
     }
     await contributorRef(tx, human.uid);
+    const credit = await creditName(tx, human.uid, draft.name);
     const id = randomUUID();
     try {
       await tx.query(
-        `INSERT INTO contributions (id, work_id, participant_uid, submitted_by_uid, summary, evidence_note, idempotency_key, content_hash)
-         VALUES ($1,$2,$3,$3,$4,$5,$6,$7)`,
-        [id, work.id, human.uid, draft.summary, draft.evidence, draft.idempotencyKey, contentHash],
+        `INSERT INTO contributions (id, work_id, participant_uid, submitted_by_uid, summary, evidence_note, idempotency_key, content_hash, public_name, public_slug)
+         VALUES ($1,$2,$3,$3,$4,$5,$6,$7,$8,$9)`,
+        [id, work.id, human.uid, draft.summary, draft.evidence, draft.idempotencyKey, contentHash, credit.name, credit.slug],
       );
     } catch (error) {
       if (error instanceof Error && /unique|duplicate/i.test(error.message)) throw new InterestRequestError(409, "That Contribution was already recorded.");
