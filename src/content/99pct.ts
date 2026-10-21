@@ -68,7 +68,7 @@ export const helpCopy = {
     },
     {
       title: "Start a utility",
-      body: "Pick one from the list, or name one that is missing. You say what it is, who it is for, and where it starts. Starting it posts the first week. People who already chose a piece are invited. You keep the list of what is needed next.",
+      body: "Pick one from the list, or name one that is missing. On a utility with Look after the list, taking that piece starts it. People who already chose a piece are invited. You keep the list of what is needed next. You can also start one yourself and name where it begins.",
       href: "/use",
       label: "See the utilities",
     },
