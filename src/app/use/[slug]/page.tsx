@@ -4,15 +4,17 @@ import { notFound } from "next/navigation";
 import { OfferForm } from "@/components/OfferForm";
 import { GrowthBanner } from "@/components/GrowthBanner";
 import { productCopy } from "@/content/99pct";
+import { ConfirmHelpForm } from "@/app/missions/[slug]/projects/[projectSlug]/work/[workSlug]/ConfirmHelpForm";
 import { verifyHumanSession } from "@/human/auth/server";
 import { humanSessionCookieName } from "@/human/auth/session";
 import { helpKinds, startUtilityPath, utilityBySlug, utilitySlug } from "@/content/utilities";
 import { missionDatabaseUnavailable } from "@/missions/db/config";
 import { getMissionDb } from "@/missions/db/runtime";
 import { findStartedUtility } from "@/missions/growth";
-import { publicMissionUrl, publicWorkUrl } from "@/missions/model";
+import { getOwnInterest } from "@/missions/interest";
+import { publicMissionUrl, publicWorkUrl, type ParticipationState } from "@/missions/model";
 import { listPieceCounts, listPublicOfferCounts, ownOffer } from "@/missions/offers";
-import { listPublicProjects, listPublicWork } from "@/missions/projects";
+import { listPublicProjects, listPublicWork, viewerMayCreate } from "@/missions/projects";
 import { beginUtilityPath, firstWeek } from "@/missions/starter";
 
 export const dynamic = "force-dynamic";
@@ -32,13 +34,18 @@ export async function generateMetadata({ params, searchParams }: { params: Promi
   return { title: piece?.title ?? utility?.name ?? "Utility" };
 }
 
-async function workForPiece(missionSlug: string, title: string) {
+async function placeOnPiece(missionSlug: string, title: string, uid: string | null) {
   const db = await getMissionDb();
   for (const project of await listPublicProjects(db, missionSlug)) {
     const match = (await listPublicWork(db, missionSlug, project.slug)).find((item) => item.title === title);
-    if (match) return publicWorkUrl(missionSlug, project.slug, match.slug);
+    if (!match) continue;
+    let state: "creator" | ParticipationState | null = null;
+    if (uid) {
+      state = await viewerMayCreate(db, missionSlug, uid) ? "creator" : (await getOwnInterest(db, missionSlug, project.slug, match.slug, uid))?.state ?? null;
+    }
+    return { href: publicWorkUrl(missionSlug, project.slug, match.slug), missionSlug, projectSlug: project.slug, workSlug: match.slug, state };
   }
-  return "";
+  return null;
 }
 
 export default async function UtilityPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ piece?: string }> }) {
@@ -53,6 +60,7 @@ export default async function UtilityPage({ params, searchParams }: { params: Pr
   let started: { slug: string } | null = null;
   let own: Awaited<ReturnType<typeof ownOffer>> = null;
   let signedIn = false;
+  let viewerUid: string | null = null;
   try {
     const db = await getMissionDb();
     helpers = (await listPublicOfferCounts(db)).find((row) => row.slug === slug)?.count ?? 0;
@@ -61,6 +69,7 @@ export default async function UtilityPage({ params, searchParams }: { params: Pr
     try {
       const identity = await verifyHumanSession((await cookies()).get(humanSessionCookieName)?.value);
       signedIn = Boolean(identity);
+      viewerUid = identity?.uid ?? null;
       if (identity) own = await ownOffer(db, slug, identity.uid);
     } catch (error) {
       if (!(error instanceof Error) || error.message !== "Human authentication is not configured.") throw error;
@@ -74,22 +83,28 @@ export default async function UtilityPage({ params, searchParams }: { params: Pr
   const helpPath = requested ? `/use/${slug}?piece=${encodeURIComponent(requested)}#help` : `/use/${slug}#help`;
   const join = `/sign-in?mode=create&next=${encodeURIComponent(helpPath)}`;
   const selectedPiece = requested || own?.piece || "";
-  let pieceHref = "";
+  let place: Awaited<ReturnType<typeof placeOnPiece>> = null;
   if (started && onThisPiece && chosen) {
     try {
-      pieceHref = await workForPiece(started.slug, chosen.title);
+      place = await placeOnPiece(started.slug, chosen.title, viewerUid);
     } catch (error) {
       if (!(error instanceof Error) || error.message !== missionDatabaseUnavailable) throw error;
     }
   }
   const waiting = steward
-    ? "Raising your hand puts you on the list. The person who takes Look after the list starts it, and you are invited to this piece. You confirm it, then you post what you did."
-    : "Raising your hand puts you on the list. When someone starts this, you are invited to this piece. You confirm it, then you post what you did.";
-  const nextLine = started
-    ? "This is not a live service. Raising your hand invites you to this piece. You confirm it, then you post what you did."
-    : chosen?.title === "Look after the list"
-      ? "This is not a live service. Taking this starts it. People who already chose a piece are invited."
-      : `This is not a live service. ${waiting}`;
+    ? "Raising your hand puts you on the list. The person who takes Look after the list starts it, and you are invited to this piece."
+    : "Raising your hand puts you on the list. When someone starts this, you are invited to this piece.";
+  const nextLine = place?.state === "creator"
+    ? "This is not a live service. You are looking after the list."
+    : place?.state === "invited"
+      ? "This is not a live service. You're invited to this piece."
+      : place?.state === "helping"
+        ? "This is not a live service. Post what you did. Your name stays on it."
+        : started
+          ? "This is not a live service. Raising your hand invites you to this piece. You confirm it, then you post what you did."
+          : chosen?.title === "Look after the list"
+            ? "This is not a live service. Taking this starts it. People who already chose a piece are invited."
+            : `This is not a live service. ${waiting}`;
   return (
     <article className="mx-auto max-w-[40rem] px-5 py-12 md:py-16">
       <GrowthBanner />
@@ -103,13 +118,19 @@ export default async function UtilityPage({ params, searchParams }: { params: Pr
           <p className="mt-4 text-[var(--ink)]">{nextLine}</p>
           {onThisPiece ? (
             <div className="mt-6">
-              <p className="text-lg text-[var(--ink)]">You are on this piece.</p>
-              {pieceHref ? (
-                <p className="phone-actions mt-4"><Link href={pieceHref} className={primaryClass}>Post what you did</Link></p>
+              {place?.state === "helping" ? (
+                <p className="phone-actions"><Link href={place.href} className={primaryClass}>Post what you did</Link></p>
+              ) : place?.state === "invited" ? (
+                <ConfirmHelpForm missionSlug={place.missionSlug} projectSlug={place.projectSlug} workSlug={place.workSlug} />
+              ) : place?.state === "creator" && started ? (
+                <p className="phone-actions"><Link href={publicMissionUrl(started.slug)} className={primaryClass}>See the list</Link></p>
               ) : (
-                <p className="mt-3 text-[var(--body)]">{steward && chosen.title !== "Look after the list" ? (
-                  <>When someone takes <Link href={`/use/${slug}?piece=${encodeURIComponent("Look after the list")}#help`} className="font-semibold text-[var(--ink)]">Look after the list</Link>, you are invited. You confirm, then you post what you did. Or take that piece and start it.</>
-                ) : "When someone starts this, you are invited. You confirm, then you post what you did."}</p>
+                <>
+                  <p className="text-lg text-[var(--ink)]">You are on this piece.</p>
+                  <p className="mt-3 text-[var(--body)]">{steward && chosen.title !== "Look after the list" ? (
+                    <>When someone takes <Link href={`/use/${slug}?piece=${encodeURIComponent("Look after the list")}#help`} className="font-semibold text-[var(--ink)]">Look after the list</Link>, you are invited. Or take that piece and start it.</>
+                  ) : "When someone starts this, you are invited."}</p>
+                </>
               )}
             </div>
           ) : signedIn ? (

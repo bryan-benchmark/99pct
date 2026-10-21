@@ -186,6 +186,14 @@ export async function findStartedUtility(db: MissionDb, name: string): Promise<{
 
 export type GrowthNotice = { href: string; text: string };
 
+function invitePieceHref(row: { mission_slug: string; project_slug: string; work_slug: string; title: string }) {
+  const utility = utilityBySlug(row.mission_slug);
+  if (utility && firstWeek(utility).work.some((item) => item.title === row.title)) {
+    return `/use/${row.mission_slug}?piece=${encodeURIComponent(row.title)}#help`;
+  }
+  return publicWorkUrl(row.mission_slug, row.project_slug, row.work_slug);
+}
+
 export async function listGrowthNotices(db: MissionDb, uid: string): Promise<GrowthNotice[]> {
   const invited = await db.query<{ mission_slug: string; project_slug: string; work_slug: string; title: string }>(
     `SELECT missions.slug AS mission_slug, projects.slug AS project_slug, work_items.slug AS work_slug, revisions.title
@@ -254,7 +262,7 @@ export async function listGrowthNotices(db: MissionDb, uid: string): Promise<Gro
   }
   return [
     ...posted.rows.map((row) => ({ href: publicWorkUrl(row.mission_slug, row.project_slug, row.work_slug), text: `Post what you did on ${row.title}.` })),
-    ...invited.rows.filter((row) => row.mission_slug !== readinessCanarySlug).map((row) => ({ href: publicWorkUrl(row.mission_slug, row.project_slug, row.work_slug), text: `You're invited to help on ${row.title}.` })),
+    ...invited.rows.filter((row) => row.mission_slug !== readinessCanarySlug).map((row) => ({ href: invitePieceHref(row), text: `You're invited to help on ${row.title}.` })),
     ...waitingOn,
     ...waiting.rows.filter((row) => row.mission_slug !== readinessCanarySlug).map((row) => ({ href: publicWorkUrl(row.mission_slug, row.project_slug, row.work_slug), text: `Someone wants to help on ${row.title}.` })),
   ].slice(0, 5);

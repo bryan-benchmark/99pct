@@ -275,6 +275,9 @@ test("public pages keep the empty state and do not offer a job, contract, or joi
     "src/app/missions/[slug]/projects/[projectSlug]/work/new/page.tsx",
   ].map((path) => readFileSync(new URL(`../../${path}`, import.meta.url), "utf8")).join("\n");
   assert.match(pages, /missionEmptyStates.projects/);
+  const missionPage = readFileSync(new URL("../../src/app/missions/[slug]/page.tsx", import.meta.url), "utf8");
+  assert.match(missionPage, /You are looking after this list/);
+  assert.equal(missionPage.includes("missionEmptyStates.ownership"), false);
   assert.match(pages, /projectCopy.workBoundary/);
   assert.match(pages, /workCopy.wantToHelp/);
   assert.match(pages, /workCopy.interestBoundary/);
