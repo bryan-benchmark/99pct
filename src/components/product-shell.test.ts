@@ -24,6 +24,9 @@ test("the root application is 99pct, with Missionism as supporting protocol", ()
   assert.equal(hero.includes("underline"), false);
   assert.match(hero, /whitespace-nowrap/);
   assert.equal(productCopy.eyebrow, "Built by the 99%, for the 99%.");
+  assert.equal(productCopy.artist, "Good artists copy. Great artists steal.");
+  assert.equal(productCopy.artistBy, "Picasso");
+  assert.match(page, /productCopy\.artist/);
   assert.equal(productCopy.gloss, "A version where the people who do the work keep all of the profits.");
   assert.equal(productCopy.stop, "Let's just stop giving our money to them.");
   assert.deepEqual([...productCopy.rules], [
