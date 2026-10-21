@@ -59,8 +59,9 @@ async function main() {
          FROM pg_attribute a
         WHERE a.attrelid = 'public.human_accounts'::regclass AND a.attnum > 0 AND NOT a.attisdropped`,
     );
-    if (columns.rows.length < 2 || columns.rows.some((column) => column.can_update !== (column.column_name === "verified_email"))) {
-      throw new Error("Mission runtime role may update only the verified email.");
+    const accountUpdate = new Set(["verified_email", "public_name", "public_slug"]);
+    if (columns.rows.length < 2 || columns.rows.some((column) => column.can_update !== accountUpdate.has(column.column_name))) {
+      throw new Error("Mission runtime role may update only the verified email and the public name.");
     }
     const offerColumns = await db.query<{ column_name: string; can_update: boolean }>(
       `SELECT a.attname AS column_name,

@@ -6,6 +6,7 @@ import { heroIncumbents, startUtilityPath, utilityByName } from "@/content/utili
 import { missionDatabaseUnavailable } from "@/missions/db/config";
 import { getMissionDb } from "@/missions/db/runtime";
 import { lifeSentence, publicPulse } from "@/missions/growth";
+import { listRecentMcus, type PublicMcu } from "@/missions/mcu";
 import { listPieceCounts } from "@/missions/offers";
 import { firstWeek } from "@/missions/starter";
 
@@ -17,10 +18,12 @@ const firstWeekWork = rideshare ? firstWeek(rideshare).work : [];
 
 export default async function HomePage() {
   let life = "";
+  let mcus: PublicMcu[] = [];
   const pieceCounts = new Map<string, number>();
   try {
     const db = await getMissionDb();
     life = lifeSentence(await publicPulse(db));
+    mcus = await listRecentMcus(db, 5);
     for (const row of await listPieceCounts(db, "rideshare-99")) pieceCounts.set(row.piece, row.count);
   } catch (error) {
     if (!(error instanceof Error) || error.message !== missionDatabaseUnavailable) throw error;
@@ -60,6 +63,28 @@ export default async function HomePage() {
       </table>
       <p className="mt-4 text-[var(--body)]">{productCopy.argument}</p>
       <p className="mt-4 text-[var(--body)]">{productCopy.truth}</p>
+      <section className="mt-10">
+        <h2 className="text-xl font-semibold text-[var(--ink)]">{productCopy.intro.title}</h2>
+        <ol className="mt-4 list-decimal space-y-2 pl-5 text-lg text-[var(--ink)]">
+          {productCopy.intro.steps.map((step) => <li key={step}>{step}</li>)}
+        </ol>
+      </section>
+      <section className="mt-10">
+        <h2 className="text-xl font-semibold text-[var(--ink)]">{productCopy.mcu.title}</h2>
+        <p className="mt-3 text-[var(--body)]">{productCopy.mcu.meaning}</p>
+        {mcus.length === 0 ? <p className="mt-3 text-[var(--ink)]">{productCopy.mcu.empty}</p> : (
+          <ul className="mt-4 space-y-4">
+            {mcus.map((item) => (
+              <li key={item.id}>
+                <Link href={`/mcus/${item.slug}`} className="font-semibold text-[var(--ink)]">{item.name}</Link>
+                <span className="text-[var(--body)]">{` · ${item.piece}`}</span>
+                <p className="text-[var(--body)]">{item.summary}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+        <p className="mt-4 font-[family-name:var(--font-sans)]"><Link href={productCopy.mcu.href} className={actionClass}>{productCopy.mcu.label}</Link></p>
+      </section>
       <section className="mt-10">
         <h2 className="text-xl font-semibold text-[var(--ink)]">Start with one piece</h2>
         <p className="mt-3 text-[var(--body)]">Rideshare 99 starts here. Pick one. You do not need to write code. The person who takes Look after the list starts it, and people already waiting are invited.</p>

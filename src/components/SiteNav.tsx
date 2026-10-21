@@ -5,6 +5,7 @@ const links = [
   { href: "/use", label: "Utilities" },
   { href: "/help", label: "Help" },
   { href: "/missions", label: "Missions" },
+  { href: "/mcus", label: "MCUs" },
   { href: "/sign-in?mode=create&next=/use/rideshare-99", label: "Join" },
 ];
 

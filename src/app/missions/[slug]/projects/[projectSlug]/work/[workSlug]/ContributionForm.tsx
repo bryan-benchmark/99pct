@@ -24,6 +24,7 @@ export function ContributionForm({ missionSlug, projectSlug, workSlug }: { missi
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           csrfToken,
+          name: data.get("name") ?? "",
           summary: data.get("summary") ?? "",
           evidence: data.get("evidence") ?? "",
           idempotencyKey,
@@ -43,6 +44,7 @@ export function ContributionForm({ missionSlug, projectSlug, workSlug }: { missi
   return (
     <form onSubmit={submit} className="mt-4 space-y-4 font-[family-name:var(--font-sans)] text-sm">
       <p>{workCopy.contributionBoundary}</p>
+      <label className="block">{workCopy.contributionName}<input name="name" required minLength={2} maxLength={40} className={field} /></label>
       <label className="block">{workCopy.contributionSummary}<textarea name="summary" required maxLength={500} className={field} /></label>
       <label className="block">{workCopy.contributionEvidence}<input name="evidence" maxLength={500} className={field} /></label>
       <button type="submit" disabled={busy} className="w-full border border-[var(--ink)] px-4 py-2 disabled:opacity-50 sm:w-auto">{busy ? "Posting…" : workCopy.recordContribution}</button>
