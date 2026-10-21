@@ -4,6 +4,7 @@ import test from "node:test";
 import { findWorkCopy, helpCopy, missionismHubCopy, productCopy, useCopy } from "@/content/99pct";
 import { heroIncumbents, startUtilityPath, utilities, utilityBeneficiaries, utilityPurpose } from "@/content/utilities";
 import { missionLimits } from "@/missions/model";
+import { firstWeek } from "@/missions/starter";
 import { shortDefinition } from "@/content/voice";
 
 function source(path: string) {
@@ -68,6 +69,11 @@ test("the root application is 99pct, with Missionism as supporting protocol", ()
   assert.match(help, /helpCopy/);
   assert.match(help, /not a job, a paycheck, or ownership/);
   assert.equal(helpCopy.lede, "You do not need to know how open source works.");
+  const social = utilities.find((item) => item.name === "Social Media 99");
+  assert.ok(social);
+  assert.equal(social.incumbent, "TikTok");
+  assert.match(social.line, /right format/);
+  assert.equal(firstWeek(social).work.map((item) => item.title).join("|"), "Write the one-page description|Name the formats|Name the first community|Sketch the upload|Look after the list");
   assert.equal(utilities.length >= 50, true);
   assert.equal(new Set(utilities.map((item) => item.name)).size, utilities.length);
   for (const incumbent of heroIncumbents) {

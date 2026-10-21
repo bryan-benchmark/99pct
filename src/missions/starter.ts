@@ -2,6 +2,7 @@ import type { HelpKind, Utility } from "@/content/utilities";
 import { projectLimits, workLimits, type ProjectDraft, type WorkDraft } from "./model";
 
 const featured = "Rideshare 99";
+const social = "Social Media 99";
 
 function fit(value: string, label: string, max: number) {
   if (value.trim().length < 8 || value.trim().length > max) throw new Error(`${label} is ${value.trim().length} characters.`);
@@ -20,7 +21,9 @@ export function firstWeek(utility: Utility): { project: ProjectDraft; work: Work
     title: "First week",
     outcome: utility.name === featured
       ? "A plain description, a first city, and lists of what riders and drivers need."
-      : `A plain description of ${utility.name}, the first place it starts, and what an operator needs.`,
+      : utility.name === social
+        ? "A plain description, the formats a post can take, and a sketch of the upload."
+        : `A plain description of ${utility.name}, the first place it starts, and what an operator needs.`,
   };
   const work: WorkDraft[] = utility.name === featured
     ? [
@@ -29,6 +32,14 @@ export function firstWeek(utility: Utility): { project: ProjectDraft; work: Work
         { kind: "task", title: "List what a driver needs", description: "List what a person who drives needs on day one: safety, how they are paid, and how a ride reaches them. This is a list, not the software.", doneWhen: "The list is posted where other people can read it." },
         { kind: "task", title: "List what a rider needs", description: "List what a rider needs in order to trust a ride: who is driving, what it costs, and how to get help.", doneWhen: "The list is posted where other people can read it." },
         { kind: "task", title: "Sketch the first screen", description: "Draw or describe the first screen a rider would see. Paper or a simple picture is enough.", doneWhen: "The sketch is posted or described on this Mission." },
+        { kind: "role", title: "Look after the list", description: "Keep this list current. Invite people who offered to help. Say what is needed next.", doneWhen: "The next needs are posted, or someone else has been invited." },
+      ]
+    : utility.name === social
+    ? [
+        { kind: "task", title: "Write the one-page description", description: "Write what Social Media 99 is, in plain language. A person uploads the way they already post. It puts that post into the right format: a photo, a short video, a long video, or a note. Say what changes when the people who make the posts keep the value.", doneWhen: "A one-page description is posted on this Mission." },
+        { kind: "task", title: "Name the formats", description: "Name the formats a post can become. Start with a photo, a short video, a long video, and a note. Say how a person can tell which is which.", doneWhen: "The formats are posted where other people can read them." },
+        { kind: "task", title: "Name the first community", description: "Pick the first people this is for. A city, a scene, or a kind of maker. Say why they would post here before anyone else does.", doneWhen: "The Mission names the first community and why." },
+        { kind: "task", title: "Sketch the upload", description: "Draw or describe the upload. It should feel like posting somewhere they already use: a picture, a video, or words. Sorting happens after they post.", doneWhen: "The sketch is posted or described on this Mission." },
         { kind: "role", title: "Look after the list", description: "Keep this list current. Invite people who offered to help. Say what is needed next.", doneWhen: "The next needs are posted, or someone else has been invited." },
       ]
     : [
