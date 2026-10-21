@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { AgentHandoff } from "@/components/AgentHandoff";
 import { GrowthBanner } from "@/components/GrowthBanner";
 import { HeroCompare } from "@/components/HeroCompare";
+import { agentNote, anyBrickPrompt, brickPrompt, brickRepo } from "@/content/agentBrick";
 import { productCopy } from "@/content/99pct";
 import { heroIncumbents, utilityByName } from "@/content/utilities";
 import { missionDatabaseUnavailable } from "@/missions/db/config";
@@ -41,6 +43,9 @@ export default async function HomePage() {
         <h2 className="text-xl font-semibold text-[var(--ink)]">{productCopy.helpNow.title}</h2>
         <p className="mt-3 text-lg leading-relaxed text-[var(--body)]">{productCopy.lede}</p>
         {life ? <p className="mt-3 text-[var(--ink)]">{life}</p> : null}
+        <p className="mt-6 text-[var(--body)]">{agentNote}</p>
+        <p className="mt-3 font-[family-name:var(--font-sans)]"><a href={brickRepo} className={actionClass}>The public wall</a></p>
+        <AgentHandoff prompt={anyBrickPrompt()} label="Copy for your agent" />
         <p className="phone-actions mt-6">
           <Link href={productCopy.helpNow.action.href} className={primaryClass}>{productCopy.helpNow.action.label}</Link>
         </p>
@@ -49,6 +54,7 @@ export default async function HomePage() {
             <li key={item.title} className="border-t border-[var(--line)] py-3">
               <Link href={`/use/rideshare-99?piece=${encodeURIComponent(item.title)}#help`} className="inline-flex min-h-11 items-center font-semibold text-[var(--ink)]">{item.title}</Link>
               {(pieceCounts.get(item.title) ?? 0) > 0 ? <p className="text-[var(--body)]">{pieceCounts.get(item.title) === 1 ? "1 person can do this." : `${pieceCounts.get(item.title)} people can do this.`}</p> : null}
+              <AgentHandoff prompt={brickPrompt(item)} label="Copy this brick" quiet />
             </li>
           ))}
         </ul>
