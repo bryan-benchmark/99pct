@@ -254,7 +254,9 @@ test("raising a hand after a utility has started invites that person to the piec
   assert.equal(body.status, "offered");
   assert.match(body.next ?? "", /^\/missions\/rideshare-99\/projects\/[^/]+\/work\/[^/]+$/);
   assert.equal(JSON.stringify(body).includes(helper.email), false);
-  assert.match((await listGrowthNotices(db, helper.uid))[0].text, /You're invited to help on Name the first city/);
+  assert.equal((await listGrowthNotices(db, helper.uid)).length, 0);
+  const confirmed = await db.query<{ n: number }>("SELECT count(*)::int AS n FROM work_confirmations");
+  assert.equal(Number(confirmed.rows[0].n), 1);
   assert.equal((await listGrowthNotices(db, creator.uid)).length, 0);
   const again = await createOfferRequest(request("/api/utilities/rideshare-99/offer", { piece: "Name the first city", note: "Atlanta", shareEmail: true }), "rideshare-99", deps);
   const againBody = await again.json() as { next?: string };

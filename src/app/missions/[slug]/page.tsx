@@ -6,10 +6,10 @@ import { helpKinds, utilityByName, utilitySlug } from "@/content/utilities";
 import { verifyHumanSession } from "@/human/auth/server";
 import { humanSessionCookieName } from "@/human/auth/session";
 import { getMissionDb } from "@/missions/db/runtime";
-import { missionEmptyStates, publicProjectUrl } from "@/missions/model";
+import { missionEmptyStates, publicProjectUrl, publicWorkUrl, type PublicWork } from "@/missions/model";
 import { listCreatorOffers, type CreatorOffer } from "@/missions/offers";
 import { getPublicMission } from "@/missions/store";
-import { listPublicProjects, viewerMayCreate } from "@/missions/projects";
+import { listPublicProjects, listPublicWork, viewerMayCreate } from "@/missions/projects";
 
 export const dynamic = "force-dynamic";
 
@@ -35,6 +35,7 @@ export default async function MissionPage({ params }: { params: Promise<{ slug: 
   const { slug } = await params;
   let mission: Awaited<ReturnType<typeof getPublicMission>>;
   let projects: Awaited<ReturnType<typeof listPublicProjects>> = [];
+  const workByProject = new Map<string, PublicWork[]>();
   let canCreate = false;
   let offers: CreatorOffer[] = [];
   try {
@@ -42,6 +43,7 @@ export default async function MissionPage({ params }: { params: Promise<{ slug: 
     mission = await getPublicMission(db, slug);
     if (mission) {
       projects = await listPublicProjects(db, slug);
+      for (const project of projects) workByProject.set(project.slug, (await listPublicWork(db, slug, project.slug)).slice().reverse());
       try {
         const identity = await verifyHumanSession((await cookies()).get(humanSessionCookieName)?.value);
         canCreate = await viewerMayCreate(db, slug, identity?.uid);
@@ -71,7 +73,7 @@ export default async function MissionPage({ params }: { params: Promise<{ slug: 
       {canCreate && offers.length > 0 ? (
         <section className="mt-10 border-t border-[var(--line)] pt-5">
           <h2 className="text-lg font-semibold text-[var(--ink)]">People who can help</h2>
-          <p className="mt-2 text-[var(--body)]">They raised a hand before this had work. Invite them onto a piece of work. Their email is here because they agreed to share it.</p>
+          <p className="mt-2 text-[var(--body)]">They chose a piece and were invited. They confirm, then they post what they did. Their email is here because they agreed to share it.</p>
           <ul className="mt-4 space-y-4">
             {offers.map((offer) => (
               <li key={offer.id}>
@@ -91,6 +93,11 @@ export default async function MissionPage({ params }: { params: Promise<{ slug: 
                 <li key={project.slug}>
                   <Link href={publicProjectUrl(mission.slug, project.slug)} className="font-semibold text-[var(--ink)]">{project.title}</Link>
                   <p className="mt-1 text-[var(--body)]">{project.outcome}</p>
+                  <ul className="mt-3 space-y-1">
+                    {(workByProject.get(project.slug) ?? []).map((item) => (
+                      <li key={item.slug}><Link href={publicWorkUrl(mission.slug, project.slug, item.slug)} className="inline-flex min-h-11 items-center text-[var(--ink)]">{item.title}</Link></li>
+                    ))}
+                  </ul>
                   <p className="mt-1 text-[var(--muted)]">{openWorkCount(project.openWorkCount)}</p>
                 </li>
               ))}

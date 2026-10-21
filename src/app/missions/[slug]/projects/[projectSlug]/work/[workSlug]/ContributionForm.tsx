@@ -45,7 +45,7 @@ export function ContributionForm({ missionSlug, projectSlug, workSlug }: { missi
       <p>{workCopy.contributionBoundary}</p>
       <label className="block">{workCopy.contributionSummary}<textarea name="summary" required maxLength={500} className={field} /></label>
       <label className="block">{workCopy.contributionEvidence}<input name="evidence" maxLength={500} className={field} /></label>
-      <button type="submit" disabled={busy} className="border border-[var(--ink)] px-4 py-2 disabled:opacity-50">{busy ? "Recording…" : workCopy.recordContribution}</button>
+      <button type="submit" disabled={busy} className="w-full border border-[var(--ink)] px-4 py-2 disabled:opacity-50 sm:w-auto">{busy ? "Posting…" : workCopy.recordContribution}</button>
       {error ? <p role="alert" className="border border-red-700 p-3 text-red-700">{error}</p> : null}
     </form>
   );
