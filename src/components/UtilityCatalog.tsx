@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { startUtilityPath, utilities, utilitySlug, type Utility } from "@/content/utilities";
+import { utilities, utilitySlug, type Utility } from "@/content/utilities";
+import { beginUtilityPath } from "@/missions/starter";
 
 const actionClass = "inline-flex min-h-11 items-center font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4";
 
@@ -51,7 +52,7 @@ export function UtilityCatalog({ counts }: { counts: Record<string, number> }) {
                 {counts[utilitySlug(item.name)] > 0 ? <p className="mt-1 text-[var(--muted)]">{helperLabel(counts[utilitySlug(item.name)])}</p> : null}
                 <p className="mt-2 flex flex-wrap gap-x-4 gap-y-2 font-[family-name:var(--font-sans)]">
                   <Link href={`/use/${utilitySlug(item.name)}`} className={actionClass}>I can help</Link>
-                  <Link href={startUtilityPath(item)} className={actionClass}>Start this</Link>
+                  <Link href={beginUtilityPath(item)} className={actionClass}>Start this</Link>
                 </p>
               </li>
             ))}
