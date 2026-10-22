@@ -17,7 +17,7 @@ This page describes the public site. The customer workspace is not part of this 
 | Config file | `apphosting.yaml` |
 | Automatic rollouts | off |
 
-`99pct.com` is not attached. Custom-domain cutover is a later work order. Do not change DNS from this baseline.
+`99pct.com` is not serving this backend yet. The domain is registered at Namecheap, but the authoritative DNS is Afternic (`ns1.afternic.com`, `ns2.afternic.com`). Do not edit Namecheap's Personal DNS Server screen, and do not transfer the registrar or the nameservers to make the site reachable. Web-routing changes belong in the Afternic zone, using only the records Firebase shows for backend `pct99`. The generated `hosted.app` URL stays the fallback until that cutover is connected.
 
 The predecessor Firebase project and backend stay independent. Do not retarget them from this repository.
 
